@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![Cloudflare Pages](https://img.shields.io/badge/Deploy-Cloudflare%20Pages-orange?logo=cloudflare&style=for-the-badge)](https://pages.cloudflare.com/)
+[![Cloudflare Pages](https://img.shields.io/badge/Live%20App-Cloudflare%20Pages-orange?logo=cloudflare&style=for-the-badge)](https://voice-ai-cpp.pages.dev/)
 [![Supabase](https://img.shields.io/badge/Backend-Supabase%20Postgres-3ECF8E?logo=supabase&style=for-the-badge)](https://supabase.com/)
 [![React Native Expo](https://img.shields.io/badge/Mobile-Expo%20v57-000020?logo=expo&style=for-the-badge)](https://expo.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?logo=typescript&style=for-the-badge)](https://www.typescriptlang.org/)
