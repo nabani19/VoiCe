@@ -1,0 +1,16 @@
+{
+  "name": "voice-web",
+  "version": "2.1.0",
+  "description": "VoiCe — AI Chat Analysis & Human Smart Reply Web & Pages Functions",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler pages dev web --compatibility-date=2024-01-01",
+    "build": "echo 'Static landing page ready in web/'",
+    "deploy": "wrangler pages deploy web"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241022.0",
+    "typescript": "^5.4.5",
+    "wrangler": "^3.80.0"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "VoiCe",
+    "slug": "voice-ai",
+    "version": "2.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#080706",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.voice.chatintelligence",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "VoiCe needs access to your photos to analyze chat screenshots and suggest replies."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#080706"
+      },
+      "package": "com.voice.chatintelligence",
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "READ_MEDIA_IMAGES"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow VoiCe to access your photos to select chat screenshots."
+        }
+      ]
+    ]
+  }
+}

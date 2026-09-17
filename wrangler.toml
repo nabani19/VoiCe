@@ -1,0 +1,10 @@
+name = "voice-ai"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "web"
+
+[vars]
+ENVIRONMENT = "production"
+ALLOWED_ORIGIN = "https://voice-ai.pages.dev"
+RATE_LIMIT_MAX_PER_MINUTE = "30"
+SUPABASE_URL = "https://xesemjaebwxfesuyppsh.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhlc2VtamFlYnd4ZmVzdXlwcHNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0OTQ0NTUsImV4cCI6MjEwMTA3MDQ1NX0.p47zqQr-N69pmb6axlP96pvfULNmUDk2kz1A9AXWGek"

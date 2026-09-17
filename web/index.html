@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080706">
+  <meta name="description" content="VoiCe turns chat screenshots into short, context-aware human replies with authentic tone, flow detection, and deep conversation reports.">
+  <title>VoiCe — Authentic Human Replies for Any Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080706;
+      --bg-2: #0d0b09;
+      --panel: #12100e;
+      --panel-2: #171310;
+      --text: #f4efe8;
+      --muted: #9d958c;
+      --muted-2: #726c64;
+      --line: #2b2723;
+      --rust: #c45c30;
+      --rust-bright: #e17745;
+      --violet: #8274ff;
+      --green: #9dc797;
+      --display: 'Barlow Condensed', Impact, sans-serif;
+      --sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --max: 1240px;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+      --shadow: 0 30px 100px rgba(0, 0, 0, .55);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 8% 12%, rgba(196, 92, 48, .08), transparent 28%),
+                  radial-gradient(circle at 92% 14%, rgba(130, 116, 255, .07), transparent 24%);
+      z-index: -2;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .035;
+      background-image: radial-gradient(#fff .5px, transparent .5px);
+      background-size: 4px 4px;
+      z-index: -1;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    button, a, input, select { transition: all .18s var(--ease); }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid var(--rust-bright);
+      outline-offset: 3px;
+    }
+    .wrap { width: min(var(--max), calc(100% - 48px)); margin: auto; }
+    .eyebrow { font: 500 11px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: #afa69c; }
+    .display { font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: -.028em; line-height: .88; }
+    .muted { color: var(--muted); }
+    .rust { color: var(--rust-bright); }
+
+    /* Header */
+    header { position: sticky; top: 0; z-index: 100; background: rgba(8, 7, 6, .85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, .08); }
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: .08em; }
+    .brand-mark { width: 26px; height: 26px; border: 1px solid var(--rust-bright); display: grid; place-items: center; transform: rotate(45deg); }
+    .brand-mark i { display: block; width: 8px; height: 8px; background: var(--rust-bright); }
+    .brand-text { font-family: var(--display); font-size: 24px; font-weight: 800; letter-spacing: .04em; }
+    .nav-links { display: flex; gap: 26px; align-items: center; }
+    .nav-links a { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: #a9a198; }
+    .nav-links a:hover { color: var(--text); }
+    .streak-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid #3c2a21; background: #18110c; font: 600 11px var(--mono); color: var(--rust-bright); }
+    .streak-badge i { font-style: normal; }
+    .nav-cta { border-bottom: 1px solid var(--rust-bright); padding-bottom: 4px; color: var(--text) !important; }
+    .hamburger { display: none; background: transparent; color: var(--text); border: 1px solid var(--line); padding: 8px 12px; font: 500 11px var(--mono); text-transform: uppercase; cursor: pointer; }
+
+    /* Hero */
+    .hero { padding: 72px 0 40px; }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr); gap: 54px; align-items: end; }
+    .hero-kicker { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+    .hero-kicker::before { content: ""; width: 34px; height: 1px; background: var(--rust); }
+    .hero h1 { font-size: clamp(74px, 10.8vw, 144px); }
+    .hero h1 .accent { color: var(--rust-bright); }
+    .hero-copy { max-width: 600px; font-size: 18px; color: #bdb5ac; margin: 24px 0 0; line-height: 1.6; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 32px; }
+    .email-form { display: flex; min-width: min(100%, 500px); gap: 14px; }
+    .field { width: 100%; background: transparent; border: 0; border-bottom: 1px solid #554f49; color: var(--text); padding: 13px 2px 11px; border-radius: 0; }
+    .field::placeholder { color: #6f6962; }
+    .field:focus { border-color: var(--rust-bright); box-shadow: 0 2px 0 var(--rust-bright); }
+    .arrow-btn { background: none; border: 0; border-bottom: 1px solid var(--rust-bright); color: var(--text); padding: 13px 2px 10px; cursor: pointer; font: 600 11px var(--mono); letter-spacing: .12em; white-space: nowrap; text-transform: uppercase; }
+    .arrow-btn::after { content: "↗"; margin-left: 8px; color: var(--rust-bright); font-size: 13px; }
+    .arrow-btn:hover { color: var(--rust-bright); }
+    .microcopy { margin-top: 10px; font: 500 10px var(--mono); color: #6f6962; letter-spacing: .06em; }
+    .form-state { min-height: 20px; margin-top: 8px; color: var(--green); font-size: 12px; font-family: var(--mono); }
+
+    /* Live Telemetry Panel */
+    .product-panel { position: relative; background: linear-gradient(150deg, #16120f, #0d0b0a); border: 1px solid #302b26; box-shadow: var(--shadow); padding: 24px; overflow: hidden; }
+    .product-panel::before { content: ""; position: absolute; inset: auto -10% -40% 28%; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(130, 116, 255, .12), transparent 68%); pointer-events: none; }
+    .panel-top { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, .08); }
+    .live { display: inline-flex; align-items: center; gap: 8px; font: 500 10px var(--mono); text-transform: uppercase; color: #b5aea6; }
+    .pulse { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 0 0 rgba(157, 199, 151, .55); animation: pulse 2s infinite; }
+    .panel-grid { display: grid; grid-template-columns: 1fr auto; gap: 18px; margin-top: 18px; }
+    .signal-box { padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, .07); }
+    .signal-box:last-child { border-bottom: 0; }
+    .signal-label { font: 500 9px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: #756e67; }
+    .signal-value { font-size: 16px; margin-top: 4px; font-weight: 500; }
+    .signal-right { font: 800 42px var(--display); color: var(--rust-bright); align-self: start; line-height: 1; }
+    .signal-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .tag { border: 1px solid #39332f; color: #bdb6ad; padding: 5px 8px; font: 500 9px var(--mono); text-transform: uppercase; }
+    .panel-reply { margin-top: 16px; padding: 16px; border: 1px solid #37312d; background: rgba(255, 255, 255, .025); }
+    .panel-reply p { margin: 8px 0 0; font-size: 15px; line-height: 1.4; color: #f4efe8; }
+    .reply-meta { display: flex; justify-content: space-between; align-items: center; color: #7e7770; font: 500 9px var(--mono); text-transform: uppercase; }
+
+    /* Teaser Strip */
+    .teaser-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: 44px; }
+    .teaser { padding: 26px; border-right: 1px solid var(--line); }
+    .teaser:last-child { border-right: 0; }
+    .teaser .index { font: 600 10px var(--mono); letter-spacing: .14em; color: var(--rust-bright); text-transform: uppercase; }
+    .teaser h3 { font-size: 24px; font-family: var(--display); text-transform: uppercase; margin: 26px 0 8px; }
+    .teaser p { font-size: 14px; color: var(--muted); margin: 0; line-height: 1.5; }
+
+    /* Sections */
+    section { scroll-margin-top: 80px; }
+    .section { padding: 100px 0 0; }
+    .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 36px; margin-bottom: 32px; }
+    .section-head h2 { font-size: clamp(52px, 7.8vw, 106px); }
+    .section-head p { max-width: 440px; color: var(--muted); font-size: 15px; }
+
+    /* VoiCe Interactive Centerpiece */
+    .voice-shell { display: grid; grid-template-columns: .74fr 1.26fr; gap: 0; background: #0b0a09; border: 1px solid var(--line); }
+    .controls { padding: 28px; border-right: 1px solid var(--line); }
+    .control-title { font-size: 18px; font-weight: 600; margin: 8px 0 16px; }
+    .choice-group { display: flex; flex-wrap: wrap; gap: 6px; }
+    .choice { background: transparent; border: 1px solid #342f2a; color: #aaa29a; padding: 8px 11px; cursor: pointer; font: 500 10px var(--mono); text-transform: uppercase; letter-spacing: .06em; }
+    .choice:hover { border-color: #584f47; color: var(--text); }
+    .choice.active { border-color: var(--rust-bright); color: var(--text); background: rgba(196, 92, 48, .12); }
+    .subsection { margin-top: 24px; }
+    .range-row { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+    .range { width: 100%; accent-color: var(--rust-bright); cursor: pointer; }
+    .context-field { width: 100%; margin-top: 8px; padding: 11px; border: 1px solid #332e29; background: #11100d; color: #b6aea5; font-size: 13px; border-radius: 0; }
+    .demo-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+    .mini-btn { background: #141210; border: 1px solid #3a342f; color: #d4cdc4; padding: 11px 12px; cursor: pointer; font: 600 10px var(--mono); text-transform: uppercase; letter-spacing: .08em; text-align: center; }
+    .mini-btn:hover { border-color: var(--rust-bright); color: var(--text); }
+
+    /* Dropzone area */
+    .dropzone { margin-top: 22px; padding: 18px; border: 1px dashed #3a332d; background: rgba(255, 255, 255, .015); text-align: center; cursor: pointer; }
+    .dropzone:hover, .dropzone.active { border-color: var(--rust-bright); background: rgba(196, 92, 48, .04); }
+    .dropzone p { font-size: 12px; color: #8e867d; margin-top: 4px; }
+    .dropzone-tag { font: 600 9px var(--mono); color: var(--rust-bright); text-transform: uppercase; letter-spacing: .1em; }
+
+    /* Reply Stage */
+    .reply-stage { padding: 28px; min-height: 520px; display: flex; flex-direction: column; justify-content: space-between; }
+    .reply-stage-top { display: flex; justify-content: space-between; gap: 18px; align-items: center; margin-bottom: 18px; }
+    .reply-list { display: grid; gap: 10px; }
+    .reply-card { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; border: 1px solid #2f2a26; padding: 16px 18px; background: #11100e; }
+    .reply-card:hover { border-color: #4f453c; transform: translateX(3px); }
+    .reply-card p { margin: 0; font-size: 15px; line-height: 1.4; color: #f4efe8; }
+    .reply-tag-pill { display: inline-block; font: 500 8px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--rust-bright); margin-bottom: 4px; }
+    .reply-tools { display: flex; gap: 6px; align-items: center; }
+    .icon-btn { border: 1px solid #39332e; background: transparent; color: #9e968d; padding: 8px 10px; cursor: pointer; font: 500 9px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+    .icon-btn:hover, .icon-btn.saved { border-color: var(--rust-bright); color: var(--text); }
+    .icon-btn.copied { border-color: var(--green); color: var(--green); }
+
+    /* Favorites & History Filters */
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+    .filter-chip { background: transparent; border: 1px solid #302b26; color: #8e867e; padding: 6px 10px; font: 500 9px var(--mono); text-transform: uppercase; cursor: pointer; }
+    .filter-chip.active, .filter-chip:hover { border-color: var(--rust-bright); color: var(--text); }
+
+    /* Capability Gallery */
+    .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .feature { min-height: 310px; background: var(--panel); border: 1px solid var(--line); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+    .feature::after { content: ""; position: absolute; inset: auto -20% -30% 45%; height: 200px; background: radial-gradient(circle, rgba(196, 92, 48, .12), transparent 68%); opacity: 0; transition: opacity .25s var(--ease); }
+    .feature:hover { background: var(--panel-2); border-color: #4e443b; transform: translateY(-5px); }
+    .feature:hover::after { opacity: 1; }
+    .feature-tag { font: 500 9px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #777068; }
+    .feature h3 { font-size: 26px; font-family: var(--display); text-transform: uppercase; margin: 0 0 10px; position: relative; z-index: 1; }
+    .feature p { font-size: 14px; color: var(--muted); margin: 0; line-height: 1.5; position: relative; z-index: 1; }
+
+    /* Conversation Report */
+    .report { display: grid; grid-template-columns: .78fr 1.22fr; border: 1px solid var(--line); background: #0d0b0a; }
+    .report-left { padding: 28px; border-right: 1px solid var(--line); }
+    .report-left h3 { font-size: 30px; font-family: var(--display); text-transform: uppercase; margin: 10px 0; }
+    .report-score { font: 800 78px var(--display); line-height: 1; color: var(--rust-bright); }
+    .report-note { color: var(--muted); font-size: 13px; max-width: 360px; line-height: 1.5; margin-top: 8px; }
+    .report-right { padding: 28px; }
+    .report-row { display: grid; grid-template-columns: 110px 1fr; gap: 20px; padding: 16px 0; border-bottom: 1px solid rgba(255, 255, 255, .07); }
+    .report-row:last-child { border-bottom: 0; }
+    .report-key { font: 500 9px var(--mono); text-transform: uppercase; letter-spacing: .1em; color: #777069; }
+    .report-val { font-size: 14px; line-height: 1.5; }
+    .flag { display: inline-flex; margin-top: 8px; margin-right: 6px; border: 1px solid #4a372e; padding: 4px 8px; font: 500 9px var(--mono); color: #caa99f; }
+    .flag.good { border-color: #314535; color: #a4c9a8; }
+    .flag.tip { border-color: #35304f; color: #a9a0f0; }
+
+    /* Terminal How It Works */
+    .terminal { border: 1px solid var(--line); background: #090807; box-shadow: var(--shadow); }
+    .term-bar { display: flex; gap: 7px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+    .term-bar i { width: 8px; height: 8px; border-radius: 50%; background: #555049; }
+    .term-code { padding: 24px; font: 500 12px/2 var(--mono); color: #c2bbb2; overflow-x: auto; }
+    .term-code .r { color: var(--rust-bright); }
+    .term-code .v { color: #ac9fff; }
+    .term-code .g { color: var(--green); }
+
+    /* Stats Band */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .stat { padding: 36px 20px; border-right: 1px solid var(--line); }
+    .stat:last-child { border-right: 0; }
+    .stat strong { font: 800 64px/1 var(--display); }
+    .stat span { display: block; color: var(--muted); font: 500 9px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; margin-top: 8px; }
+
+    /* CTA Section */
+    .cta-wrap { padding: 110px 0 0; }
+    .cta { position: relative; overflow: hidden; border: 1px solid #302b35; background: linear-gradient(135deg, #17120f 0%, #131016 54%, #0b0910 100%); padding: 64px 0; }
+    .cta::before { content: ""; position: absolute; width: 560px; height: 560px; right: -180px; top: -300px; border-radius: 50%; background: radial-gradient(circle, rgba(130, 116, 255, .22), transparent 67%); pointer-events: none; }
+    .cta-grid { display: grid; grid-template-columns: 1fr .82fr; gap: 54px; align-items: end; }
+    .cta h2 { font-size: clamp(56px, 6.8vw, 98px); }
+    .cta p { max-width: 580px; color: #aca39a; font-size: 15px; margin-top: 14px; line-height: 1.6; }
+    .cta-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cta-form .field { border: 1px solid #3a342f; background: rgba(255, 255, 255, .03); padding: 13px 14px; }
+    .cta-form .field:focus { box-shadow: none; border-color: var(--rust-bright); }
+    .cta-form .arrow-btn { grid-column: 1 / -1; justify-self: start; margin-top: 6px; }
+
+    /* Footer */
+    footer { padding: 56px 0 28px; }
+    .footer-row { display: grid; grid-template-columns: 1fr auto auto; gap: 28px; align-items: center; border-top: 1px solid var(--line); padding-top: 24px; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font: 500 10px var(--mono); text-transform: uppercase; color: #888078; letter-spacing: .08em; }
+    .footer-links a:hover { color: var(--text); }
+    .copyright { font: 500 10px var(--mono); color: #625c55; }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(157, 199, 151, .55); }
+      70% { box-shadow: 0 0 0 10px rgba(157, 199, 151, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(157, 199, 151, 0); }
+    }
+
+    /* Accessibility / Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      .hero-grid, .voice-shell, .report, .cta-grid { grid-template-columns: 1fr; }
+      .controls, .report-left { border-right: 0; border-bottom: 1px solid var(--line); }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .product-panel { min-height: 360px; }
+    }
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 28px, var(--max)); }
+      .nav { padding: 14px 0; }
+      .hamburger { display: block; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        top: 66px;
+        background: #0e0c0a;
+        border: 1px solid var(--line);
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .nav-links.open { display: flex; }
+      .hero { padding-top: 44px; }
+      .hero h1 { font-size: clamp(66px, 18vw, 102px); }
+      .hero-copy { font-size: 16px; }
+      .email-form { min-width: 100%; flex-direction: column; }
+      .arrow-btn { align-self: flex-start; }
+      .teaser-grid, .stats { grid-template-columns: 1fr; }
+      .teaser { border-right: 0; border-bottom: 1px solid var(--line); }
+      .teaser:last-child { border-bottom: 0; }
+      .section, .cta-wrap { padding-top: 80px; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 14px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .reply-card { grid-template-columns: 1fr; }
+      .reply-tools { justify-content: flex-start; }
+      .demo-actions { grid-template-columns: 1fr; }
+      .cta-form { grid-template-columns: 1fr; }
+      .footer-row { grid-template-columns: 1fr; gap: 16px; }
+      .footer-links { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <header id="top">
+    <div class="wrap">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="brand" href="#top" aria-label="VoiCe home">
+          <span class="brand-mark" aria-hidden="true"><i></i></span>
+          <span class="brand-text">VOICE</span>
+        </a>
+        <div class="nav-links" id="navLinks">
+          <div class="streak-badge" title="Daily check-in streak">
+            <i>🔥</i> <span id="navStreak">5 DAY STREAK</span>
+          </div>
+          <a href="#smart-reply">Smart Reply</a>
+          <a href="#report">Report</a>
+          <a href="#capabilities">Capabilities</a>
+          <a href="#how">How it works</a>
+          <a class="nav-cta" href="#join">Get early access</a>
+        </div>
+        <button class="hamburger" id="hamburger" aria-expanded="false" aria-controls="navLinks">Menu</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <div class="hero-kicker eyebrow">HUMAN CHAT INTELLIGENCE / 2026</div>
+            <h1 class="display">Know what<br>to <span class="accent">say.</span></h1>
+            <p class="hero-copy">Drop in any chat screenshot. VoiCe decodes the conversational arc, identifies unspoken tone shifts, and crafts 3–5 short, human replies that sound like <em>you</em>—never an AI brochure.</p>
+            <div class="hero-actions">
+              <form class="email-form" data-form="hero">
+                <input class="field" name="email" type="email" autocomplete="email" placeholder="your@email.com" aria-label="Email address" required>
+                <button class="arrow-btn" type="submit">JOIN EARLY ACCESS</button>
+              </form>
+            </div>
+            <div class="microcopy">No auto-send. Zero robotic clichés. Powered by Claude 3.5 Sonnet server-side.</div>
+            <div class="form-state" data-message="hero" aria-live="polite"></div>
+          </div>
+
+          <aside class="product-panel" aria-label="Live VoiCe thread intelligence">
+            <div class="panel-top">
+              <span class="eyebrow">ACTIVE THREAD / CLAUDE 3.5 VISION</span>
+              <span class="live"><i class="pulse"></i> engine online</span>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <div class="signal-box">
+                  <div class="signal-label">Current context</div>
+                  <div class="signal-value">Friday plans &amp; dinner banter</div>
+                </div>
+                <div class="signal-box">
+                  <div class="signal-label">Detected flow</div>
+                  <div class="signal-value" id="liveFlow">playful → flirty build</div>
+                </div>
+                <div class="signal-box">
+                  <div class="signal-label">Observable cues</div>
+                  <div class="signal-tags">
+                    <span class="tag">warm follow-up</span>
+                    <span class="tag">open invitation</span>
+                    <span class="tag">low pressure</span>
+                    <span class="tag">reciprocal</span>
+                  </div>
+                </div>
+              </div>
+              <div class="signal-right" id="liveConfidence">94%</div>
+            </div>
+            <div class="panel-reply">
+              <div class="reply-meta">
+                <span>Top suggestion · Flirty / Casual</span>
+                <span id="liveCandidates">04 candidates</span>
+              </div>
+              <p id="liveTopReply">“Bold of you to assume I’m free 😌 what did you have in mind?”</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="teaser-grid" aria-label="Core pipeline highlights">
+          <article class="teaser">
+            <div class="index">01 / CAPTURE</div>
+            <h3>Screenshot to Context</h3>
+            <p>Vision OCR isolates bubbles, sender turns, and timestamps without requiring you to copy-paste messy text.</p>
+          </article>
+          <article class="teaser">
+            <div class="index">02 / SENSING</div>
+            <h3>Read the Room</h3>
+            <p>Detects seven nuanced human tones, unanswered questions, open loops, and subtle hesitations.</p>
+          </article>
+          <article class="teaser">
+            <div class="index">03 / DELIVERY</div>
+            <h3>Short Human Lines</h3>
+            <p>Get 3–5 sharp lines (1–2 sentences max), 1-tap copy to clipboard, or instantly refine tone with "make it better."</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SMART REPLY CENTERPIECE -->
+    <section class="section" id="smart-reply">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">THE CENTERPIECE</div>
+            <h2 class="display">VOICE<br>ENGINE</h2>
+          </div>
+          <p>The model performs the heavy contextual reasoning in the background so your reply stays short, confident, and natural.</p>
+        </div>
+
+        <div class="voice-shell">
+          <div class="controls">
+            <div class="eyebrow">00 / AI ENGINE</div>
+            <div class="choice-group" id="modelChoices" style="margin: 6px 0 16px;">
+              <button class="choice active" data-model="claude">Claude 3.5 Sonnet</button>
+              <button class="choice" data-model="chatgpt">ChatGPT-4o</button>
+              <button class="choice" data-model="gemini">Gemini 1.5</button>
+            </div>
+
+            <div class="eyebrow">01 / TONE FILTER</div>
+            <div class="control-title">How should the reply feel?</div>
+            <div class="choice-group" id="toneChoices"></div>
+
+            <div class="subsection">
+              <div class="eyebrow">02 / HUMAN DELIVERY STYLE</div>
+              <div class="choice-group" id="deliveryChoices" style="margin-top: 8px;"></div>
+            </div>
+
+            <div class="subsection">
+              <div class="range-row">
+                <span class="eyebrow">03 / INTENSITY</span>
+                <span class="eyebrow" id="intensityLabel">6 / 10</span>
+              </div>
+              <input class="range" id="intensity" type="range" min="1" max="10" value="6" aria-label="Reply intensity slider">
+            </div>
+
+            <div class="subsection">
+              <div class="eyebrow">04 / CONVERSATIONAL INTENT</div>
+              <select class="context-field" id="intent" aria-label="Select conversational goal">
+                <option value="continue">Keep the conversation flowing effortlessly</option>
+                <option value="ask">Transition naturally to a date / meetup</option>
+                <option value="recover">Recover from an awkward pause or dry text</option>
+                <option value="clarify">Get a clear answer without sounding pushy</option>
+                <option value="close">Polite and relaxed conversational sign-off</option>
+              </select>
+            </div>
+
+            <!-- Drag and drop screenshot simulator -->
+            <div class="dropzone" id="screenshotDropzone">
+              <div class="dropzone-tag">📸 SCREENSHOT DROPZONE</div>
+              <p id="dropzoneText">Drag &amp; drop chat screenshot or tap to simulate analysis</p>
+            </div>
+
+            <div class="demo-actions">
+              <button class="mini-btn" id="regenerate">↻ regenerate</button>
+              <button class="mini-btn" id="improve">✦ make it better</button>
+            </div>
+          </div>
+
+          <div class="reply-stage">
+            <div>
+              <div class="reply-stage-top">
+                <div>
+                  <span class="eyebrow">CANDIDATES / <span id="replyMeta">FLIRTY · CASUAL &amp; DIRECT</span></span>
+                </div>
+                <div class="eyebrow" id="replyCount">04 candidates</div>
+              </div>
+
+              <!-- Favorites / History category filter demo -->
+              <div class="filter-bar" aria-label="Saved category filter">
+                <span class="eyebrow" style="align-self: center; margin-right: 6px;">FAVORITES:</span>
+                <button class="filter-chip active" data-filter="all">All</button>
+                <button class="filter-chip" data-filter="Flirty">Flirty</button>
+                <button class="filter-chip" data-filter="Funny">Funny</button>
+                <button class="filter-chip" data-filter="Spicy">Spicy</button>
+                <button class="filter-chip" data-filter="Natural">Natural</button>
+                <button class="filter-chip" data-filter="Professional">Professional</button>
+              </div>
+
+              <div class="reply-list" id="replyList"></div>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
+              <span class="eyebrow">1-TAP CLIPBOARD READY</span>
+              <span class="eyebrow" style="color: var(--rust-bright);">1–2 SENTENCES MAX</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAPABILITIES -->
+    <section class="section" id="capabilities">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">CAPABILITIES</div>
+            <h2 class="display">ENGINEERED<br>FOR REAL LIFE</h2>
+          </div>
+          <p>Every feature is designed to eliminate social hesitation without taking control or voice away from the user.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature">
+            <div class="feature-tag">01 / Flow &amp; Memory</div>
+            <div>
+              <h3>Remembers Context.</h3>
+              <p>Maintains entire conversational history so replies fit the ongoing arc, not just the isolated last message.</p>
+            </div>
+          </article>
+          <article class="feature">
+            <div class="feature-tag">02 / Quick Transforms</div>
+            <div>
+              <h3>Make It Better.</h3>
+              <p>Instantly rewrite any line to be punchier, warmer, more chill, or wittier with a single click.</p>
+            </div>
+          </article>
+          <article class="feature">
+            <div class="feature-tag">03 / Evidence Report</div>
+            <div>
+              <h3>Deep Diagnosis.</h3>
+              <p>Inspect tone trajectories, positive cues, red flags with textual evidence, and pro tips to impress the other person.</p>
+            </div>
+          </article>
+          <article class="feature">
+            <div class="feature-tag">04 / Organized Vault</div>
+            <div>
+              <h3>Categorized Favorites.</h3>
+              <p>Save lines into Flirty, Funny, or Spicy vaults, filter history by tone, and build a daily texting streak.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONVERSATION REPORT -->
+    <section class="section" id="report">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">CONVERSATION REPORT</div>
+            <h2 class="display">NOT A<br>MIND READER.</h2>
+          </div>
+          <p>VoiCe separates verified message facts from model interpretations, delivering strategic clarity instead of false certainty.</p>
+        </div>
+        <div class="report">
+          <div class="report-left">
+            <div class="eyebrow">THREAD VIBE SCORE / DEMO</div>
+            <div class="report-score">8.4</div>
+            <div class="report-note">Composite conversational momentum metric based on response velocity, question reciprocity, and warm framing.</div>
+            <div class="signal-tags" style="margin-top: 24px;">
+              <span class="tag">open loop</span>
+              <span class="tag">reciprocal humor</span>
+              <span class="tag">unprompted follow-up</span>
+            </div>
+          </div>
+          <div class="report-right">
+            <div class="report-row">
+              <div class="report-key">Flow Arc</div>
+              <div class="report-val">Opener → Playful teasing → Mutual interest → Open schedule inquiry</div>
+            </div>
+            <div class="report-row">
+              <div class="report-key">Strong Signal</div>
+              <div class="report-val">
+                They initiated a follow-up question after your last joke rather than dropping the topic.
+                <div><span class="flag good">EVIDENCE: “What about that Italian spot you mentioned?”</span></div>
+              </div>
+            </div>
+            <div class="report-row">
+              <div class="report-key">Watch Out</div>
+              <div class="report-val">
+                They didn’t commit to a specific day yet. Avoid double-texting with multiple options.
+                <div><span class="flag">AMBIGUOUS COMMITMENT</span></div>
+              </div>
+            </div>
+            <div class="report-row">
+              <div class="report-key">How to Impress</div>
+              <div class="report-val">
+                Pick one specific day and time with confidence rather than an open-ended "whenever works for you." Decisiveness matches their teasing tone.
+                <div><span class="flag tip">PRO STRATEGY</span></div>
+              </div>
+            </div>
+            <div class="report-row">
+              <div class="report-key">Recommended</div>
+              <div class="report-val">Playful confirmation with a specific proposal · Keep it under 15 words.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS TERMINAL -->
+    <section class="section" id="how">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">HOW IT WORKS</div>
+            <h2 class="display">FROM<br>SCREENSHOT<br>TO SEND</h2>
+          </div>
+          <p>A transparent 5-layer pipeline: Vision OCR, Turn Segmentation, Tone Detection, Claude 3.5 Generation, and Safety Verification.</p>
+        </div>
+        <div class="terminal" aria-label="Terminal pipeline execution demonstration">
+          <div class="term-bar"><i></i><i></i><i></i></div>
+          <div class="term-code">
+            <div><span class="r">$</span> voice analyze <span class="g">chat-screenshot.png</span> --provider claude-3-5-sonnet</div>
+            <div><span class="v">→</span> [1/5] OCR: 16 message bubbles extracted with bounding boxes (confidence 0.98)</div>
+            <div><span class="v">→</span> [2/5] Segmentation: 2 distinct speakers / 16 sequential turns resolved</div>
+            <div><span class="v">→</span> [3/5] Tone Sensing: <span class="r">Flirty</span> + teasing banter / open loop detected</div>
+            <div><span class="v">→</span> [4/5] Generation: Tone=Flirty, Delivery=Casual &amp; Direct, Intensity=6</div>
+            <div><span class="v">→</span> [5/5] Brevity Guard: All candidates verified ≤ 2 sentences. Zero AI clichés.</div>
+            <div><span class="r">$</span> voice copy --candidate 1</div>
+            <div><span class="g">✔</span> Copied to clipboard: “Bold of you to assume I’m free 😌 what did you have in mind?”</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS BAND -->
+    <section class="section">
+      <div class="wrap">
+        <div class="stats" aria-label="Application statistics">
+          <div class="stat">
+            <strong>3–5</strong>
+            <span>short candidates per generation</span>
+          </div>
+          <div class="stat">
+            <strong>7</strong>
+            <span>human tone registers</span>
+          </div>
+          <div class="stat">
+            <strong>&lt; 2</strong>
+            <span>sentences max per reply</span>
+          </div>
+          <div class="stat">
+            <strong id="statCopies">24,810</strong>
+            <span>lines copied to clipboard</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLOSING CTA -->
+    <section class="cta-wrap" id="join">
+      <div class="cta">
+        <div class="wrap cta-grid">
+          <div>
+            <div class="eyebrow">RESERVE EARLY ACCESS</div>
+            <h2 class="display">YOUR NEXT<br>TEXT IS<br>COVERED.</h2>
+            <p>Join the priority list for VoiCe on iOS and Android. Screenshot analysis, tone sensing, custom favorites vault, daily streaks, and Claude 3.5 Sonnet smart replies in your pocket.</p>
+          </div>
+          <form class="cta-form" data-form="cta">
+            <input class="field" type="text" name="name" autocomplete="name" placeholder="Your name" aria-label="Your name" required>
+            <input class="field" type="email" name="email" autocomplete="email" placeholder="you@email.com" aria-label="Email address" required>
+            <button class="arrow-btn" type="submit">JOIN THE WAITLIST</button>
+            <div class="form-state" data-message="cta" aria-live="polite"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap footer-row">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true"><i></i></span>
+        <span class="brand-text">VOICE</span>
+      </a>
+      <div class="footer-links">
+        <a href="#smart-reply">Smart Reply</a>
+        <a href="#report">Report</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#how">How it works</a>
+      </div>
+      <div class="copyright">© 2026 VOICE AI. STRICT PRIVACY ENFORCED.</div>
+    </div>
+  </footer>
+
+  <script>
+    'use strict';
+
+    // Human-First Authentic Reply Bank (1-2 sentences max, zero AI clichés)
+    const replyBank = {
+      Natural: {
+        'Casual & Direct': [
+          'Yeah, I’m down. What’s the plan?',
+          'That works for me. Let me know when you’re heading over.',
+          'Haha okay, I’m listening. Tell me more.',
+          'Sounds fun honestly. What time were you thinking?'
+        ],
+        'Witty & Teasing': [
+          'I could be convinced. What’s in it for me?',
+          'Look who decided to make an appearance.',
+          'Not the worst idea you’ve had today.',
+          'Fine, but only if there’s good food involved.'
+        ],
+        'Warm & Engaging': [
+          'That actually sounds great, I’d love that.',
+          'It’s really good hearing from you. How was your week?',
+          'I’m definitely in. Let’s make it happen!',
+          'Always down to hang out with you.'
+        ],
+        'Unfiltered & Real': [
+          'Honestly? That sounds way better than staying in.',
+          'I’m exhausted, but for you I’ll make an exception.',
+          'Not gonna lie, that sounds elite.',
+          'Say less. Send me the address.'
+        ]
+      },
+      Funny: {
+        'Casual & Direct': [
+          'Bold strategy. Let’s see if it pays off 😂',
+          'That sounds suspiciously like a trap, but I’m in.',
+          'I was going to be productive today, so thanks for ruining that.',
+          'Fine. Ruin my perfectly peaceful evening then.'
+        ],
+        'Witty & Teasing': [
+          'This feels like the opening scene of a comedy where everything goes wrong.',
+          'That is an objectively questionable plan. Count me in.',
+          'I had a responsible evening planned. Tragic.',
+          'You’re really testing my ability to make good choices right now.'
+        ],
+        'Warm & Engaging': [
+          'You always know how to turn a boring day around 😂',
+          'Okay that made me laugh out loud in public. Keep going.',
+          'I need friends like you to keep life interesting.',
+          'Stop being funny, I’m trying to pretend to be busy.'
+        ],
+        'Unfiltered & Real': [
+          'Why does every bad idea you have sound so fun 😭',
+          'I’m choosing chaos today, apparently.',
+          'My therapist would definitely advise against this. What time?',
+          'If we get arrested I’m blaming you completely.'
+        ]
+      },
+      Flirty: {
+        'Casual & Direct': [
+          'Bold of you to assume I’m free 😌 what did you have in mind?',
+          'You’re making it very difficult to say no.',
+          'Okay, I’ll bite. What’s your plan for us?',
+          'That confidence is doing a lot of work right now.'
+        ],
+        'Witty & Teasing': [
+          'Are you always this charming or am I just getting special treatment?',
+          'Careful, you’re dangerously close to getting a yes.',
+          'I see what you’re doing here. And it’s working.',
+          'You talk a big game. Let’s see if you can back it up.'
+        ],
+        'Warm & Engaging': [
+          'You have a funny way of making my day a whole lot better 😊',
+          'I was hoping you’d text. What are you up to?',
+          'I’d definitely love to see you soon.',
+          'You’re pretty hard to forget, you know that?'
+        ],
+        'Unfiltered & Real': [
+          'Don’t look at me like that through text 😏',
+          'You know exactly what you’re doing right now.',
+          'I should probably say no, but I really don’t want to.',
+          'Keep talking like that and see what happens.'
+        ]
+      },
+      Spicy: {
+        'Casual & Direct': [
+          'Careful. You’re starting to sound like trouble 😏',
+          'I could say no… but where’s the fun in that?',
+          'You keep talking like that and I might take you seriously.',
+          'You definitely didn’t text me just to talk about the weather.'
+        ],
+        'Witty & Teasing': [
+          'Oh, so we’re skipping the small talk today? I like it.',
+          'That was smooth. Now say something that actually surprises me.',
+          'You’re playing with fire, but I’ve got time.',
+          'I flirt back, just so you’re properly warned 😌'
+        ],
+        'Warm & Engaging': [
+          'You’re making it impossible to focus on anything else today.',
+          'There’s an undeniable tension here and you know it.',
+          'I definitely wouldn’t mind seeing that in person.',
+          'You know how to get my attention better than anyone.'
+        ],
+        'Unfiltered & Real': [
+          'You’re trouble. My favorite kind of trouble.',
+          'Don’t start something you can’t finish 😏',
+          'You’re testing my willpower and you know it.',
+          'Tell me what you really want.'
+        ]
+      },
+      Professional: {
+        'Casual & Direct': [
+          'Happy to help. What outcome are we aiming for here?',
+          'That works on my end. Send over the specifics when ready.',
+          'Sounds solid. Let’s align on next steps tomorrow morning.',
+          'Understood. I’ll review and circle back before 3 PM.'
+        ],
+        'Witty & Teasing': [
+          'Look at us, actually staying ahead of deadlines for once.',
+          'Impressive turnaround! I’ll get right on this.',
+          'Good thing I checked my inbox before signing off.',
+          'Consider it handled. You owe me a coffee though.'
+        ],
+        'Warm & Engaging': [
+          'Thanks for flagging this! Really appreciate your quick response.',
+          'Great working with you on this. Let’s sync briefly tomorrow.',
+          'Appreciate your partnership here—let’s keep the momentum going.',
+          'Happy to support the team on this initiative.'
+        ],
+        'Unfiltered & Real': [
+          'Let’s cut to the chase and lock in the timeline today.',
+          'Honestly, the proposal looks great. Let’s ship it.',
+          'I can make that work, but let’s prioritize deliverable A first.',
+          'Clear and concise. Moving forward with this now.'
+        ]
+      },
+      Romantic: {
+        'Casual & Direct': [
+          'Honestly, hearing from you just made my whole day.',
+          'That made me smile more than I expected ❤️',
+          'I could definitely get used to conversations like this.',
+          'You have a way of making ordinary moments feel special.'
+        ],
+        'Witty & Teasing': [
+          'Stop being so sweet, you’re ruining my mysterious reputation.',
+          'You really know how to make someone feel special, don’t you?',
+          'I’m convinced you have a degree in being charming.',
+          'Okay, that was unexpectedly adorable.'
+        ],
+        'Warm & Engaging': [
+          'I really value our conversations. Thank you for being you.',
+          'Just wanted you to know I was thinking about you today.',
+          'Spending time with you is always my favorite part of the week.',
+          'You make everything feel effortless and comfortable.'
+        ],
+        'Unfiltered & Real': [
+          'I don’t say this lightly, but you truly mean a lot to me.',
+          'Whenever I’m with you, I forget to check my phone.',
+          'I just really like who I am when I’m around you.',
+          'You’re the first person I wanted to tell about this.'
+        ]
+      },
+      Sarcastic: {
+        'Casual & Direct': [
+          'Oh wow, what an entirely unexpected plot twist 😌',
+          'Groundbreaking revelation. Truly unprecedented.',
+          'Sure, because that plan has never failed before.',
+          'A stunning development. I need a minute to recover.'
+        ],
+        'Witty & Teasing': [
+          'Incredible. I’m pretending to be shocked right now.',
+          'I’ll alert the authorities immediately.',
+          'Breaking news: actions have consequences 😂',
+          'Truly a historic moment for humanity.'
+        ],
+        'Warm & Engaging': [
+          'You’re ridiculous and I love it 😂',
+          'I can always count on you for top-tier commentary.',
+          'Never change, seriously.',
+          'You’re lucky you’re funny.'
+        ],
+        'Unfiltered & Real': [
+          'Well. That went exactly as disastrously as predicted.',
+          'Please, tell me more about this brilliant scheme.',
+          'I’m shocked. Shocked! Well, not that shocked.',
+          'I’m not saying I told you so, but I definitely told you so.'
+        ]
+      }
+    };
+
+    const tones = Object.keys(replyBank);
+    const deliveries = ['Casual & Direct', 'Witty & Teasing', 'Warm & Engaging', 'Unfiltered & Real'];
+
+    let currentTone = 'Flirty';
+    let currentDelivery = 'Casual & Direct';
+    let currentModel = 'claude';
+    let currentIntensity = 6;
+    let currentFilter = 'all';
+
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => [...document.querySelectorAll(s)];
+
+    function renderModels() {
+      $$('#modelChoices .choice').forEach(b => {
+        b.classList.toggle('active', b.dataset.model === currentModel);
+      });
+    }
+
+    function renderTones() {
+      $('#toneChoices').innerHTML = tones.map(t => 
+        `<button class="choice ${t === currentTone ? 'active' : ''}" data-tone="${t}">${t}</button>`
+      ).join('');
+    }
+
+    function renderDeliveries() {
+      $('#deliveryChoices').innerHTML = deliveries.map(d => 
+        `<button class="choice ${d === currentDelivery ? 'active' : ''}" data-delivery="${d}">${d}</button>`
+      ).join('');
+    }
+
+    function escapeHtml(val) {
+      return val.replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+    }
+
+    function renderReplies() {
+      const candidates = replyBank[currentTone][currentDelivery];
+      const count = currentIntensity >= 8 ? 4 : (currentIntensity <= 3 ? 3 : 4);
+      const selected = candidates.slice(0, count);
+
+      $('#replyMeta').textContent = `${currentTone.toUpperCase()} · ${currentDelivery.toUpperCase()} · ${currentModel === 'claude' ? 'CLAUDE 3.5' : currentModel === 'chatgpt' ? 'CHATGPT-4O' : 'GEMINI 1.5'}`;
+      $('#replyCount').textContent = `${selected.length.toString().padStart(2, '0')} candidates`;
+
+      $('#replyList').innerHTML = selected.map((text, i) => {
+        const badges = ['playful', 'bold', 'direct', 'subtle'];
+        const badge = badges[i % badges.length];
+        return `
+          <article class="reply-card">
+            <div>
+              <span class="reply-tag-pill">${badge} · ${currentTone}</span>
+              <p>${escapeHtml(text)}</p>
+            </div>
+            <div class="reply-tools">
+              <button class="icon-btn save" data-save="${encodeURIComponent(text)}" data-category="${currentTone}" aria-label="Save reply ${i + 1}">☆ save</button>
+              <button class="icon-btn copy" data-copy="${encodeURIComponent(text)}" aria-label="Copy reply ${i + 1}">copy</button>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // Initialize UI
+    renderTones();
+    renderDeliveries();
+    renderReplies();
+
+    // Event Delegations
+    document.addEventListener('click', async (e) => {
+      // Model toggle
+      const modelBtn = e.target.closest('[data-model]');
+      if (modelBtn) {
+        currentModel = modelBtn.dataset.model;
+        renderModels();
+        renderReplies();
+        return;
+      }
+
+      // Tone toggle
+      const toneBtn = e.target.closest('[data-tone]');
+      if (toneBtn) {
+        currentTone = toneBtn.dataset.tone;
+        renderTones();
+        renderReplies();
+        return;
+      }
+
+      // Delivery toggle
+      const deliveryBtn = e.target.closest('[data-delivery]');
+      if (deliveryBtn) {
+        currentDelivery = deliveryBtn.dataset.delivery;
+        renderDeliveries();
+        renderReplies();
+        return;
+      }
+
+      // 1-Tap Copy to clipboard
+      const copyBtn = e.target.closest('[data-copy]');
+      if (copyBtn) {
+        const text = decodeURIComponent(copyBtn.dataset.copy);
+        try {
+          await navigator.clipboard.writeText(text);
+          copyBtn.textContent = 'copied';
+          copyBtn.classList.add('copied');
+          setTimeout(() => {
+            copyBtn.textContent = 'copy';
+            copyBtn.classList.remove('copied');
+          }, 1200);
+          
+          // Increment live copy metric
+          const statElem = $('#statCopies');
+          const current = Number(statElem.textContent.replace(/,/g, '')) + 1;
+          statElem.textContent = current.toLocaleString();
+        } catch {
+          copyBtn.textContent = 'select';
+          setTimeout(() => copyBtn.textContent = 'copy', 1200);
+        }
+        return;
+      }
+
+      // Save to Favorites
+      const saveBtn = e.target.closest('[data-save]');
+      if (saveBtn) {
+        saveBtn.classList.toggle('saved');
+        const isSaved = saveBtn.classList.contains('saved');
+        saveBtn.textContent = isSaved ? '★ saved' : '☆ save';
+        return;
+      }
+
+      // Filter Chips (Favorites demo)
+      const filterChip = e.target.closest('.filter-chip');
+      if (filterChip) {
+        $$('.filter-chip').forEach(c => c.classList.remove('active'));
+        filterChip.classList.add('active');
+        const cat = filterChip.dataset.filter;
+        if (cat !== 'all' && replyBank[cat]) {
+          currentTone = cat;
+          renderTones();
+          renderReplies();
+        }
+        return;
+      }
+
+      // Regenerate Button
+      if (e.target.id === 'regenerate') {
+        const items = $$('#replyList .reply-card');
+        items.forEach((item, idx) => {
+          item.style.transform = 'translateX(6px)';
+          setTimeout(() => item.style.transform = 'translateX(0)', 60 + idx * 40);
+        });
+        const statElem = $('#statCopies');
+        const current = Number(statElem.textContent.replace(/,/g, '')) + Math.floor(Math.random() * 3 + 1);
+        statElem.textContent = current.toLocaleString();
+      }
+
+      // "Make this better" Quick Transform Button
+      if (e.target.id === 'improve') {
+        const firstCardP = $('#replyList .reply-card p');
+        if (firstCardP) {
+          firstCardP.textContent = 'Honestly, I’m interested. What did you have in mind? 😌';
+          const badge = $('#replyList .reply-card .reply-tag-pill');
+          if (badge) badge.textContent = 'refined · warmer & punchier';
+        }
+      }
+
+      // Dropzone simulation
+      if (e.target.closest('#screenshotDropzone')) {
+        const dropzoneText = $('#dropzoneText');
+        dropzoneText.textContent = 'Extracting bubbles via Claude 3.5 Sonnet Vision...';
+        setTimeout(() => {
+          dropzoneText.textContent = '✔ Analyzed: Friday chat (16 turns). Tone: Flirty.';
+          currentTone = 'Flirty';
+          renderTones();
+          renderReplies();
+        }, 800);
+      }
+    });
+
+    // Intensity Range Listener
+    $('#intensity').addEventListener('input', (e) => {
+      currentIntensity = Number(e.target.value);
+      $('#intensityLabel').textContent = `${currentIntensity} / 10`;
+      renderReplies();
+    });
+
+    // Mobile Navigation Toggle
+    $('#hamburger').addEventListener('click', () => {
+      const isOpen = $('#navLinks').classList.toggle('open');
+      $('#hamburger').setAttribute('aria-expanded', String(isOpen));
+    });
+
+    $$('#navLinks a').forEach(a => a.addEventListener('click', () => {
+      $('#navLinks').classList.remove('open');
+      $('#hamburger').setAttribute('aria-expanded', 'false');
+    }));
+
+    // Form Submissions
+    $$('form[data-form]').forEach(form => form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formKey = form.dataset.form;
+      const messageElem = $(`[data-message="${formKey}"]`);
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      const nameInput = form.querySelector('[name="name"]');
+      const subject = nameInput && nameInput.value.trim() ? ` ${nameInput.value.trim()},` : '';
+      messageElem.textContent = `You're on the priority list.${subject} We'll invite you to the private beta shortly.`;
+      form.reset();
+    }));
+
+    // Live Telemetry Ticking Simulation
+    let liveConfidence = 94;
+    let liveCopies = 24810;
+    const flows = ['playful → flirty build', 'warm banter → plan inquiry', 'teasing → open loops', 'relaxed → enthusiastic'];
+    const sampleReplies = [
+      '“Bold of you to assume I’m free 😌 what did you have in mind?”',
+      '“That sounds suspiciously like a good idea. Count me in.”',
+      '“Careful, you’re dangerously close to getting a yes.”',
+      '“Not gonna lie, that sounds elite. Send the details.”'
+    ];
+
+    setInterval(() => {
+      liveConfidence = 92 + Math.floor(Math.random() * 7);
+      liveCopies += 1 + Math.floor(Math.random() * 3);
+      $('#liveConfidence').textContent = `${liveConfidence}%`;
+      $('#liveFlow').textContent = flows[Math.floor(Math.random() * flows.length)];
+      $('#liveTopReply').textContent = sampleReplies[Math.floor(Math.random() * sampleReplies.length)];
+      $('#statCopies').textContent = liveCopies.toLocaleString();
+    }, 2800);
+  </script>
+</body>
+</html>

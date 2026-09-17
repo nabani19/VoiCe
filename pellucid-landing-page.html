@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pellucid — Know what your system is doing, right now</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14151A;
+    --surface: #1C1E24;
+    --surface-2: #23252D;
+    --line: rgba(243,241,236,0.10);
+    --text: #F3F1EC;
+    --muted: #8A8D94;
+    --rust: #C1502E;
+    --rust-dim: #8a3a20;
+    --violet-1: #6B5B95;
+    --violet-2: #2A2440;
+    --radius: 2px;
+    --max: 1240px;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+
+  a{ color:inherit; text-decoration:none; }
+  img{ max-width:100%; display:block; }
+
+  .wrap{
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rust);
+  }
+
+  h1,h2,h3{
+    font-family:'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 0.98;
+    font-weight: 600;
+  }
+
+  :focus-visible{
+    outline: 2px solid var(--rust);
+    outline-offset: 3px;
+  }
+
+  /* ---------- NAV ---------- */
+  header{
+    position: sticky;
+    top:0;
+    z-index: 50;
+    background: rgba(20,21,26,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 20px 0;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'Oswald', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .logo-dot{
+    width:9px; height:9px;
+    border-radius:50%;
+    background: var(--rust);
+    flex-shrink:0;
+  }
+  .nav-links{
+    display:flex;
+    gap: 36px;
+    list-style:none;
+  }
+  .nav-links a{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.2s ease;
+    position: relative;
+  }
+  .nav-links a:hover{ color: var(--text); }
+  .nav-cta{
+    display:flex;
+    align-items:center;
+    gap:24px;
+  }
+  .btn-text{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text);
+    border-bottom: 1px solid var(--rust);
+    padding-bottom: 4px;
+    transition: opacity 0.2s ease;
+  }
+  .btn-text:hover{ opacity: 0.7; }
+  .menu-toggle{ display:none; background:none; border:none; color:var(--text); font-size: 22px; cursor:pointer; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position: relative;
+    min-height: 92vh;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 70% 60% at 78% 18%, rgba(107,91,149,0.35), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 15% 85%, rgba(193,80,46,0.12), transparent 60%),
+      var(--bg);
+  }
+  .hero-grid-lines{
+    position:absolute;
+    inset:0;
+    background-image:
+      linear-gradient(to right, var(--line) 1px, transparent 1px);
+    background-size: 25% 100%;
+    opacity: 0.5;
+    pointer-events:none;
+  }
+  .hero-inner{
+    position: relative;
+    display:grid;
+    grid-template-columns: 1fr 220px;
+    gap: 40px;
+    align-items: end;
+    padding-top: 60px;
+    padding-bottom: 70px;
+  }
+  .hero-eyebrow{
+    margin-bottom: 22px;
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  .hero-eyebrow .pulse{
+    width:7px; height:7px; border-radius:50%;
+    background: var(--rust);
+    box-shadow: 0 0 0 0 rgba(193,80,46,0.6);
+    animation: pulse 2.2s infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow: 0 0 0 0 rgba(193,80,46,0.55); }
+    70%{ box-shadow: 0 0 0 8px rgba(193,80,46,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(193,80,46,0); }
+  }
+  h1.hero-title{
+    font-size: clamp(52px, 9vw, 116px);
+    color: var(--text);
+  }
+  h1.hero-title .thin{
+    font-weight: 300;
+    color: var(--muted);
+    display:block;
+  }
+  h1.hero-title .accent{
+    color: var(--rust);
+  }
+  .hero-sub{
+    max-width: 480px;
+    margin-top: 28px;
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  /* live readout panel — signature element */
+  .readout{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+    padding-bottom: 6px;
+    border-right: 1px solid var(--line);
+    padding-right: 24px;
+  }
+  .readout-row{
+    display:flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--line);
+    letter-spacing: 0.04em;
+  }
+  .readout-row:last-child{ border-bottom:none; }
+  .readout-row .val{ color: var(--text); }
+  .readout-row .val.ok::before{
+    content:'';
+    display:inline-block;
+    width:6px; height:6px;
+    border-radius:50%;
+    background:#7FAE6F;
+    margin-right:6px;
+  }
+  .readout-label{
+    font-size:10px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color: var(--rust);
+    margin-bottom: 10px;
+    text-align:right;
+  }
+
+  .hero-form-row{
+    margin-top: 44px;
+    display:flex;
+    gap: 0;
+    max-width: 480px;
+  }
+  .hero-form-row input[type=email]{
+    flex:1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+    font-family:'Inter', sans-serif;
+    font-size: 15px;
+    padding: 14px 4px;
+    transition: border-color 0.2s ease;
+  }
+  .hero-form-row input[type=email]::placeholder{ color: var(--muted); }
+  .hero-form-row input[type=email]:focus{
+    border-color: var(--rust);
+  }
+  .btn-arrow{
+    background:none;
+    border:none;
+    border-bottom: 1px solid var(--text);
+    color: var(--text);
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 4px 14px 20px;
+    white-space: nowrap;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition: color 0.2s ease, border-color 0.2s ease, gap 0.2s ease;
+  }
+  .btn-arrow:hover{ color: var(--rust); border-color: var(--rust); gap:12px; }
+  .form-note{
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family:'JetBrains Mono', monospace;
+    letter-spacing: 0.03em;
+  }
+  .form-note.success{ color:#7FAE6F; display:none; }
+
+  /* ---------- TEASER STRIP ---------- */
+  .teaser{
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .teaser-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .teaser-item{
+    padding: 36px 32px;
+    border-right: 1px solid var(--line);
+  }
+  .teaser-item:last-child{ border-right:none; }
+  .teaser-num{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--rust);
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+    display:block;
+  }
+  .teaser-item p{
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 280px;
+  }
+  .teaser-item strong{
+    display:block;
+    color: var(--text);
+    font-size: 15px;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  /* ---------- CAPABILITIES (4-card gallery) ---------- */
+  .section{
+    padding: 110px 0;
+  }
+  .section-head{
+    margin-bottom: 56px;
+    max-width: 640px;
+  }
+  .section-eyebrow{
+    margin-bottom: 16px;
+  }
+  .section-head h2{
+    font-size: clamp(30px, 4vw, 44px);
+  }
+
+  .cap-grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .cap-card{
+    background: var(--surface);
+    padding: 36px 28px 32px;
+    display:flex;
+    flex-direction: column;
+    min-height: 320px;
+    position:relative;
+    overflow:hidden;
+    transition: background 0.25s ease;
+  }
+  .cap-card:hover{ background: var(--surface-2); }
+  .cap-card::before{
+    content:'';
+    position:absolute;
+    top:0; left:0; right:0;
+    height: 2px;
+    background: var(--rust);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .cap-card:hover::before{ transform: scaleX(1); }
+  .cap-icon{
+    width: 38px; height:38px;
+    margin-bottom: 28px;
+    color: var(--rust);
+  }
+  .cap-card h3{
+    font-size: 19px;
+    text-transform: none;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    letter-spacing: 0;
+    margin-bottom: 12px;
+    line-height: 1.25;
+  }
+  .cap-card p{
+    font-size: 14px;
+    color: var(--muted);
+    flex:1;
+  }
+  .cap-tag{
+    margin-top: 22px;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---------- CODE / SNIPPET STRIP ---------- */
+  .snippet-section{
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .snippet-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items:center;
+  }
+  .snippet-copy h2{ font-size: clamp(28px,3.6vw,40px); margin-bottom:20px; }
+  .snippet-copy p{ color: var(--muted); max-width: 420px; margin-bottom: 30px; font-size:15px; }
+  .code-block{
+    background: #0F1014;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow:hidden;
+  }
+  .code-head{
+    display:flex;
+    gap:8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .code-head span{ width:10px; height:10px; border-radius:50%; background: #3a3c44; }
+  .code-body{
+    padding: 22px 20px;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #C9CBD3;
+    overflow-x:auto;
+  }
+  .code-body .c1{ color: var(--rust); }
+  .code-body .c2{ color: #7FAE6F; }
+  .code-body .c3{ color: #8A8D94; }
+
+  /* ---------- STATS BAND ---------- */
+  .stats{
+    padding: 80px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .stats-grid{
+    display:grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 32px;
+  }
+  .stat{
+    border-left: 1px solid var(--line);
+    padding-left: 24px;
+  }
+  .stat-num{
+    font-family:'Oswald', sans-serif;
+    font-size: clamp(36px,4.4vw,52px);
+    color: var(--text);
+    font-weight: 500;
+  }
+  .stat-num .accent{ color: var(--rust); }
+  .stat-label{
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ---------- CTA / SIGNUP BAND (closing, echoes the galaxy footer) ---------- */
+  .cta-band{
+    position:relative;
+    padding: 130px 0 110px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 80% 70% at 70% 30%, rgba(107,91,149,0.45), transparent 65%),
+      radial-gradient(ellipse 50% 60% at 10% 100%, rgba(193,80,46,0.18), transparent 60%),
+      var(--bg);
+  }
+  .cta-band::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    background-image: radial-gradient(circle, rgba(243,241,236,0.6) 0.5px, transparent 0.5px);
+    background-size: 38px 38px;
+    opacity: 0.25;
+    pointer-events:none;
+  }
+  .cta-inner{
+    position:relative;
+    display:grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 60px;
+    align-items:center;
+  }
+  .cta-inner h2{
+    font-size: clamp(34px, 5vw, 58px);
+    margin-bottom: 18px;
+  }
+  .cta-inner > div > p{
+    color: var(--muted);
+    max-width: 440px;
+    font-size:15px;
+  }
+  .cta-form{
+    background: rgba(28,30,36,0.7);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(8px);
+    padding: 36px;
+    border-radius: var(--radius);
+  }
+  .cta-form .label-row{
+    margin-bottom: 18px;
+  }
+  .cta-form label{
+    display:block;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .cta-form input{
+    width:100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family:'Inter',sans-serif;
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: var(--radius);
+    transition: border-color 0.2s ease;
+  }
+  .cta-form input:focus{ border-color: var(--rust); }
+  .btn-solid{
+    width:100%;
+    margin-top: 6px;
+    background: var(--rust);
+    color: #fff;
+    border:none;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 15px;
+    border-radius: var(--radius);
+    cursor:pointer;
+    transition: background 0.2s ease;
+  }
+  .btn-solid:hover{ background: #a8431f; }
+  .cta-fineprint{
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--muted);
+    text-align:center;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    padding: 50px 0 60px;
+  }
+  .footer-grid{
+    display:flex;
+    justify-content: space-between;
+    flex-wrap:wrap;
+    gap: 30px;
+    border-top: 1px solid var(--line);
+    padding-top: 36px;
+  }
+  .footer-links{
+    display:flex;
+    gap: 28px;
+    list-style:none;
+  }
+  .footer-links a{
+    font-size: 13px;
+    color: var(--muted);
+    transition: color 0.2s ease;
+  }
+  .footer-links a:hover{ color: var(--text); }
+  .footer-copy{
+    font-size: 12px;
+    color: var(--muted);
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 980px){
+    .hero-inner{ grid-template-columns: 1fr; }
+    .readout{ display:none; }
+    .cap-grid{ grid-template-columns: repeat(2,1fr); }
+    .stats-grid{ grid-template-columns: repeat(2,1fr); gap: 30px 20px;}
+    .snippet-grid{ grid-template-columns:1fr; gap: 40px; }
+    .cta-inner{ grid-template-columns: 1fr; }
+    .teaser-grid{ grid-template-columns: 1fr; }
+    .teaser-item{ border-right:none; border-bottom: 1px solid var(--line); }
+    .teaser-item:last-child{ border-bottom:none; }
+  }
+  @media (max-width: 760px){
+    .nav-links{ display:none; }
+    .menu-toggle{ display:block; }
+    .nav-cta .btn-text{ display:none; }
+    .cap-grid{ grid-template-columns: 1fr; }
+    .hero-form-row{ flex-direction:column; gap: 16px; }
+    .btn-arrow{ justify-content:center; border:1px solid var(--text); padding:14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a href="#" class="logo"><span class="logo-dot"></span>PELLUCID</a>
+      <ul class="nav-links">
+        <li><a href="#capabilities">PRODUCT</a></li>
+        <li><a href="#how">HOW IT WORKS</a></li>
+        <li><a href="#pricing">PRICING</a></li>
+        <li><a href="#docs">DOCS</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="#" class="btn-text">SIGN IN</a>
+        <button class="menu-toggle" aria-label="Open menu">☰</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-grid-lines"></div>
+  <div class="wrap">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-eyebrow">
+          <span class="pulse"></span>
+          <span class="eyebrow">LIVE OBSERVABILITY FOR DISTRIBUTED SYSTEMS</span>
+        </div>
+        <h1 class="hero-title">
+          KNOW WHAT
+          <span class="thin">YOUR SYSTEM IS</span>
+          <span class="accent">DOING, NOW</span>
+        </h1>
+        <p class="hero-sub">Pellucid traces every request across every service and shows you exactly where it slowed down, failed, or cost more than it should have. No new agents, no sampling guesswork.</p>
+
+        <form class="hero-form-row" id="heroForm">
+          <input type="email" placeholder="you@company.com" required aria-label="Work email">
+          <button type="submit" class="btn-arrow">START FREE →</button>
+        </form>
+        <p class="form-note" id="formNote">14-day trial. No card required. Set up in under ten minutes.</p>
+      </div>
+
+      <div class="readout">
+        <div class="readout-label">SYSTEM STATUS</div>
+        <div class="readout-row"><span>P50 LATENCY</span><span class="val" id="p50">42ms</span></div>
+        <div class="readout-row"><span>P99 LATENCY</span><span class="val" id="p99">210ms</span></div>
+        <div class="readout-row"><span>ERROR RATE</span><span class="val" id="errRate">0.02%</span></div>
+        <div class="readout-row"><span>UPTIME</span><span class="val ok">99.98%</span></div>
+        <div class="readout-row"><span>TRACES/SEC</span><span class="val" id="tps">8,412</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="teaser">
+  <div class="wrap">
+    <div class="teaser-grid">
+      <div class="teaser-item">
+        <span class="teaser-num">01</span>
+        <strong>Trace every hop</strong>
+        <p>Follow a single request through every service, queue, and database call it touches.</p>
+      </div>
+      <div class="teaser-item">
+        <span class="teaser-num">02</span>
+        <strong>Alert before users notice</strong>
+        <p>Anomaly detection flags drift in latency or error rate minutes before it becomes an incident.</p>
+      </div>
+      <div class="teaser-item">
+        <span class="teaser-num">03</span>
+        <strong>Ten-minute setup</strong>
+        <p>One install script, auto-instrumentation for the major frameworks, no code changes required.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="capabilities">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow section-eyebrow">PRODUCT</div>
+      <h2>Built for the moment<br>something goes wrong.</h2>
+    </div>
+
+    <div class="cap-grid">
+      <div class="cap-card">
+        <svg class="cap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+        <h3>Distributed tracing</h3>
+        <p>See the full path of a request across services, with timing for every span, automatically correlated.</p>
+        <span class="cap-tag">REAL-TIME</span>
+      </div>
+      <div class="cap-card">
+        <svg class="cap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        <h3>Latency breakdowns</h3>
+        <p>P50 through P999 for every endpoint, sliced by region, version, and customer tier without extra config.</p>
+        <span class="cap-tag">PERCENTILES</span>
+      </div>
+      <div class="cap-card">
+        <svg class="cap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 3v18M4 7.5l8 4.5 8-4.5"/></svg>
+        <h3>Dependency maps</h3>
+        <p>A live graph of every service, queue, and datastore your system actually talks to, not what the docs say.</p>
+        <span class="cap-tag">AUTO-DISCOVERED</span>
+      </div>
+      <div class="cap-card">
+        <svg class="cap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 19V5a1 1 0 011-1h7l5 5v10a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 16l2-4 2 2 2-5"/></svg>
+        <h3>Cost attribution</h3>
+        <p>Tie infrastructure spend back to specific services, endpoints, or customers so cost reviews take minutes.</p>
+        <span class="cap-tag">PER-REQUEST</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="snippet-section" id="how">
+  <div class="wrap section">
+    <div class="snippet-grid">
+      <div class="snippet-copy">
+        <div class="eyebrow section-eyebrow">HOW IT WORKS</div>
+        <h2>One line.<br>Every request.</h2>
+        <p>Drop the agent into your build, point it at your services, and Pellucid starts mapping traffic immediately. Works with the runtimes you already use.</p>
+        <a href="#" class="btn-text">READ THE DOCS →</a>
+      </div>
+      <div class="code-block">
+        <div class="code-head"><span></span><span></span><span></span></div>
+        <div class="code-body"><span class="c3">$</span> npm install <span class="c1">@pellucid/agent</span>
+
+<span class="c3">// instrument.js</span>
+<span class="c1">import</span> { trace } <span class="c1">from</span> <span class="c2">'@pellucid/agent'</span>;
+
+trace.init({
+  service: <span class="c2">'checkout-api'</span>,
+  env: <span class="c2">'production'</span>
+});
+
+<span class="c3">// that's it — traces start streaming</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-num"><span class="accent">11</span>ms</div>
+        <div class="stat-label">Added latency per request, p99</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">4,200<span class="accent">+</span></div>
+        <div class="stat-label">Services traced across active accounts</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">99.98<span class="accent">%</span></div>
+        <div class="stat-label">Pellucid's own platform uptime</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">8<span class="accent">min</span></div>
+        <div class="stat-label">Median time from install to first trace</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band" id="pricing">
+  <div class="wrap">
+    <div class="cta-inner">
+      <div>
+        <div class="eyebrow section-eyebrow">START TODAY</div>
+        <h2>Stop guessing<br>where it broke.</h2>
+        <p>Free for the first 14 days on any plan. Bring your team, your services, and your incident history — we'll show you what changed.</p>
+      </div>
+      <div class="cta-form">
+        <form id="ctaForm">
+          <div class="label-row">
+            <label for="workEmail">Work email</label>
+            <input id="workEmail" type="email" placeholder="you@company.com" required>
+          </div>
+          <div class="label-row">
+            <label for="teamSize">Team size</label>
+            <input id="teamSize" type="text" placeholder="e.g. 12 engineers">
+          </div>
+          <button type="submit" class="btn-solid">CREATE FREE ACCOUNT</button>
+        </form>
+        <p class="cta-fineprint" id="ctaFinePrint">No credit card. Cancel anytime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <a href="#" class="logo"><span class="logo-dot"></span>PELLUCID</a>
+      <ul class="footer-links">
+        <li><a href="#">Product</a></li>
+        <li><a href="#">Docs</a></li>
+        <li><a href="#">Pricing</a></li>
+        <li><a href="#">Status</a></li>
+        <li><a href="#">Security</a></li>
+      </ul>
+      <span class="footer-copy">© 2026 PELLUCID, INC.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // subtle live-readout ticking — signature element, mirrors the source's "running system" feel
+  function jitter(el, base, decimals, suffix){
+    setInterval(() => {
+      const delta = (Math.random() - 0.5) * base * 0.06;
+      const val = (base + delta).toFixed(decimals);
+      el.textContent = val + suffix;
+    }, 2400);
+  }
+  const p50 = document.getElementById('p50');
+  const p99 = document.getElementById('p99');
+  const err = document.getElementById('errRate');
+  const tps = document.getElementById('tps');
+  if(p50) jitter(p50, 42, 0, 'ms');
+  if(p99) jitter(p99, 210, 0, 'ms');
+  if(err) jitter(err, 0.02, 2, '%');
+  if(tps){
+    setInterval(() => {
+      const v = Math.round(8412 + (Math.random()-0.5)*900);
+      tps.textContent = v.toLocaleString();
+    }, 1800);
+  }
+
+  function handleSubmit(formId, noteId, successMsg){
+    const form = document.getElementById(formId);
+    const note = document.getElementById(noteId);
+    if(!form) return;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if(note){
+        note.textContent = successMsg;
+        note.style.color = '#7FAE6F';
+      }
+      form.querySelectorAll('input').forEach(i => i.disabled = true);
+      const btn = form.querySelector('button');
+      if(btn) btn.textContent = 'CHECK YOUR INBOX';
+    });
+  }
+  handleSubmit('heroForm', 'formNote', "You're on the list — check your inbox to finish setup.");
+  handleSubmit('ctaForm', 'ctaFinePrint', "Account requested — check your inbox to finish setup.");
+</script>
+
+</body>
+</html>
