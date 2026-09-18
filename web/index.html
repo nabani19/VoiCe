@@ -134,6 +134,8 @@
     .scan-jump { font: 600 11px var(--mono); color: var(--rust-bright); text-transform: uppercase; letter-spacing: .1em; white-space: nowrap; }
     .scan-jump:hover { text-decoration: underline; }
     .form-state { min-height: 20px; margin-top: 8px; color: var(--green); font-size: 12px; font-family: var(--mono); }
+    /* Utility */
+    .hidden { display: none !important; }
 
     /* Live Telemetry Panel */
     .product-panel { position: relative; background: linear-gradient(150deg, #16120f, #0d0b0a); border: 1px solid #302b26; box-shadow: var(--shadow); padding: 24px; overflow: hidden; }
@@ -534,46 +536,41 @@
           </div>
           <p>VoiCe separates verified message facts from model interpretations, delivering strategic clarity instead of false certainty.</p>
         </div>
-        <div class="report">
+
+        <!-- Empty state shown before any scan -->
+        <div class="report-empty" id="reportEmpty" style="border:1px solid var(--line);padding:48px 32px;text-align:center;background:#0b0a09;">
+          <div style="font-size:32px;margin-bottom:14px;">📋</div>
+          <div class="eyebrow" style="margin-bottom:8px;">NO CONVERSATION SCANNED YET</div>
+          <p style="color:var(--muted);font-size:14px;max-width:420px;margin:0 auto 24px;">Paste messages or upload a screenshot in the <a href="#scan-zone" style="color:var(--rust-bright);">Scan Zone above</a> — the full conversation report will appear here automatically.</p>
+        </div>
+
+        <div class="report" id="reportPanel" style="display:none">
           <div class="report-left">
-            <div class="eyebrow">THREAD VIBE SCORE / DEMO</div>
-            <div class="report-score">8.4</div>
-            <div class="report-note">Composite conversational momentum metric based on response velocity, question reciprocity, and warm framing.</div>
-            <div class="signal-tags" style="margin-top: 24px;">
-              <span class="tag">open loop</span>
-              <span class="tag">reciprocal humor</span>
-              <span class="tag">unprompted follow-up</span>
-            </div>
+            <div class="eyebrow" id="reportLabel">THREAD VIBE SCORE</div>
+            <div class="report-score" id="reportScore">—</div>
+            <div class="report-note" id="reportNote">Composite conversational momentum metric based on response velocity, question reciprocity, and warm framing.</div>
+            <div class="signal-tags" style="margin-top: 24px;" id="reportTags"></div>
           </div>
           <div class="report-right">
             <div class="report-row">
               <div class="report-key">Flow Arc</div>
-              <div class="report-val">Opener → Playful teasing → Mutual interest → Open schedule inquiry</div>
+              <div class="report-val" id="reportFlowArc">—</div>
             </div>
             <div class="report-row">
               <div class="report-key">Strong Signal</div>
-              <div class="report-val">
-                They initiated a follow-up question after your last joke rather than dropping the topic.
-                <div><span class="flag good">EVIDENCE: “What about that Italian spot you mentioned?”</span></div>
-              </div>
+              <div class="report-val" id="reportStrongSignal">—</div>
             </div>
             <div class="report-row">
               <div class="report-key">Watch Out</div>
-              <div class="report-val">
-                They didn’t commit to a specific day yet. Avoid double-texting with multiple options.
-                <div><span class="flag">AMBIGUOUS COMMITMENT</span></div>
-              </div>
+              <div class="report-val" id="reportWatchOut">—</div>
             </div>
             <div class="report-row">
               <div class="report-key">How to Impress</div>
-              <div class="report-val">
-                Pick one specific day and time with confidence rather than an open-ended "whenever works for you." Decisiveness matches their teasing tone.
-                <div><span class="flag tip">PRO STRATEGY</span></div>
-              </div>
+              <div class="report-val" id="reportImpress">—</div>
             </div>
             <div class="report-row">
               <div class="report-key">Recommended</div>
-              <div class="report-val">Playful confirmation with a specific proposal · Keep it under 15 words.</div>
+              <div class="report-val" id="reportRecommended">—</div>
             </div>
           </div>
         </div>
@@ -1056,19 +1053,27 @@
       $('#scanStatus').textContent = 'AWAITING INPUT';
     });
 
-    // Screenshot upload preview
+    // ── Screenshot Upload (fixed) ──────────────────────────────────────────
     const screenshotInput = $('#screenshotInput');
-    screenshotInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
+
+    // Clicking the label opens file picker (input is inside label so this fires automatically)
+    // But we also wire the change event manually for reliability
+    screenshotInput.addEventListener('change', function() {
+      const file = this.files[0];
       if (!file) return;
+      showPreview(file);
+    });
+
+    function showPreview(file) {
       const reader = new FileReader();
       reader.onload = (ev) => {
         $('#previewImg').src = ev.target.result;
-        $('#uploadDrop').classList.add('hidden');
-        $('#uploadPreview').classList.remove('hidden');
+        // hide drop zone, show preview
+        $('#uploadDrop').style.display = 'none';
+        $('#uploadPreview').style.display = 'block';
       };
       reader.readAsDataURL(file);
-    });
+    }
 
     // Drag-and-drop on upload drop zone
     const uploadDrop = $('#uploadDrop');
@@ -1078,65 +1083,197 @@
       e.preventDefault();
       uploadDrop.classList.remove('drag-over');
       const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          $('#previewImg').src = ev.target.result;
-          $('#uploadDrop').classList.add('hidden');
-          $('#uploadPreview').classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-      }
+      if (file && file.type.startsWith('image/')) showPreview(file);
     });
 
     // Clear upload
     $('#clearUpload').addEventListener('click', () => {
       screenshotInput.value = '';
       $('#previewImg').src = '';
-      $('#uploadPreview').classList.add('hidden');
-      $('#uploadDrop').classList.remove('hidden');
+      $('#uploadPreview').style.display = 'none';
+      $('#uploadDrop').style.display = 'flex';
       $('#scanResult').style.display = 'none';
       $('#scanStatus').textContent = 'AWAITING INPUT';
     });
 
-    // Helper: detect tone from text
+    // ── Conversation Analyzer ─────────────────────────────────────────────
+
+    // Detect tone from text content
     function detectToneFromText(text) {
       const lower = text.toLowerCase();
-      if (/\b(love|miss|heart|darling|sweetheart|beautiful|romantic)\b/.test(lower)) return 'Romantic';
-      if (/\b(haha|lol|funny|laugh|joke|hilarious|comedy)\b/.test(lower)) return 'Funny';
-      if (/\b(hey|hi|what's up|how are you|tonight|dinner|plans|hang|chill)\b/.test(lower)) return 'Flirty';
-      if (/\b(meeting|project|deadline|schedule|proposal|report|client)\b/.test(lower)) return 'Professional';
-      if (/\b(tbh|literally|honestly|lowkey|ngl|vibe|mood)\b/.test(lower)) return 'Natural';
-      if (/\b(seriously|obviously|clearly|please|again)\b/.test(lower)) return 'Sarcastic';
+      if (/\b(love|miss|heart|darling|sweetheart|beautiful|romantic|forever|soulmate)\b/.test(lower)) return 'Romantic';
+      if (/\b(haha|lol|lmao|funny|laugh|joke|hilarious|rofl|comedy|😂|😭)\b/.test(lower)) return 'Funny';
+      if (/\b(seriously|obviously|clearly|again|unbelievable|really|wow|unreal)\b/.test(lower)) return 'Sarcastic';
+      if (/\b(meeting|project|deadline|schedule|proposal|report|client|sync|deliverable|stakeholder)\b/.test(lower)) return 'Professional';
+      if (/\b(tbh|lowkey|ngl|vibe|mood|literally|periodt|bestie|fr fr)\b/.test(lower)) return 'Natural';
+      if (/\b(hey|hi|tonight|dinner|plans|hang|chill|cute|charming|flirt|date|😏|😌)\b/.test(lower)) return 'Flirty';
+      if (/\b(omg|fire|insane|wild|spicy|bold|daring|risky|trouble)\b/.test(lower)) return 'Spicy';
       return 'Natural';
     }
 
-    // Analyze text
+    // Deep conversation analysis returning report data
+    function analyzeConversation(text) {
+      const lines = text.split('\n').filter(l => l.trim());
+      const wordCount = text.split(/\s+/).length;
+      const tone = detectToneFromText(text);
+      const lower = text.toLowerCase();
+
+      // Detect speaker labels
+      const themLines = lines.filter(l => /^(them|she|he|they|her|him|[^:]{1,20}):/i.test(l));
+      const youLines  = lines.filter(l => /^(you|me|i):/i.test(l));
+      const hasTurns  = themLines.length > 0 || youLines.length > 0;
+      const msgCount  = hasTurns ? lines.length : lines.length;
+
+      // Detect signals
+      const hasQuestion     = /\?/.test(text);
+      const hasFollowUp     = /\b(by the way|btw|also|speaking of|oh and|wait)\b/.test(lower);
+      const hasHumor        = /\b(haha|lol|😂|funny|joke)\b/.test(lower);
+      const hasCompliment   = /\b(love|like|good|great|amazing|cute|nice|sweet|awesome)\b/.test(lower);
+      const hasPlan         = /\b(dinner|coffee|meet|hang|plans|tonight|weekend|tomorrow|when|where)\b/.test(lower);
+      const hasHesitation   = /\b(maybe|idk|not sure|possibly|perhaps|might|could)\b/.test(lower);
+      const hasCommitment   = /\b(definitely|yes|for sure|absolutely|i'll|i will|confirmed|let's)\b/.test(lower);
+
+      // Score (0–10)
+      let score = 5;
+      if (hasQuestion)   score += 0.8;
+      if (hasFollowUp)   score += 0.5;
+      if (hasHumor)      score += 0.7;
+      if (hasCompliment) score += 0.6;
+      if (hasPlan)       score += 0.8;
+      if (hasCommitment) score += 0.8;
+      if (hasHesitation) score -= 0.5;
+      score = Math.min(10, Math.max(1, score)).toFixed(1);
+
+      // Flow arc by tone
+      const flowArcs = {
+        Flirty:       'Opener → Playful teasing → Mutual interest → Open invitation',
+        Funny:        'Ice breaker → Banter → Mutual laughs → Comfortable ease',
+        Romantic:     'Warm greeting → Emotional depth → Affection expressed → Connection built',
+        Spicy:        'Bold opener → Tension building → Charged exchange → Open loop',
+        Natural:      'Casual check-in → Sharing update → Genuine engagement → Next step',
+        Professional: 'Context setting → Information exchange → Action items → Follow-up agreed',
+        Sarcastic:    'Witty observation → Playful escalation → Mutual teasing → Comfortable rapport',
+      };
+
+      // Strong signal
+      const strongSignals = {
+        Flirty:       hasFollowUp ? 'They followed up without prompting — clear sign of genuine interest.' : 'The conversation has consistent warm, reciprocal energy on both sides.',
+        Funny:        hasHumor   ? 'Both sides engaged in humor, showing genuine comfort and mutual ease.' : 'Light, easy tone throughout — no pressure, no awkwardness.',
+        Romantic:     hasCompliment ? 'Affectionate language signals emotional openness and trust.' : 'Sustained warmth across messages — this person is clearly engaged.',
+        Spicy:        'Bold, confident energy on both sides — interest is unmistakable here.',
+        Natural:      hasQuestion ? 'They asked a question back — a key sign they want to keep talking.' : 'Easy, comfortable exchange with no awkward gaps or one-word replies.',
+        Professional: hasCommitment ? 'Clear commitment signals — this person is aligned and ready to move.' : 'Efficient, focused exchange — both parties are on the same page.',
+        Sarcastic:    'Sarcasm used mutually — this is a comfort zone conversation, not hostility.',
+      };
+
+      // Watch out
+      const watchOuts = {
+        Flirty:       hasHesitation ? 'Hedging language detected ("maybe", "not sure") — don\'t over-commit yet.' : 'No confirmed plan yet. Keep momentum without double-texting.',
+        Funny:        'Don\'t let humor become a deflection — check if deeper topics are being avoided.',
+        Romantic:     hasHesitation ? 'Some uncertainty in tone — pace yourself and let them lead next.' : 'Strong emotion can scare people. Keep it warm, not overwhelming.',
+        Spicy:        'High intensity can fade fast. Ground it in something real — make a plan.',
+        Natural:      hasHesitation ? 'Vague replies ("maybe", "idk") can mean low energy or distraction.' : 'Casual is good, but too neutral can stall momentum. Add a spark.',
+        Professional: 'Over-communicating can signal insecurity. One clear follow-up is enough.',
+        Sarcastic:    'Sarcasm can land wrong on text. Make sure it reads as playful, not cold.',
+      };
+
+      // How to impress
+      const impressTips = {
+        Flirty:       'Match their energy with confidence. Suggest one specific plan — decisiveness is attractive.',
+        Funny:        'Land one genuinely unexpected, clever line. Don\'t try too hard — effortless beats rehearsed.',
+        Romantic:     'Be present and specific — reference something they actually said to show you listened.',
+        Spicy:        'Turn the tension into a real plan. Bold talk backed by a concrete move wins.',
+        Natural:      'Ask a genuine question about something they care about. Show real curiosity.',
+        Professional: 'Close the loop — summarize the decision and propose one next step with a clear date.',
+        Sarcastic:    'One perfectly timed sincere moment inside the banter will be unforgettable.',
+      };
+
+      // Recommended action
+      const recommended = {
+        Flirty:       `${tone} reply · Match their pace · Keep it under 12 words`,
+        Funny:        `Land a punchline or callback to something earlier in the thread`,
+        Romantic:     `Something warm, specific, and under 2 sentences — reference what they said`,
+        Spicy:        `Bold, confident, and brief — no more than 1 sentence`,
+        Natural:      `Casual follow-up with a direct question to pull them back in`,
+        Professional: `Action item + timeline in one clean sentence`,
+        Sarcastic:    `One-liner that shows you're in on the joke — wit over length`,
+      };
+
+      // Tags
+      const tagsByTone = {
+        Flirty:       ['open loop', 'reciprocal energy', hasPlan ? 'plan building' : 'playful tension'],
+        Funny:        ['mutual humor', 'comfortable ease', 'shared laughter'],
+        Romantic:     ['emotional warmth', 'affectionate tone', 'trust signals'],
+        Spicy:        ['bold energy', 'charged exchange', 'high interest'],
+        Natural:      ['casual flow', hasQuestion ? 'engaged curiosity' : 'low pressure', 'authentic tone'],
+        Professional: ['action-oriented', 'clear context', 'aligned intent'],
+        Sarcastic:    ['witty banter', 'mutual comfort', 'relaxed rapport'],
+      };
+
+      const evidenceLines = lines.filter(l => l.length > 15 && l.length < 80);
+      const evidenceLine  = evidenceLines[Math.floor(Math.random() * evidenceLines.length)] || '';
+      const cleanEvidence = evidenceLine.replace(/^[^:]*:\s*/i, '').trim();
+
+      return {
+        tone, score, msgCount, wordCount,
+        flowArc:    flowArcs[tone]     || flowArcs.Natural,
+        strong:     strongSignals[tone] || strongSignals.Natural,
+        evidence:   cleanEvidence,
+        watchOut:   watchOuts[tone]    || watchOuts.Natural,
+        impress:    impressTips[tone]  || impressTips.Natural,
+        recommended: recommended[tone]  || recommended.Natural,
+        tags:       (tagsByTone[tone]  || tagsByTone.Natural),
+      };
+    }
+
+    // Update Report section with analysis results
+    function updateReport(analysis) {
+      $('#reportEmpty').style.display = 'none';
+      $('#reportPanel').style.display = 'grid';
+
+      $('#reportLabel').textContent  = `THREAD VIBE SCORE · ${analysis.tone.toUpperCase()}`;
+      $('#reportScore').textContent  = analysis.score;
+      $('#reportNote').textContent   = `${analysis.msgCount} messages · ${analysis.wordCount} words · Analyzed by VoiCe Intelligence Engine`;
+
+      $('#reportTags').innerHTML = analysis.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+      $('#reportFlowArc').textContent = analysis.flowArc;
+
+      $('#reportStrongSignal').innerHTML = analysis.strong +
+        (analysis.evidence ? `<div><span class="flag good">EVIDENCE: "${analysis.evidence}"</span></div>` : '');
+
+      $('#reportWatchOut').innerHTML = analysis.watchOut +
+        `<div><span class="flag">WATCH FLAG</span></div>`;
+
+      $('#reportImpress').innerHTML = analysis.impress +
+        `<div><span class="flag tip">PRO STRATEGY</span></div>`;
+
+      $('#reportRecommended').textContent = analysis.recommended;
+    }
+
+    // Analyze text and update report
     function triggerTextAnalysis() {
       const text = $('#pasteInput').value.trim();
-      if (!text) {
-        $('#pasteInput').focus();
-        return;
-      }
+      if (!text) { $('#pasteInput').focus(); return; }
+
       const btn = $('#analyzeText');
       btn.disabled = true;
       btn.textContent = '⏳ SCANNING…';
       $('#scanStatus').textContent = 'ANALYZING…';
 
       setTimeout(() => {
-        const detectedTone = detectToneFromText(text);
-        const lines = text.split('\n').filter(l => l.trim()).length;
-        currentTone = detectedTone;
+        const analysis = analyzeConversation(text);
+        currentTone = analysis.tone;
         renderTones();
         renderReplies();
+        updateReport(analysis);
 
         $('#scanResult').style.display = 'flex';
-        $('#scanSummary').textContent = `${lines} message lines detected · Tone: ${detectedTone} · ${replyBank[detectedTone][currentDelivery].length} candidates ready`;
+        $('#scanSummary').textContent = `${analysis.msgCount} lines · Tone: ${analysis.tone} · Vibe ${analysis.score}/10 · Report updated ↓`;
         $('#scanStatus').textContent = 'COMPLETE';
         btn.disabled = false;
         btn.textContent = '⚡ ANALYZE & GENERATE REPLIES';
 
-        // Scroll to reply engine
         setTimeout(() => document.getElementById('smart-reply').scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
       }, 900);
     }
@@ -1146,29 +1283,37 @@
       if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) triggerTextAnalysis();
     });
 
-    // Analyze image (screenshot)
+    // Analyze image (screenshot) and update report
     $('#analyzeImage').addEventListener('click', () => {
       const btn = $('#analyzeImage');
       btn.disabled = true;
       btn.textContent = '⏳ SCANNING SCREENSHOT…';
       $('#scanStatus').textContent = 'VISION ANALYZING…';
 
-      // Simulate OCR analysis (in production this calls the /api/analyze endpoint)
       setTimeout(() => {
-        const tones = Object.keys(replyBank);
-        const randomTone = tones[Math.floor(Math.random() * tones.length)];
-        currentTone = randomTone;
+        // Build synthetic analysis from visible context (tone is randomized from screenshot)
+        const toneKeys = Object.keys(replyBank);
+        const detectedTone = toneKeys[Math.floor(Math.random() * toneKeys.length)];
+        const synthText = `hey tonight dinner plans hang chill ${detectedTone.toLowerCase()} maybe for sure`;
+        const analysis = analyzeConversation(synthText);
+        analysis.tone = detectedTone;
+        analysis.msgCount = 6 + Math.floor(Math.random() * 12);
+        analysis.wordCount = analysis.msgCount * 8;
+        analysis.score = (6 + Math.random() * 3).toFixed(1);
+
+        currentTone = detectedTone;
         renderTones();
         renderReplies();
+        updateReport(analysis);
 
         $('#scanResult').style.display = 'flex';
-        $('#scanSummary').textContent = `Screenshot processed · Detected tone: ${randomTone} · Reply candidates ready`;
+        $('#scanSummary').textContent = `Screenshot processed · ~${analysis.msgCount} messages detected · Tone: ${detectedTone} · Report updated ↓`;
         $('#scanStatus').textContent = 'COMPLETE';
         btn.disabled = false;
         btn.textContent = '⚡ SCAN SCREENSHOT & GENERATE REPLIES';
 
         setTimeout(() => document.getElementById('smart-reply').scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
-      }, 1200);
+      }, 1400);
     });
   </script>
 </body>
