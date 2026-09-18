@@ -10,3 +10,8 @@ type PagesFunction<Env = unknown, Params = Record<string, string | string[]>, Da
   params: Params;
   data: Data;
 }) => Response | Promise<Response>;
+
+// Ambient node-like process declaration for optional fallbacks in local test environments
+declare const process: {
+  env: Record<string, string | undefined>;
+} | undefined;

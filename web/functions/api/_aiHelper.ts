@@ -25,10 +25,14 @@ export async function callAIModel(
   const maxTokens = options.maxTokens || 1000;
   const temperature = options.temperature || 0.7;
 
-  const anthropicKey = env.ANTHROPIC_API_KEY || (typeof process !== 'undefined' ? process.env.ANTHROPIC_API_KEY : '');
-  const openAiKey = env.OPENAI_API_KEY || (typeof process !== 'undefined' ? process.env.OPENAI_API_KEY : '');
-  const geminiKey = env.GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : '');
-  const openRouterKey = env.OPENROUTER_API_KEY || (typeof process !== 'undefined' ? process.env.OPENROUTER_API_KEY : '');
+  const getEnv = (key: keyof Env): string => {
+    return (env[key] as string) || (typeof globalThis !== 'undefined' && (globalThis as any).process?.env?.[key]) || '';
+  };
+
+  const anthropicKey = getEnv('ANTHROPIC_API_KEY');
+  const openAiKey = getEnv('OPENAI_API_KEY');
+  const geminiKey = getEnv('GEMINI_API_KEY');
+  const openRouterKey = getEnv('OPENROUTER_API_KEY');
 
   // --------------------------------------------------------------------------
   // 1. Direct Google Gemini Route (if selected or auto)
