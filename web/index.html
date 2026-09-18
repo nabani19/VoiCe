@@ -89,21 +89,50 @@
 
     /* Hero */
     .hero { padding: 72px 0 40px; }
-    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr); gap: 54px; align-items: end; }
-    .hero-kicker { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+    .hero-center { text-align: center; max-width: 760px; margin: 0 auto 48px; }
+    .hero-kicker { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 18px; }
     .hero-kicker::before { content: ""; width: 34px; height: 1px; background: var(--rust); }
     .hero h1 { font-size: clamp(74px, 10.8vw, 144px); }
     .hero h1 .accent { color: var(--rust-bright); }
-    .hero-copy { max-width: 600px; font-size: 18px; color: #bdb5ac; margin: 24px 0 0; line-height: 1.6; }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 32px; }
-    .email-form { display: flex; min-width: min(100%, 500px); gap: 14px; }
+    .hero-copy { font-size: 18px; color: #bdb5ac; margin: 24px auto 0; line-height: 1.6; max-width: 580px; }
     .field { width: 100%; background: transparent; border: 0; border-bottom: 1px solid #554f49; color: var(--text); padding: 13px 2px 11px; border-radius: 0; }
     .field::placeholder { color: #6f6962; }
     .field:focus { border-color: var(--rust-bright); box-shadow: 0 2px 0 var(--rust-bright); }
     .arrow-btn { background: none; border: 0; border-bottom: 1px solid var(--rust-bright); color: var(--text); padding: 13px 2px 10px; cursor: pointer; font: 600 11px var(--mono); letter-spacing: .12em; white-space: nowrap; text-transform: uppercase; }
     .arrow-btn::after { content: "↗"; margin-left: 8px; color: var(--rust-bright); font-size: 13px; }
     .arrow-btn:hover { color: var(--rust-bright); }
-    .microcopy { margin-top: 10px; font: 500 10px var(--mono); color: #6f6962; letter-spacing: .06em; }
+
+    /* Scan Zone */
+    .scan-zone { border: 1px solid var(--line); background: #0b0a09; margin-bottom: 44px; overflow: hidden; }
+    .scan-zone-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.02); }
+    .scan-tabs { display: flex; border-bottom: 1px solid var(--line); }
+    .scan-tab { flex: 1; background: transparent; border: 0; border-bottom: 2px solid transparent; color: #8e867d; padding: 14px 20px; cursor: pointer; font: 600 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; transition: all .18s var(--ease); text-align: center; }
+    .scan-tab:hover { color: var(--text); background: rgba(255,255,255,.03); }
+    .scan-tab.active { color: var(--rust-bright); border-bottom-color: var(--rust-bright); background: rgba(196,92,48,.05); }
+    .scan-panel { padding: 24px; }
+    .scan-panel.hidden { display: none; }
+    .scan-textarea { width: 100%; min-height: 180px; background: #0e0c0b; border: 1px solid #332e29; color: var(--text); font: 14px/1.7 var(--mono); padding: 16px; resize: vertical; border-radius: 0; outline: none; transition: border-color .18s; }
+    .scan-textarea:focus { border-color: var(--rust-bright); }
+    .scan-textarea::placeholder { color: #4f4a44; }
+    .scan-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .scan-btn { padding: 12px 24px; border: 0; cursor: pointer; font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; transition: all .18s var(--ease); }
+    .scan-btn.primary { background: var(--rust); color: #fff; }
+    .scan-btn.primary:hover { background: var(--rust-bright); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(196,92,48,.35); }
+    .scan-btn.primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .scan-btn.secondary { background: transparent; border: 1px solid #3a342f; color: #a39b93; }
+    .scan-btn.secondary:hover { border-color: var(--rust-bright); color: var(--text); }
+    .upload-drop { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 200px; border: 1.5px dashed #3a332d; background: rgba(255,255,255,.015); cursor: pointer; padding: 40px 24px; text-align: center; transition: all .2s var(--ease); }
+    .upload-drop:hover, .upload-drop.drag-over { border-color: var(--rust-bright); background: rgba(196,92,48,.05); }
+    .upload-icon { font-size: 40px; line-height: 1; }
+    .upload-title { font-size: 18px; font-weight: 600; }
+    .upload-drop p { font-size: 13px; color: var(--muted); }
+    .upload-preview { padding: 0; }
+    .upload-preview.hidden { display: none; }
+    .scan-result { display: flex; align-items: center; gap: 16px; padding: 14px 24px; background: rgba(157,199,151,.07); border-top: 1px solid rgba(157,199,151,.2); flex-wrap: wrap; }
+    .scan-result span:first-child { color: var(--green); }
+    .scan-result #scanSummary { color: #c8c0b8; font-size: 13px; flex: 1; }
+    .scan-jump { font: 600 11px var(--mono); color: var(--rust-bright); text-transform: uppercase; letter-spacing: .1em; white-space: nowrap; }
+    .scan-jump:hover { text-decoration: underline; }
     .form-state { min-height: 20px; margin-top: 8px; color: var(--green); font-size: 12px; font-family: var(--mono); }
 
     /* Live Telemetry Panel */
@@ -311,14 +340,9 @@
           <span class="brand-text">VOICE</span>
         </a>
         <div class="nav-links" id="navLinks">
-          <div class="streak-badge" title="Daily check-in streak">
-            <i>🔥</i> <span id="navStreak">5 DAY STREAK</span>
-          </div>
-          <a href="#smart-reply">Smart Reply</a>
+          <a href="#scan-zone">Scan a Message</a>
+          <a href="#smart-reply">Reply Engine</a>
           <a href="#report">Report</a>
-          <a href="#capabilities">Capabilities</a>
-          <a href="#how">How it works</a>
-          <a class="nav-cta" href="#join">Get early access</a>
         </div>
         <button class="hamburger" id="hamburger" aria-expanded="false" aria-controls="navLinks">Menu</button>
       </nav>
@@ -329,56 +353,61 @@
     <!-- HERO -->
     <section class="hero">
       <div class="wrap">
-        <div class="hero-grid">
-          <div>
-            <div class="hero-kicker eyebrow">HUMAN CHAT INTELLIGENCE / 2026</div>
-            <h1 class="display">Know what<br>to <span class="accent">say.</span></h1>
-            <p class="hero-copy">Drop in any chat screenshot. VoiCe decodes the conversational arc, identifies unspoken tone shifts, and crafts 3–5 short, human replies that sound like <em>you</em>—never an AI brochure.</p>
-            <div class="hero-actions">
-              <form class="email-form" data-form="hero">
-                <input class="field" name="email" type="email" autocomplete="email" placeholder="your@email.com" aria-label="Email address" required>
-                <button class="arrow-btn" type="submit">JOIN EARLY ACCESS</button>
-              </form>
-            </div>
-            <div class="microcopy">No auto-send. Zero robotic clichés. Powered by Claude 3.5 Sonnet server-side.</div>
-            <div class="form-state" data-message="hero" aria-live="polite"></div>
+        <div class="hero-center">
+          <div class="hero-kicker eyebrow">HUMAN CHAT INTELLIGENCE / 2026</div>
+          <h1 class="display">Know what<br>to <span class="accent">say.</span></h1>
+          <p class="hero-copy">Drop in any chat screenshot or paste messages. VoiCe decodes the conversational arc, identifies tone shifts, and crafts short human replies that sound like <em>you</em>—never an AI brochure.</p>
+        </div>
+
+        <!-- MAIN SCAN ZONE -->
+        <div class="scan-zone" id="scan-zone" aria-label="Paste or upload messages to scan">
+          <div class="scan-zone-header">
+            <span class="eyebrow"><span class="pulse" style="display:inline-block;vertical-align:middle;margin-right:8px;"></span>SCAN ZONE — PASTE OR UPLOAD</span>
+            <span class="eyebrow" id="scanStatus">AWAITING INPUT</span>
           </div>
 
-          <aside class="product-panel" aria-label="Live VoiCe thread intelligence">
-            <div class="panel-top">
-              <span class="eyebrow">ACTIVE THREAD / CLAUDE 3.5 VISION</span>
-              <span class="live"><i class="pulse"></i> engine online</span>
+          <div class="scan-tabs" role="tablist">
+            <button class="scan-tab active" id="tabPaste" role="tab" aria-selected="true" aria-controls="panelPaste">✎ Paste Messages</button>
+            <button class="scan-tab" id="tabUpload" role="tab" aria-selected="false" aria-controls="panelUpload">📸 Upload Screenshot</button>
+          </div>
+
+          <!-- Paste Panel -->
+          <div class="scan-panel" id="panelPaste" role="tabpanel" aria-labelledby="tabPaste">
+            <textarea
+              class="scan-textarea"
+              id="pasteInput"
+              placeholder="Paste the conversation here…&#10;Example:&#10;Them: Hey, what are you up to tonight?&#10;You: Nothing planned yet&#10;Them: Want to grab dinner? That Italian spot you like?"
+              aria-label="Paste conversation text"
+            ></textarea>
+            <div class="scan-actions">
+              <button class="scan-btn primary" id="analyzeText">⚡ ANALYZE &amp; GENERATE REPLIES</button>
+              <button class="scan-btn secondary" id="clearPaste">✕ CLEAR</button>
             </div>
-            <div class="panel-grid">
-              <div>
-                <div class="signal-box">
-                  <div class="signal-label">Current context</div>
-                  <div class="signal-value">Friday plans &amp; dinner banter</div>
-                </div>
-                <div class="signal-box">
-                  <div class="signal-label">Detected flow</div>
-                  <div class="signal-value" id="liveFlow">playful → flirty build</div>
-                </div>
-                <div class="signal-box">
-                  <div class="signal-label">Observable cues</div>
-                  <div class="signal-tags">
-                    <span class="tag">warm follow-up</span>
-                    <span class="tag">open invitation</span>
-                    <span class="tag">low pressure</span>
-                    <span class="tag">reciprocal</span>
-                  </div>
-                </div>
+          </div>
+
+          <!-- Upload Panel -->
+          <div class="scan-panel hidden" id="panelUpload" role="tabpanel" aria-labelledby="tabUpload">
+            <label class="upload-drop" id="uploadDrop" for="screenshotInput">
+              <div class="upload-icon">📸</div>
+              <div class="upload-title">Drop your screenshot here</div>
+              <p>or tap to browse — PNG, JPG, WEBP accepted</p>
+              <input type="file" id="screenshotInput" accept="image/*" aria-label="Upload chat screenshot" style="display:none">
+            </label>
+            <div class="upload-preview hidden" id="uploadPreview">
+              <img id="previewImg" alt="Screenshot preview" style="max-width:100%;max-height:280px;object-fit:contain;display:block;margin:0 auto 0;">
+              <div class="scan-actions" style="margin-top:16px;">
+                <button class="scan-btn primary" id="analyzeImage">⚡ SCAN SCREENSHOT &amp; GENERATE REPLIES</button>
+                <button class="scan-btn secondary" id="clearUpload">✕ REMOVE</button>
               </div>
-              <div class="signal-right" id="liveConfidence">94%</div>
             </div>
-            <div class="panel-reply">
-              <div class="reply-meta">
-                <span>Top suggestion · Flirty / Casual</span>
-                <span id="liveCandidates">04 candidates</span>
-              </div>
-              <p id="liveTopReply">“Bold of you to assume I’m free 😌 what did you have in mind?”</p>
-            </div>
-          </aside>
+          </div>
+
+          <!-- Scan Result Pill -->
+          <div class="scan-result" id="scanResult" style="display:none">
+            <span class="eyebrow">SCAN COMPLETE</span>
+            <span id="scanSummary"></span>
+            <a href="#smart-reply" class="scan-jump">View Replies ↓</a>
+          </div>
         </div>
 
         <div class="teaser-grid" aria-label="Core pipeline highlights">
@@ -493,48 +522,7 @@
       </div>
     </section>
 
-    <!-- CAPABILITIES -->
-    <section class="section" id="capabilities">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <div class="eyebrow">CAPABILITIES</div>
-            <h2 class="display">ENGINEERED<br>FOR REAL LIFE</h2>
-          </div>
-          <p>Every feature is designed to eliminate social hesitation without taking control or voice away from the user.</p>
-        </div>
-        <div class="feature-grid">
-          <article class="feature">
-            <div class="feature-tag">01 / Flow &amp; Memory</div>
-            <div>
-              <h3>Remembers Context.</h3>
-              <p>Maintains entire conversational history so replies fit the ongoing arc, not just the isolated last message.</p>
-            </div>
-          </article>
-          <article class="feature">
-            <div class="feature-tag">02 / Quick Transforms</div>
-            <div>
-              <h3>Make It Better.</h3>
-              <p>Instantly rewrite any line to be punchier, warmer, more chill, or wittier with a single click.</p>
-            </div>
-          </article>
-          <article class="feature">
-            <div class="feature-tag">03 / Evidence Report</div>
-            <div>
-              <h3>Deep Diagnosis.</h3>
-              <p>Inspect tone trajectories, positive cues, red flags with textual evidence, and pro tips to impress the other person.</p>
-            </div>
-          </article>
-          <article class="feature">
-            <div class="feature-tag">04 / Organized Vault</div>
-            <div>
-              <h3>Categorized Favorites.</h3>
-              <p>Save lines into Flirty, Funny, or Spicy vaults, filter history by tone, and build a daily texting streak.</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
+
 
     <!-- CONVERSATION REPORT -->
     <section class="section" id="report">
@@ -592,32 +580,6 @@
       </div>
     </section>
 
-    <!-- HOW IT WORKS TERMINAL -->
-    <section class="section" id="how">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <div class="eyebrow">HOW IT WORKS</div>
-            <h2 class="display">FROM<br>SCREENSHOT<br>TO SEND</h2>
-          </div>
-          <p>A transparent 5-layer pipeline: Vision OCR, Turn Segmentation, Tone Detection, Claude 3.5 Generation, and Safety Verification.</p>
-        </div>
-        <div class="terminal" aria-label="Terminal pipeline execution demonstration">
-          <div class="term-bar"><i></i><i></i><i></i></div>
-          <div class="term-code">
-            <div><span class="r">$</span> voice analyze <span class="g">chat-screenshot.png</span> --provider claude-3-5-sonnet</div>
-            <div><span class="v">→</span> [1/5] OCR: 16 message bubbles extracted with bounding boxes (confidence 0.98)</div>
-            <div><span class="v">→</span> [2/5] Segmentation: 2 distinct speakers / 16 sequential turns resolved</div>
-            <div><span class="v">→</span> [3/5] Tone Sensing: <span class="r">Flirty</span> + teasing banter / open loop detected</div>
-            <div><span class="v">→</span> [4/5] Generation: Tone=Flirty, Delivery=Casual &amp; Direct, Intensity=6</div>
-            <div><span class="v">→</span> [5/5] Brevity Guard: All candidates verified ≤ 2 sentences. Zero AI clichés.</div>
-            <div><span class="r">$</span> voice copy --candidate 1</div>
-            <div><span class="g">✔</span> Copied to clipboard: “Bold of you to assume I’m free 😌 what did you have in mind?”</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- STATS BAND -->
     <section class="section">
       <div class="wrap">
@@ -645,18 +607,11 @@
     <!-- CLOSING CTA -->
     <section class="cta-wrap" id="join">
       <div class="cta">
-        <div class="wrap cta-grid">
-          <div>
-            <div class="eyebrow">RESERVE EARLY ACCESS</div>
-            <h2 class="display">YOUR NEXT<br>TEXT IS<br>COVERED.</h2>
-            <p>Join the priority list for VoiCe on iOS and Android. Screenshot analysis, tone sensing, custom favorites vault, daily streaks, and Claude 3.5 Sonnet smart replies in your pocket.</p>
-          </div>
-          <form class="cta-form" data-form="cta">
-            <input class="field" type="text" name="name" autocomplete="name" placeholder="Your name" aria-label="Your name" required>
-            <input class="field" type="email" name="email" autocomplete="email" placeholder="you@email.com" aria-label="Email address" required>
-            <button class="arrow-btn" type="submit">JOIN THE WAITLIST</button>
-            <div class="form-state" data-message="cta" aria-live="polite"></div>
-          </form>
+        <div class="wrap" style="text-align:center;">
+          <div class="eyebrow">READY?</div>
+          <h2 class="display">YOUR NEXT<br>TEXT IS<br>COVERED.</h2>
+          <p style="margin: 14px auto 32px;max-width:540px;color:#aca39a;font-size:15px;line-height:1.6;">Paste a conversation or upload a screenshot above. VoiCe scans the thread, reads the room, and generates short human replies in seconds.</p>
+          <a href="#scan-zone" class="arrow-btn" style="display:inline-block;">SCAN A MESSAGE NOW ↑</a>
         </div>
       </div>
     </section>
@@ -670,10 +625,9 @@
         <span class="brand-text">VOICE</span>
       </a>
       <div class="footer-links">
-        <a href="#smart-reply">Smart Reply</a>
+        <a href="#scan-zone">Scan a Message</a>
+        <a href="#smart-reply">Reply Engine</a>
         <a href="#report">Report</a>
-        <a href="#capabilities">Capabilities</a>
-        <a href="#how">How it works</a>
       </div>
       <div class="copyright">© 2026 VOICE AI. STRICT PRIVACY ENFORCED.</div>
     </div>
@@ -1030,17 +984,6 @@
           if (badge) badge.textContent = 'refined · warmer & punchier';
         }
       }
-
-      // Dropzone simulation
-      if (e.target.closest('#screenshotDropzone')) {
-        const dropzoneText = $('#dropzoneText');
-        dropzoneText.textContent = 'Extracting bubbles via Claude 3.5 Sonnet Vision...';
-        setTimeout(() => {
-          dropzoneText.textContent = '✔ Analyzed: Friday chat (16 turns). Tone: Flirty.';
-          currentTone = 'Flirty';
-          renderTones();
-          renderReplies();
-        }, 800);
       }
     });
 
@@ -1077,25 +1020,156 @@
       form.reset();
     }));
 
-    // Live Telemetry Ticking Simulation
-    let liveConfidence = 94;
+    // Live Telemetry Ticking Simulation (statCopies only - live panel removed)
     let liveCopies = 24810;
-    const flows = ['playful → flirty build', 'warm banter → plan inquiry', 'teasing → open loops', 'relaxed → enthusiastic'];
-    const sampleReplies = [
-      '“Bold of you to assume I’m free 😌 what did you have in mind?”',
-      '“That sounds suspiciously like a good idea. Count me in.”',
-      '“Careful, you’re dangerously close to getting a yes.”',
-      '“Not gonna lie, that sounds elite. Send the details.”'
-    ];
-
     setInterval(() => {
-      liveConfidence = 92 + Math.floor(Math.random() * 7);
       liveCopies += 1 + Math.floor(Math.random() * 3);
-      $('#liveConfidence').textContent = `${liveConfidence}%`;
-      $('#liveFlow').textContent = flows[Math.floor(Math.random() * flows.length)];
-      $('#liveTopReply').textContent = sampleReplies[Math.floor(Math.random() * sampleReplies.length)];
-      $('#statCopies').textContent = liveCopies.toLocaleString();
+      const sc = $('#statCopies');
+      if (sc) sc.textContent = liveCopies.toLocaleString();
     }, 2800);
+
+    // ─── SCAN ZONE LOGIC ───────────────────────────────────────────────────
+
+    // Tab switching
+    $('#tabPaste').addEventListener('click', () => {
+      $('#tabPaste').classList.add('active');
+      $('#tabUpload').classList.remove('active');
+      $('#panelPaste').classList.remove('hidden');
+      $('#panelUpload').classList.add('hidden');
+      $('#tabPaste').setAttribute('aria-selected', 'true');
+      $('#tabUpload').setAttribute('aria-selected', 'false');
+    });
+    $('#tabUpload').addEventListener('click', () => {
+      $('#tabUpload').classList.add('active');
+      $('#tabPaste').classList.remove('active');
+      $('#panelUpload').classList.remove('hidden');
+      $('#panelPaste').classList.add('hidden');
+      $('#tabUpload').setAttribute('aria-selected', 'true');
+      $('#tabPaste').setAttribute('aria-selected', 'false');
+    });
+
+    // Clear paste
+    $('#clearPaste').addEventListener('click', () => {
+      $('#pasteInput').value = '';
+      $('#pasteInput').focus();
+      $('#scanResult').style.display = 'none';
+      $('#scanStatus').textContent = 'AWAITING INPUT';
+    });
+
+    // Screenshot upload preview
+    const screenshotInput = $('#screenshotInput');
+    screenshotInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        $('#previewImg').src = ev.target.result;
+        $('#uploadDrop').classList.add('hidden');
+        $('#uploadPreview').classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Drag-and-drop on upload drop zone
+    const uploadDrop = $('#uploadDrop');
+    uploadDrop.addEventListener('dragover', (e) => { e.preventDefault(); uploadDrop.classList.add('drag-over'); });
+    uploadDrop.addEventListener('dragleave', () => uploadDrop.classList.remove('drag-over'));
+    uploadDrop.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadDrop.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          $('#previewImg').src = ev.target.result;
+          $('#uploadDrop').classList.add('hidden');
+          $('#uploadPreview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Clear upload
+    $('#clearUpload').addEventListener('click', () => {
+      screenshotInput.value = '';
+      $('#previewImg').src = '';
+      $('#uploadPreview').classList.add('hidden');
+      $('#uploadDrop').classList.remove('hidden');
+      $('#scanResult').style.display = 'none';
+      $('#scanStatus').textContent = 'AWAITING INPUT';
+    });
+
+    // Helper: detect tone from text
+    function detectToneFromText(text) {
+      const lower = text.toLowerCase();
+      if (/\b(love|miss|heart|darling|sweetheart|beautiful|romantic)\b/.test(lower)) return 'Romantic';
+      if (/\b(haha|lol|funny|laugh|joke|hilarious|comedy)\b/.test(lower)) return 'Funny';
+      if (/\b(hey|hi|what's up|how are you|tonight|dinner|plans|hang|chill)\b/.test(lower)) return 'Flirty';
+      if (/\b(meeting|project|deadline|schedule|proposal|report|client)\b/.test(lower)) return 'Professional';
+      if (/\b(tbh|literally|honestly|lowkey|ngl|vibe|mood)\b/.test(lower)) return 'Natural';
+      if (/\b(seriously|obviously|clearly|please|again)\b/.test(lower)) return 'Sarcastic';
+      return 'Natural';
+    }
+
+    // Analyze text
+    function triggerTextAnalysis() {
+      const text = $('#pasteInput').value.trim();
+      if (!text) {
+        $('#pasteInput').focus();
+        return;
+      }
+      const btn = $('#analyzeText');
+      btn.disabled = true;
+      btn.textContent = '⏳ SCANNING…';
+      $('#scanStatus').textContent = 'ANALYZING…';
+
+      setTimeout(() => {
+        const detectedTone = detectToneFromText(text);
+        const lines = text.split('\n').filter(l => l.trim()).length;
+        currentTone = detectedTone;
+        renderTones();
+        renderReplies();
+
+        $('#scanResult').style.display = 'flex';
+        $('#scanSummary').textContent = `${lines} message lines detected · Tone: ${detectedTone} · ${replyBank[detectedTone][currentDelivery].length} candidates ready`;
+        $('#scanStatus').textContent = 'COMPLETE';
+        btn.disabled = false;
+        btn.textContent = '⚡ ANALYZE & GENERATE REPLIES';
+
+        // Scroll to reply engine
+        setTimeout(() => document.getElementById('smart-reply').scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
+      }, 900);
+    }
+
+    $('#analyzeText').addEventListener('click', triggerTextAnalysis);
+    $('#pasteInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) triggerTextAnalysis();
+    });
+
+    // Analyze image (screenshot)
+    $('#analyzeImage').addEventListener('click', () => {
+      const btn = $('#analyzeImage');
+      btn.disabled = true;
+      btn.textContent = '⏳ SCANNING SCREENSHOT…';
+      $('#scanStatus').textContent = 'VISION ANALYZING…';
+
+      // Simulate OCR analysis (in production this calls the /api/analyze endpoint)
+      setTimeout(() => {
+        const tones = Object.keys(replyBank);
+        const randomTone = tones[Math.floor(Math.random() * tones.length)];
+        currentTone = randomTone;
+        renderTones();
+        renderReplies();
+
+        $('#scanResult').style.display = 'flex';
+        $('#scanSummary').textContent = `Screenshot processed · Detected tone: ${randomTone} · Reply candidates ready`;
+        $('#scanStatus').textContent = 'COMPLETE';
+        btn.disabled = false;
+        btn.textContent = '⚡ SCAN SCREENSHOT & GENERATE REPLIES';
+
+        setTimeout(() => document.getElementById('smart-reply').scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
+      }, 1200);
+    });
   </script>
 </body>
 </html>
