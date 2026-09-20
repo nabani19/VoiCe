@@ -807,6 +807,7 @@
     let currentModel = 'claude';
     let currentIntensity = 6;
     let currentFilter = 'all';
+    let currentMessages = [];
 
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => [...document.querySelectorAll(s)];
@@ -833,8 +834,8 @@
       return val.replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
     }
 
-    function renderReplies() {
-      const candidates = replyBank[currentTone][currentDelivery];
+    function renderRepliesFallback() {
+      const candidates = replyBank[currentTone] && replyBank[currentTone][currentDelivery] ? replyBank[currentTone][currentDelivery] : replyBank['Flirty']['Casual & Direct'];
       const count = currentIntensity >= 8 ? 4 : (currentIntensity <= 3 ? 3 : 4);
       const selected = candidates.slice(0, count);
 
@@ -859,10 +860,65 @@
       }).join('');
     }
 
+    async function fetchReplies() {
+      if (!currentMessages || currentMessages.length === 0) {
+        renderRepliesFallback();
+        return;
+      }
+      
+      const intentSelect = $('#intent');
+      const currentIntent = intentSelect ? intentSelect.value : 'continue';
+      
+      $('#replyList').innerHTML = '<div style="padding: 24px; color: #a9a198; text-align: center; border: 1px dashed var(--border-color); border-radius: var(--radius-md);">⚡ Generating fresh replies via AI...</div>';
+      
+      try {
+        const res = await fetch('/api/rizz/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: currentMessages,
+            tone: currentTone,
+            delivery: currentDelivery,
+            intensity: currentIntensity,
+            intent: currentIntent,
+            provider: currentModel
+          })
+        });
+        const data = await res.json();
+        
+        if (!data.success) throw new Error(data.error || 'Failed to generate replies');
+        
+        const candidates = data.data.candidates || [];
+        
+        $('#replyMeta').textContent = `${currentTone.toUpperCase()} · ${currentDelivery.toUpperCase()} · ${currentModel === 'claude' ? 'CLAUDE 3.5' : currentModel === 'chatgpt' ? 'CHATGPT-4O' : 'GEMINI 1.5'}`;
+        $('#replyCount').textContent = `${candidates.length.toString().padStart(2, '0')} candidates`;
+        
+        $('#replyList').innerHTML = candidates.map((c, i) => {
+          const badges = ['playful', 'bold', 'direct', 'subtle'];
+          const badge = c.style || badges[i % badges.length];
+          return `
+            <article class="reply-card">
+              <div>
+                <span class="reply-tag-pill">${badge} · ${currentTone}</span>
+                <p>${escapeHtml(c.body)}</p>
+              </div>
+              <div class="reply-tools">
+                <button class="icon-btn save" data-save="${encodeURIComponent(c.body)}" data-category="${currentTone}" aria-label="Save reply ${i + 1}">☆ save</button>
+                <button class="icon-btn copy" data-copy="${encodeURIComponent(c.body)}" aria-label="Copy reply ${i + 1}">copy</button>
+              </div>
+            </article>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error(err);
+        renderRepliesFallback();
+      }
+    }
+
     // Initialize UI
     renderTones();
     renderDeliveries();
-    renderReplies();
+    fetchReplies();
 
     // Event Delegations
     document.addEventListener('click', async (e) => {
@@ -871,7 +927,7 @@
       if (modelBtn) {
         currentModel = modelBtn.dataset.model;
         renderModels();
-        renderReplies();
+        fetchReplies();
         return;
       }
 
@@ -880,7 +936,7 @@
       if (toneBtn) {
         currentTone = toneBtn.dataset.tone;
         renderTones();
-        renderReplies();
+        fetchReplies();
         return;
       }
 
@@ -889,7 +945,7 @@
       if (deliveryBtn) {
         currentDelivery = deliveryBtn.dataset.delivery;
         renderDeliveries();
-        renderReplies();
+        fetchReplies();
         return;
       }
 
@@ -935,21 +991,16 @@
         if (cat !== 'all' && replyBank[cat]) {
           currentTone = cat;
           renderTones();
-          renderReplies();
+          fetchReplies();
         }
         return;
       }
 
-      // Regenerate Button
       if (e.target.id === 'regenerate') {
-        const items = $$('#replyList .reply-card');
-        items.forEach((item, idx) => {
-          item.style.transform = 'translateX(6px)';
-          setTimeout(() => item.style.transform = 'translateX(0)', 60 + idx * 40);
-        });
         const statElem = $('#statCopies');
         const current = Number(statElem.textContent.replace(/,/g, '')) + Math.floor(Math.random() * 3 + 1);
         statElem.textContent = current.toLocaleString();
+        fetchReplies();
       }
 
       // "Make this better" Quick Transform Button
@@ -964,11 +1015,12 @@
       }
     });
 
-    // Intensity Range Listener
     $('#intensity').addEventListener('input', (e) => {
       currentIntensity = Number(e.target.value);
       $('#intensityLabel').textContent = `${currentIntensity} / 10`;
-      renderReplies();
+    });
+    $('#intensity').addEventListener('change', (e) => {
+      fetchReplies();
     });
 
     // Mobile Navigation Toggle
@@ -1206,36 +1258,75 @@
     }
 
     // Analyze image (screenshot) and update report
-    $('#analyzeImage').addEventListener('click', () => {
+    $('#analyzeImage').addEventListener('click', async () => {
       const btn = $('#analyzeImage');
+      const file = screenshotInput.files[0];
+      if (!file) {
+        alert('Please select or drop a screenshot first.');
+        return;
+      }
+
       btn.disabled = true;
       btn.textContent = '⏳ SCANNING SCREENSHOT…';
       $('#scanStatus').textContent = 'VISION ANALYZING…';
 
-      setTimeout(() => {
-        // Build synthetic analysis from visible context (tone is randomized from screenshot)
-        const toneKeys = Object.keys(replyBank);
-        const detectedTone = toneKeys[Math.floor(Math.random() * toneKeys.length)];
-        const synthText = `hey tonight dinner plans hang chill ${detectedTone.toLowerCase()} maybe for sure`;
-        const analysis = analyzeConversation(synthText);
-        analysis.tone = detectedTone;
-        analysis.msgCount = 6 + Math.floor(Math.random() * 12);
-        analysis.wordCount = analysis.msgCount * 8;
-        analysis.score = (6 + Math.random() * 3).toFixed(1);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('provider', currentModel);
 
-        currentTone = detectedTone;
+        const res = await fetch('/api/analyze', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          throw new Error(data.error || 'Analysis failed.');
+        }
+
+        const analysisData = data.data;
+        currentMessages = analysisData.messages || [];
+
+        // Reconstruct text for the frontend report analyzer to extract tags/signals
+        const synthText = currentMessages.map(m => `${m.sender === 'me' ? 'me' : 'them'}: ${m.body}`).join('\n');
+        
+        const analysis = analyzeConversation(synthText);
+        
+        // Override with backend properties
+        if (analysisData.detected_tone) {
+            analysis.tone = analysisData.detected_tone;
+            currentTone = analysis.tone;
+        }
+        if (analysisData.summary) {
+            analysis.evidence = analysisData.summary.substring(0, 75) + '...';
+        }
+        
+        analysis.msgCount = currentMessages.length;
+        analysis.wordCount = synthText.split(/\s+/).length || 0;
+        
+        if (analysisData.confidence) {
+            analysis.score = ((analysisData.confidence * 10).toFixed(1));
+        }
+
         renderTones();
-        renderReplies();
         updateReport(analysis);
 
         $('#scanResult').style.display = 'flex';
-        $('#scanSummary').textContent = `Screenshot processed · ~${analysis.msgCount} messages detected · Tone: ${detectedTone} · Report updated ↓`;
+        $('#scanSummary').textContent = `Screenshot processed · ${analysis.msgCount} messages detected · Tone: ${analysis.tone} · Report updated ↓`;
         $('#scanStatus').textContent = 'COMPLETE';
-        btn.disabled = false;
-        btn.textContent = '⚡ SCAN SCREENSHOT & GENERATE REPLIES';
+
+        await fetchReplies();
 
         setTimeout(() => document.getElementById('smart-reply').scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
-      }, 1400);
+      } catch (err) {
+        console.error(err);
+        $('#scanStatus').textContent = 'ERROR';
+        alert('Failed to analyze image: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '⚡ SCAN SCREENSHOT & GENERATE REPLIES';
+      }
     });
   </script>
 </body>
