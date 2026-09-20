@@ -5,10 +5,28 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#080706">
   <meta name="description" content="VoiCe turns chat screenshots into short, context-aware human replies with authentic tone, flow detection, and deep conversation reports.">
+  <meta property="og:title" content="VoiCe — Authentic Human Replies for Any Chat">
+  <meta property="og:description" content="VoiCe turns chat screenshots into short, context-aware human replies with authentic tone, flow detection, and deep conversation reports.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VoiCe — Authentic Human Replies for Any Chat">
   <title>VoiCe — Authentic Human Replies for Any Chat</title>
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "VoiCe",
+    "description": "VoiCe turns chat screenshots into short, context-aware human replies with authentic tone, flow detection, and deep conversation reports.",
+    "applicationCategory": "CommunicationApplication",
+    "operatingSystem": "All"
+  }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
     :root {
       --bg: #080706;
@@ -276,6 +294,29 @@
       100% { box-shadow: 0 0 0 0 rgba(157, 199, 151, 0); }
     }
 
+    .lang-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(130, 116, 255, 0.15);
+      border: 1px solid rgba(130, 116, 255, 0.4);
+      color: var(--violet);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .reply-card-active-glow {
+      animation: replyGlow 1.4s ease-out;
+    }
+    @keyframes replyGlow {
+      0% { border-color: var(--rust-bright); box-shadow: 0 0 25px rgba(225, 119, 69, 0.6); }
+      100% { border-color: var(--line); box-shadow: none; }
+    }
+
     /* Accessibility / Reduced Motion */
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -344,6 +385,8 @@
           <a href="#scan-zone">Scan a Message</a>
           <a href="#smart-reply">Reply Engine</a>
           <a href="#report">Report</a>
+          <a href="#" id="feedbackBtn" style="color:var(--violet);">Feedback</a>
+          <a href="#" id="authBtn" style="color:var(--rust-bright); font-weight: 600;">Sign In</a>
         </div>
         <button class="hamburger" id="hamburger" aria-expanded="false" aria-controls="navLinks">Menu</button>
       </nav>
@@ -357,31 +400,38 @@
         <div class="hero-center">
           <div class="hero-kicker eyebrow">HUMAN CHAT INTELLIGENCE / 2026</div>
           <h1 class="display">Know what<br>to <span class="accent">say.</span></h1>
-          <p class="hero-copy">Drop in any chat screenshot or paste messages. VoiCe decodes the conversational arc, identifies tone shifts, and crafts short human replies that sound like <em>you</em>—never an AI brochure.</p>
+          <p class="hero-copy">Drop in any chat screenshot. VoiCe decodes the conversational arc, identifies tone shifts, and crafts short human replies that sound like <em>you</em>—never an AI brochure.</p>
         </div>
 
         <!-- MAIN SCAN ZONE -->
-        <div class="scan-zone" id="scan-zone" aria-label="Upload screenshot to scan">
+        <div class="scan-zone" id="scan-zone" aria-label="Upload chat screenshot to scan">
           <div class="scan-zone-header">
-            <span class="eyebrow"><span class="pulse" style="display:inline-block;vertical-align:middle;margin-right:8px;"></span>SCAN ZONE — UPLOAD SCREENSHOT</span>
-            <span class="eyebrow" id="scanStatus">AWAITING INPUT</span>
+            <span class="eyebrow"><span class="pulse" style="display:inline-block;vertical-align:middle;margin-right:8px;"></span>SCAN ZONE — CHAT SCREENSHOT</span>
+            <span class="eyebrow" id="scanStatus">AWAITING SCREENSHOT</span>
           </div>
 
           <!-- Upload Panel -->
           <div class="scan-panel" id="panelUpload">
-            <label class="upload-drop" id="uploadDrop" for="screenshotInput">
+            <label class="upload-drop" id="uploadDrop" for="screenshotInput" style="cursor:pointer;">
               <div class="upload-icon">📸</div>
-              <div class="upload-title">Drop your screenshot here</div>
-              <p>or tap to browse — PNG, JPG, WEBP accepted</p>
-              <input type="file" id="screenshotInput" accept="image/*" aria-label="Upload chat screenshot" style="display:none">
+              <div class="upload-title">Drop your chat screenshot here</div>
+              <p>or tap to browse your photos / gallery (PNG, JPG, WEBP)</p>
             </label>
-            <div class="upload-preview" id="uploadPreview" style="display:none">
-              <img id="previewImg" alt="Screenshot preview" style="max-width:100%;max-height:280px;object-fit:contain;display:block;margin:0 auto 0;">
-              <div class="scan-actions" style="margin-top:16px;">
-                <button class="scan-btn primary" id="analyzeImage">⚡ SCAN SCREENSHOT &amp; GENERATE REPLIES</button>
-                <button class="scan-btn secondary" id="clearUpload">✕ REMOVE</button>
+            <input type="file" id="screenshotInput" accept="image/*" aria-label="Upload chat screenshot" style="display:none">
+
+            <div class="upload-preview" id="uploadPreview" style="display:none;text-align:center;">
+              <div style="position:relative;display:inline-block;max-width:100%;">
+                <img id="previewImg" alt="Screenshot preview" style="max-width:100%;max-height:360px;border-radius:12px;border:1px solid #3d352e;object-fit:contain;display:block;margin:0 auto;box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+              </div>
+              <div style="margin-top:12px;">
+                <label for="screenshotInput" style="cursor:pointer;font-size:13px;font-family:var(--mono);color:var(--muted);text-decoration:underline;">Click here to choose a different screenshot</label>
               </div>
             </div>
+          </div>
+          
+          <div class="scan-actions" style="margin-top:20px;display:flex;gap:12px;">
+            <button class="scan-btn primary" id="scanScreenshotBtn" style="flex:1;">⚡ SCAN SCREENSHOT &amp; GENERATE REPLIES</button>
+            <button class="scan-btn secondary" id="clearScreenshotBtn" style="display:none;">✕ REMOVE</button>
           </div>
 
           <!-- Scan Result Pill -->
@@ -460,6 +510,19 @@
               </select>
             </div>
 
+            <div class="subsection">
+              <div class="eyebrow">05 / LANGUAGE MODE</div>
+              <select class="context-field" id="languageSelect" aria-label="Select conversation language mode">
+                <option value="auto">Auto-Detect (Matches Chat Screenshot)</option>
+                <option value="Bengali - English">Bengali - English (Benglish / Banglish)</option>
+                <option value="Hinglish">Hinglish (Hindi-English)</option>
+                <option value="English">English (Global)</option>
+                <option value="Spanish">Spanish (Español)</option>
+                <option value="French">French (Français)</option>
+                <option value="German">German (Deutsch)</option>
+              </select>
+            </div>
+
             <!-- Drag and drop screenshot simulator -->
             <div class="dropzone" id="screenshotDropzone">
               <div class="dropzone-tag">📸 SCREENSHOT DROPZONE</div>
@@ -474,6 +537,9 @@
 
           <div class="reply-stage">
             <div>
+              <div id="langBadgeContainer" style="display:none;margin-bottom:14px;">
+                <span class="lang-badge" id="detectedLangBadge">💬 MATCHING CHAT LANGUAGE: <strong id="detectedLangName" style="color:var(--text);margin-left:4px;">ENGLISH</strong></span>
+              </div>
               <div class="reply-stage-top">
                 <div>
                   <span class="eyebrow">CANDIDATES / <span id="replyMeta">FLIRTY · CASUAL &amp; DIRECT</span></span>
@@ -609,6 +675,11 @@
       <div class="copyright">© 2026 VOICE AI. STRICT PRIVACY ENFORCED.</div>
     </div>
   </footer>
+
+  <script type="module">
+    import { generateReply } from './replyEngine.js';
+    window.generateReply = generateReply;
+  </script>
 
   <script>
     'use strict';
@@ -808,6 +879,7 @@
     let currentIntensity = 6;
     let currentFilter = 'all';
     let currentMessages = [];
+    let currentLanguage = 'English';
 
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => [...document.querySelectorAll(s)];
@@ -835,25 +907,28 @@
     }
 
     function renderRepliesFallback() {
-      const candidates = replyBank[currentTone] && replyBank[currentTone][currentDelivery] ? replyBank[currentTone][currentDelivery] : replyBank['Flirty']['Casual & Direct'];
-      const count = currentIntensity >= 8 ? 4 : (currentIntensity <= 3 ? 3 : 4);
-      const selected = candidates.slice(0, count);
+      if (!window.generateReply) {
+        console.warn("replyEngine not loaded yet");
+        return;
+      }
+      
+      const rawText = currentMessages.map(m => m.body).join('\n');
+      const fallbackData = window.generateReply(rawText, { style: 'natural' });
+      const candidates = fallbackData.candidates || [];
 
-      $('#replyMeta').textContent = `${currentTone.toUpperCase()} · ${currentDelivery.toUpperCase()} · ${currentModel === 'claude' ? 'CLAUDE 3.5' : currentModel === 'chatgpt' ? 'CHATGPT-4O' : 'GEMINI 1.5'}`;
-      $('#replyCount').textContent = `${selected.length.toString().padStart(2, '0')} candidates`;
+      $('#replyMeta').textContent = `LANG: ${currentLanguage.toUpperCase()} · OFFLINE FALLBACK ENGINE`;
+      $('#replyCount').textContent = `${candidates.length.toString().padStart(2, '0')} candidates`;
 
-      $('#replyList').innerHTML = selected.map((text, i) => {
-        const badges = ['playful', 'bold', 'direct', 'subtle'];
-        const badge = badges[i % badges.length];
+      $('#replyList').innerHTML = candidates.map((c, i) => {
         return `
           <article class="reply-card">
             <div>
-              <span class="reply-tag-pill">${badge} · ${currentTone}</span>
-              <p>${escapeHtml(text)}</p>
+              <span class="reply-tag-pill">${c.style || 'Option'} · Offline</span>
+              <p>${escapeHtml(c.body)}</p>
             </div>
             <div class="reply-tools">
-              <button class="icon-btn save" data-save="${encodeURIComponent(text)}" data-category="${currentTone}" aria-label="Save reply ${i + 1}">☆ save</button>
-              <button class="icon-btn copy" data-copy="${encodeURIComponent(text)}" aria-label="Copy reply ${i + 1}">copy</button>
+              <button class="icon-btn save" data-save="${encodeURIComponent(c.body)}" data-category="${c.style || 'Offline'}" aria-label="Save reply ${i + 1}">☆ save</button>
+              <button class="icon-btn copy" data-copy="${encodeURIComponent(c.body)}" aria-label="Copy reply ${i + 1}">copy</button>
             </div>
           </article>
         `;
@@ -869,7 +944,7 @@
       const intentSelect = $('#intent');
       const currentIntent = intentSelect ? intentSelect.value : 'continue';
       
-      $('#replyList').innerHTML = '<div style="padding: 24px; color: #a9a198; text-align: center; border: 1px dashed var(--border-color); border-radius: var(--radius-md);">⚡ Generating fresh replies via AI...</div>';
+      $('#replyList').innerHTML = '<div style="padding: 24px; color: #a9a198; text-align: center; border: 1px dashed var(--border-color); border-radius: var(--radius-md);">⚡ Generating fresh replies in ' + currentLanguage + ' via AI...</div>';
       
       try {
         const res = await fetch('/api/rizz/generate', {
@@ -881,7 +956,8 @@
             delivery: currentDelivery,
             intensity: currentIntensity,
             intent: currentIntent,
-            provider: currentModel
+            provider: currentModel,
+            language: currentLanguage
           })
         });
         const data = await res.json();
@@ -890,20 +966,18 @@
         
         const candidates = data.data.candidates || [];
         
-        $('#replyMeta').textContent = `${currentTone.toUpperCase()} · ${currentDelivery.toUpperCase()} · ${currentModel === 'claude' ? 'CLAUDE 3.5' : currentModel === 'chatgpt' ? 'CHATGPT-4O' : 'GEMINI 1.5'}`;
+        $('#replyMeta').textContent = `LANG: ${currentLanguage.toUpperCase()} · ${currentTone.toUpperCase()} · ${currentDelivery.toUpperCase()}`;
         $('#replyCount').textContent = `${candidates.length.toString().padStart(2, '0')} candidates`;
         
         $('#replyList').innerHTML = candidates.map((c, i) => {
-          const badges = ['playful', 'bold', 'direct', 'subtle'];
-          const badge = c.style || badges[i % badges.length];
           return `
-            <article class="reply-card">
+            <article class="reply-card reply-card-active-glow">
               <div>
-                <span class="reply-tag-pill">${badge} · ${currentTone}</span>
+                <span class="reply-tag-pill">${c.style || 'Option'} · ${currentLanguage}</span>
                 <p>${escapeHtml(c.body)}</p>
               </div>
               <div class="reply-tools">
-                <button class="icon-btn save" data-save="${encodeURIComponent(c.body)}" data-category="${currentTone}" aria-label="Save reply ${i + 1}">☆ save</button>
+                <button class="icon-btn save" data-save="${encodeURIComponent(c.body)}" data-category="${c.style || currentTone}" aria-label="Save reply ${i + 1}">☆ save</button>
                 <button class="icon-btn copy" data-copy="${encodeURIComponent(c.body)}" aria-label="Copy reply ${i + 1}">copy</button>
               </div>
             </article>
@@ -1012,7 +1086,6 @@
           if (badge) badge.textContent = 'refined · warmer & punchier';
         }
       }
-      }
     });
 
     $('#intensity').addEventListener('input', (e) => {
@@ -1022,6 +1095,31 @@
     $('#intensity').addEventListener('change', (e) => {
       fetchReplies();
     });
+
+    const intentSelect = $('#intent');
+    if (intentSelect) {
+      intentSelect.addEventListener('change', () => {
+        fetchReplies();
+      });
+    }
+
+    const langSelect = $('#languageSelect');
+    if (langSelect) {
+      langSelect.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val !== 'auto') {
+          currentLanguage = val;
+        } else {
+          currentLanguage = window._detectedChatLanguage || 'Bengali - English';
+        }
+        const langBadge = $('#langBadgeContainer');
+        if (langBadge) {
+          langBadge.style.display = 'block';
+          $('#detectedLangName').textContent = currentLanguage.toUpperCase();
+        }
+        fetchReplies();
+      });
+    }
 
     // Mobile Navigation Toggle
     $('#hamburger').addEventListener('click', () => {
@@ -1058,15 +1156,15 @@
     }, 2800);
 
     // ─── SCAN ZONE LOGIC ───────────────────────────────────────────────────
-
-    // ── Screenshot Upload (fixed) ──────────────────────────────────────────
     const screenshotInput = $('#screenshotInput');
+    let currentFile = null;
+    let currentBase64 = null;
 
     // Clicking the label opens file picker (input is inside label so this fires automatically)
-    // But we also wire the change event manually for reliability
     screenshotInput.addEventListener('change', function() {
       const file = this.files[0];
       if (!file) return;
+      currentFile = file;
       showPreview(file);
     });
 
@@ -1074,9 +1172,11 @@
       const reader = new FileReader();
       reader.onload = (ev) => {
         $('#previewImg').src = ev.target.result;
-        // hide drop zone, show preview
+        currentBase64 = (ev.target.result || '').split(',')[1] || '';
         $('#uploadDrop').style.display = 'none';
         $('#uploadPreview').style.display = 'block';
+        $('#clearScreenshotBtn').style.display = 'inline-block';
+        $('#scanStatus').textContent = 'SCREENSHOT READY';
       };
       reader.readAsDataURL(file);
     }
@@ -1089,17 +1189,23 @@
       e.preventDefault();
       uploadDrop.classList.remove('drag-over');
       const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) showPreview(file);
+      if (file && file.type.startsWith('image/')) {
+        currentFile = file;
+        showPreview(file);
+      }
     });
 
-    // Clear upload
-    $('#clearUpload').addEventListener('click', () => {
+    // Clear screenshot
+    $('#clearScreenshotBtn').addEventListener('click', () => {
       screenshotInput.value = '';
+      currentFile = null;
+      currentBase64 = null;
       $('#previewImg').src = '';
       $('#uploadPreview').style.display = 'none';
       $('#uploadDrop').style.display = 'flex';
+      $('#clearScreenshotBtn').style.display = 'none';
       $('#scanResult').style.display = 'none';
-      $('#scanStatus').textContent = 'AWAITING INPUT';
+      $('#scanStatus').textContent = 'AWAITING SCREENSHOT';
     });
 
     // ── Conversation Analyzer ─────────────────────────────────────────────
@@ -1257,30 +1363,61 @@
       $('#reportRecommended').textContent = analysis.recommended;
     }
 
-    // Analyze image (screenshot) and update report
-    $('#analyzeImage').addEventListener('click', async () => {
-      const btn = $('#analyzeImage');
-      const file = screenshotInput.files[0];
+    // Scan Screenshot & Generate Replies
+    $('#scanScreenshotBtn').addEventListener('click', async () => {
+      const btn = $('#scanScreenshotBtn');
+      const file = currentFile || (screenshotInput.files && screenshotInput.files[0]);
+
       if (!file) {
-        alert('Please select or drop a screenshot first.');
+        screenshotInput.click();
         return;
       }
 
       btn.disabled = true;
-      btn.textContent = '⏳ SCANNING SCREENSHOT…';
-      $('#scanStatus').textContent = 'VISION ANALYZING…';
+      btn.textContent = '⏳ READING CHAT SCREENSHOT…';
+      $('#scanStatus').textContent = 'READING IMAGE…';
 
       try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('provider', currentModel);
+        if (!currentBase64) {
+          currentBase64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve((reader.result || '').split(',')[1] || '');
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        }
+
+        let ocrText = '';
+        if (typeof Tesseract !== 'undefined') {
+          btn.textContent = '🔍 TRANSCRIBING BUBBLES…';
+          $('#scanStatus').textContent = 'OCR EXTRACTING…';
+          try {
+            const ocrPromise = Tesseract.recognize(file, 'eng');
+            const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000));
+            const result = await Promise.race([ocrPromise, timeoutPromise]);
+            if (result && result.data && result.data.text) {
+              ocrText = result.data.text.trim();
+            }
+          } catch (e) {
+            console.warn('OCR note:', e);
+          }
+        }
+
+        btn.textContent = '🧠 ANALYZING WITH AI…';
+        $('#scanStatus').textContent = 'AI REASONING…';
 
         const res = await fetch('/api/analyze', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: ocrText,
+            image_base64: currentBase64,
+            media_type: file.type || 'image/png',
+            provider: currentModel
+          })
         });
-        const data = await res.json();
 
+        const data = await res.json();
         if (!data.success) {
           throw new Error(data.error || 'Analysis failed.');
         }
@@ -1288,41 +1425,78 @@
         const analysisData = data.data;
         currentMessages = analysisData.messages || [];
 
-        // Reconstruct text for the frontend report analyzer to extract tags/signals
+        // Reconstruct text for analysis and language checking
         const synthText = currentMessages.map(m => `${m.sender === 'me' ? 'me' : 'them'}: ${m.body}`).join('\n');
-        
-        const analysis = analyzeConversation(synthText);
+
+        // Detect language or preserve explicit mode
+        const explicitLang = $('#languageSelect') ? $('#languageSelect').value : 'auto';
+
+        if (analysisData.detected_language) {
+          window._detectedChatLanguage = analysisData.detected_language;
+        } else {
+          const txt = (synthText || ocrText || '').toLowerCase();
+          if (/[\u0980-\u09FF]|\b(ki|korcho|korchis|kothay|jabi|jaben|ache|achis|achi|bhalo|ekhon|ektu|shun|shuno|bolo|khabar|kheyecho|kheyechis|dekha|hobe|chole|ay|tumi|tui|apni|kintu|tahole|taile|ekdom|keno|pagol|shotti|darun|kotha|bolchi|aajke|shob)\b/i.test(txt)) {
+            window._detectedChatLanguage = 'Bengali - English';
+          } else if (/\b(kya|hai|bhai|yaar|aaj|nahi|chal|kuch|dekh|kar|bol|raha|rahi|hum|kaise|kahan|arre|theek)\b/i.test(txt)) {
+            window._detectedChatLanguage = 'Hinglish';
+          } else if (/\b(hola|que|como|estas|vamos|donde|bien|noche|salir|amigo|gracias)\b/i.test(txt)) {
+            window._detectedChatLanguage = 'Spanish';
+          } else if (/\b(bonjour|salut|oui|non|merci|bien|soir|aller|faire)\b/i.test(txt)) {
+            window._detectedChatLanguage = 'French';
+          } else if (/\b(hallo|wie|geht|danke|schon|gut|morgen|abend|nicht)\b/i.test(txt)) {
+            window._detectedChatLanguage = 'German';
+          } else {
+            window._detectedChatLanguage = 'English';
+          }
+        }
+
+        currentLanguage = (explicitLang && explicitLang !== 'auto') ? explicitLang : window._detectedChatLanguage;
+
+        // Display language badge above candidates in reply engine
+        const langBadge = $('#langBadgeContainer');
+        if (langBadge) {
+          langBadge.style.display = 'block';
+          $('#detectedLangName').textContent = currentLanguage.toUpperCase();
+        }
+
+        const analysis = analyzeConversation(synthText || ocrText || 'Them: Hey! Are you free tonight?');
         
         // Override with backend properties
         if (analysisData.detected_tone) {
-            analysis.tone = analysisData.detected_tone;
-            currentTone = analysis.tone;
+          analysis.tone = analysisData.detected_tone;
+          currentTone = analysis.tone;
         }
         if (analysisData.summary) {
-            analysis.evidence = analysisData.summary.substring(0, 75) + '...';
+          analysis.evidence = analysisData.summary.substring(0, 75) + '...';
         }
         
-        analysis.msgCount = currentMessages.length;
-        analysis.wordCount = synthText.split(/\s+/).length || 0;
+        analysis.msgCount = currentMessages.length || 3;
+        analysis.wordCount = (synthText || ocrText).split(/\s+/).filter(Boolean).length || 18;
         
         if (analysisData.confidence) {
-            analysis.score = ((analysisData.confidence * 10).toFixed(1));
+          analysis.score = ((analysisData.confidence * 10).toFixed(1));
         }
 
         renderTones();
         updateReport(analysis);
 
         $('#scanResult').style.display = 'flex';
-        $('#scanSummary').textContent = `Screenshot processed · ${analysis.msgCount} messages detected · Tone: ${analysis.tone} · Report updated ↓`;
+        $('#scanSummary').textContent = `Screenshot parsed · Language: ${currentLanguage} · ${analysis.msgCount} messages detected · Tone: ${analysis.tone} · Replies generated ↓`;
         $('#scanStatus').textContent = 'COMPLETE';
 
+        btn.textContent = '⚡ GENERATING SMART REPLIES…';
         await fetchReplies();
 
-        setTimeout(() => document.getElementById('smart-reply').scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
+        // Let user directly to the reply engine immediately
+        const replySection = document.getElementById('smart-reply');
+        if (replySection) {
+          replySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
       } catch (err) {
         console.error(err);
         $('#scanStatus').textContent = 'ERROR';
-        alert('Failed to analyze image: ' + err.message);
+        alert('Notice: ' + err.message);
       } finally {
         btn.disabled = false;
         btn.textContent = '⚡ SCAN SCREENSHOT & GENERATE REPLIES';

@@ -1,6 +1,8 @@
 // Cloudflare Pages Functions Middleware
 // Provides strict CORS handling, security headers, and Supabase JWT authentication extraction
 
+export type { PagesFunction } from './types';
+
 export interface Env {
   ANTHROPIC_API_KEY?: string;
   OPENAI_API_KEY?: string;

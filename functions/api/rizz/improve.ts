@@ -1,5 +1,5 @@
 // POST /api/rizz/improve — "Make this reply better" Quick Transforms
-import { Env } from '../_middleware';
+import { Env, PagesFunction } from '../_middleware';
 import { callAIModel, AIMessage, AIProvider } from '../_aiHelper';
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {

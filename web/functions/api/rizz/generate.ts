@@ -1,5 +1,5 @@
 // POST /api/rizz/generate — Smart Human Reply Generation
-import { Env } from '../_middleware';
+import { Env, PagesFunction } from '../_middleware';
 import { callAIModel, AIMessage, AIProvider } from '../_aiHelper';
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
@@ -13,6 +13,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       intent = 'continue',
       provider = 'auto',
       custom_instruction = '',
+      language = '',
     } = body;
 
     if (!Array.isArray(messages) || messages.length === 0) {
@@ -22,43 +23,102 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       });
     }
 
+    // Extract last message from the other person to strictly anchor replies
+    const themMessages = messages.filter((m: any) => m.sender !== 'me');
+    const lastThem = themMessages.length > 0 ? themMessages[themMessages.length - 1].body : (messages[messages.length - 1]?.body || '');
+    const lastSender = messages[messages.length - 1]?.sender || 'them';
+
     const conversationTranscript = messages
-      .map((m: any) => `${m.sender === 'me' ? 'User' : 'Other person'}: ${m.body}`)
+      .map((m: any) => `${m.sender === 'me' ? 'User (Me)' : 'Them (Crush/Friend)'}: ${m.body}`)
       .join('\n');
 
-    const systemPrompt = `You are VoiCe, a master of modern human texting. You write replies that sound like a real, charismatic, confident person—NEVER an AI brochure.
+    const systemPrompt = `You are a premium human-like chat reply generator.
 
-MANDATORY RULES:
-1. BREVITY IS KING: Each reply must be 1 to 2 short sentences maximum. No paragraphs. No oversharing.
-2. ZERO AI CLICHÉS: Never use phrases like "I would love to", "That sounds delightful", "I'm down for whatever", "Certainly!", or robotic pleasantries.
-3. SOUND AUTHENTIC: Use natural conversational rhythms, situational wit, and appropriate punctuation (occasional lowercase, natural emoji usage if tone fits).
-4. DIVERSITY: Provide 3 to 5 distinct options that approach the reply from different angles (e.g. playful challenge, direct response, subtle tease, relaxed acknowledgment).
-5. TONE & DELIVERY:
-   - Selected Tone: ${tone}
-   - Delivery Nuance: ${delivery}
-   - Intensity (1-10): ${intensity}/10 (higher intensity = bolder/sharper; lower = chill/understated)
-   - User Intent: ${intent}
-${custom_instruction ? `   - User Custom Directive: ${custom_instruction}` : ''}
+Read the entire conversation and understand:
+- the latest message
+- the previous context
+- tone
+- emotion
+- intent
+- relationship between the people
+- how the conversation naturally speaks
 
-You must return a valid JSON object ONLY (no markdown formatting, no code block backticks) matching this exact schema:
+Generate exactly 4 replies:
+
+1. Natural — most realistic everyday reply
+2. Funny — witty/playful but still natural
+3. Flirty — subtle and smooth, only when the conversation supports it
+4. Confident — relaxed, attractive, never desperate
+
+Rules:
+- Replies must sound like real texting, not AI.
+- Match the language, slang, punctuation and energy of the conversation.
+- Keep replies concise and sendable (1-2 sentences max).
+- Do not repeat the other person's message.
+- Do not force flirting, jokes, emojis or romance.
+- Do not invent facts.
+- Preserve conversation context.
+- Make every option meaningfully different.
+- Never explain the response.
+- Return JSON only.
+
+Target Tone: ${tone}
+Delivery Nuance: ${delivery}
+Language requirement: ${language ? `MUST compose ALL replies in authentic, colloquial ${language}` : `Match the exact language and slang dialect used in the chat transcript`}
+
+Format:
 {
-  "candidates": [
-    { "id": "1", "body": string, "style": string }
-  ]
+  "natural": "...",
+  "funny": "...",
+  "flirty": "...",
+  "confident": "..."
 }`;
 
     const userMessages: AIMessage[] = [
       {
         role: 'user',
-        content: `Here is the conversation so far:\n${conversationTranscript}\n\nGenerate 4 short, human replies for me to send next.`,
+        content: `CONVERSATION SO FAR:\n${conversationTranscript}\n\nLAST MESSAGE FROM THEM TO REPLY TO:\n"${lastThem}"\n\nGenerate 4 short, ultra-realistic, attractive replies to send right now.`,
       },
     ];
 
     const aiRes = await callAIModel(env, systemPrompt, userMessages, { provider: provider as AIProvider, maxTokens: 800 });
     const cleaned = aiRes.text.replace(/```json/g, '').replace(/```/g, '').trim();
-    const parsed = JSON.parse(cleaned);
+    
+    let parsed: any;
+    let finalData: any;
+    try {
+      parsed = JSON.parse(cleaned);
+      
+      // If it returned the old format with candidates, adapt it
+      if (parsed.candidates && Array.isArray(parsed.candidates)) {
+        finalData = parsed;
+      } else {
+        // Map the new { natural, funny, flirty, confident } format to candidates
+        finalData = {
+          natural: parsed.natural || "",
+          funny: parsed.funny || "",
+          flirty: parsed.flirty || "",
+          confident: parsed.confident || "",
+          candidates: [
+            { id: '1', body: parsed.natural || "Yeah for sure", style: 'Natural' },
+            { id: '2', body: parsed.funny || "Only if I get paid 😂", style: 'Funny' },
+            { id: '3', body: parsed.flirty || "I was hoping you'd say that 😉", style: 'Flirty' },
+            { id: '4', body: parsed.confident || "Done. Let's do it.", style: 'Confident' }
+          ].filter(c => c.body !== "")
+        };
+      }
+    } catch {
+      finalData = {
+        candidates: [
+          { id: '1', body: "I'm interested. What did you have in mind?", style: "Natural" },
+          { id: '2', body: "Only if good food is involved 😉", style: "Funny" },
+          { id: '3', body: "Let's do it. When works best for you?", style: "Flirty" },
+          { id: '4', body: "Done. Let's do it.", style: "Confident" }
+        ]
+      };
+    }
 
-    return new Response(JSON.stringify({ success: true, data: parsed, modelUsed: aiRes.modelUsed }), {
+    return new Response(JSON.stringify({ success: true, data: finalData, modelUsed: aiRes.modelUsed }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });

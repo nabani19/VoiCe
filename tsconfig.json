@@ -18,7 +18,8 @@
   "include": [
     "mobile/src/**/*",
     "mobile/App.tsx",
-    "web/functions/**/*"
+    "web/functions/**/*",
+    "functions/**/*"
   ],
   "exclude": ["node_modules", "dist", "build"]
 }

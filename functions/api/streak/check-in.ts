@@ -1,5 +1,5 @@
 // POST /api/streak/check-in — Idempotent Daily Streak Check-in
-import { Env } from '../_middleware';
+import { Env, PagesFunction } from '../_middleware';
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   try {

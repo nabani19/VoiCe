@@ -1,0 +1,1 @@
+import { generateReply } from './replyEngine.js'; console.log(generateReply('I just got a promotion!', { style: 'natural' })); console.log(generateReply('tui ki pagol naki amake ignore korchis?', { style: 'funny' })); console.log(generateReply('aaj kahan chalna hai bata?', { style: 'flirty' }));
