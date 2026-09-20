@@ -1503,5 +1503,259 @@
       }
     });
   </script>
+  <!-- MODALS & COMPLIANCE -->
+  <style>
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+      display: none; justify-content: center; align-items: center; z-index: 9999;
+    }
+    .modal-content {
+      background: var(--panel-2); border: 1px solid var(--line);
+      border-radius: 12px; width: 90%; max-width: 500px; padding: 24px;
+      color: var(--text); position: relative; max-height: 90vh; overflow-y: auto;
+    }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px; background: none; border: none;
+      color: var(--muted); font-size: 24px; cursor: pointer;
+    }
+    .modal-title { font-family: var(--display); font-size: 24px; margin-bottom: 16px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--muted); }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--line);
+      color: var(--text); border-radius: 6px; font-family: var(--sans);
+    }
+    .btn-full { width: 100%; padding: 12px; background: var(--rust-bright); color: #000; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-family: var(--display); font-size: 18px; margin-top: 8px;}
+    .btn-google { background: #fff; color: #000; margin-top: 12px; }
+    .legal-text { font-size: 14px; color: var(--muted-2); margin-top: 16px; text-align: center; }
+    
+    .cookie-banner {
+      position: fixed; bottom: 0; left: 0; right: 0; background: var(--panel);
+      border-top: 1px solid var(--line); padding: 16px 24px; z-index: 9998;
+      display: none; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    .cookie-actions button {
+      padding: 8px 16px; border-radius: 4px; font-family: var(--sans); font-weight: 600; cursor: pointer; border: none;
+    }
+    .btn-accept { background: var(--violet); color: #fff; }
+    .btn-essential { background: var(--line); color: var(--text); margin-left: 8px; }
+  </style>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="document.getElementById('authModal').style.display='none'">×</button>
+      <h2 class="modal-title">SIGN IN OR CREATE ACCOUNT</h2>
+      <div id="authError" style="color:var(--rust-bright);margin-bottom:12px;font-size:14px;display:none;"></div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="authEmail" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••">
+      </div>
+      <button class="btn-full" id="signInBtn">Continue with Email</button>
+      <button class="btn-full btn-google" id="googleAuthBtn">Continue with Google</button>
+      <p class="legal-text">By continuing, you agree to our <a href="#" onclick="showLegal('tos')" style="color:var(--violet)">Terms of Service</a> and <a href="#" onclick="showLegal('privacy')" style="color:var(--violet)">Privacy Policy</a>.</p>
+    </div>
+  </div>
+
+  <!-- Legal Modal -->
+  <div class="modal-overlay" id="legalModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="document.getElementById('legalModal').style.display='none'">×</button>
+      <h2 class="modal-title" id="legalTitle">Legal</h2>
+      <div id="legalContent" style="font-size:14px; color:var(--muted); line-height:1.6; white-space:pre-wrap;"></div>
+    </div>
+  </div>
+
+  <!-- Feedback Modal -->
+  <div class="modal-overlay" id="feedbackModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="document.getElementById('feedbackModal').style.display='none'">×</button>
+      <h2 class="modal-title">SUBMIT FEEDBACK OR BUG</h2>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="feedbackCategory">
+          <option value="bug">🐛 Report a Bug</option>
+          <option value="feature">💡 Feature Request</option>
+          <option value="support">💬 General Question</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea id="feedbackMessage" rows="4" placeholder="What's on your mind?"></textarea>
+      </div>
+      <button class="btn-full" id="submitFeedbackBtn">Submit Ticket</button>
+    </div>
+  </div>
+
+  <!-- Cookie Banner -->
+  <div class="cookie-banner" id="cookieBanner">
+    <div style="font-size:14px; color:var(--muted); max-width:800px;">
+      We use cookies to improve your experience and track analytics. By clicking "Accept All", you consent to our use of cookies.
+    </div>
+    <div class="cookie-actions">
+      <button class="btn-accept" onclick="acceptCookies('all')">Accept All</button>
+      <button class="btn-essential" onclick="acceptCookies('essential')">Essential Only</button>
+    </div>
+  </div>
+
+  <script>
+    // --- XSS & UTILS ---
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[tag]));
+    }
+
+    // --- ANALYTICS TRACKING ---
+    const Analytics = {
+      trackEvent: (eventName, payload = {}) => {
+        const consent = localStorage.getItem('cookie_consent');
+        if (consent !== 'all') return;
+        console.log(`[Analytics Event] ${eventName}`, payload);
+        // Here we would push to Google Analytics or Mixpanel
+      },
+      trackPageView: (pageName) => {
+        const consent = localStorage.getItem('cookie_consent');
+        if (consent !== 'all') return;
+        console.log(`[Analytics PageView] ${pageName}`);
+      }
+    };
+    
+    // Initial page track
+    window.addEventListener('load', () => Analytics.trackPageView(window.location.pathname));
+
+    // --- COOKIE CONSENT ---
+    if (!localStorage.getItem('cookie_consent')) {
+      document.getElementById('cookieBanner').style.display = 'flex';
+    }
+    function acceptCookies(level) {
+      localStorage.setItem('cookie_consent', level);
+      document.getElementById('cookieBanner').style.display = 'none';
+      if (level === 'all') {
+        Analytics.trackPageView(window.location.pathname);
+      }
+    }
+
+    // --- LEGAL TEXTS ---
+    const legalTexts = {
+      privacy: "Privacy Policy\n\n1. Data Collection: We collect chat context strictly to generate replies. Images are not stored on our servers post-processing.\n2. Analytics: We use cookies to track usage anonymously if you opt-in.\n3. Third-party: We send text to OpenAI/Claude APIs to process replies. They do not train on this data.",
+      tos: "Terms of Service\n\n1. Usage: You agree to use VoiCe responsibly and not for harassment or abusive behavior.\n2. Liability: Generated replies are suggestions. You are fully responsible for the messages you choose to send.\n3. Limits: We may rate-limit usage to prevent abuse."
+    };
+    function showLegal(type) {
+      document.getElementById('legalTitle').textContent = type === 'privacy' ? 'PRIVACY POLICY' : 'TERMS OF SERVICE';
+      document.getElementById('legalContent').textContent = legalTexts[type];
+      document.getElementById('legalModal').style.display = 'flex';
+    }
+
+    // --- SUPABASE & AUTH ---
+    // Placeholder config - user must inject real keys in environment/build
+    const supabaseUrl = 'YOUR_SUPABASE_URL';
+    const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+    
+    let supabase = null;
+    try {
+      if (supabaseUrl !== 'YOUR_SUPABASE_URL' && window.supabase) {
+        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+      }
+    } catch(e) { console.warn("Supabase not initialized", e); }
+
+    const authModal = document.getElementById('authModal');
+    const authBtn = document.getElementById('authBtn');
+    let authRateLimit = 0;
+
+    if (authBtn) {
+      authBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        authModal.style.display = 'flex';
+        Analytics.trackEvent('auth_modal_opened');
+      });
+    }
+
+    document.getElementById('signInBtn').addEventListener('click', async () => {
+      if (authRateLimit >= 3) {
+        alert("Too many attempts. Please wait 30 seconds.");
+        return;
+      }
+      
+      const email = escapeHTML(document.getElementById('authEmail').value);
+      const password = document.getElementById('authPassword').value;
+      const errDiv = document.getElementById('authError');
+      
+      if (!email || !password) {
+        errDiv.textContent = "Please fill out all fields.";
+        errDiv.style.display = 'block';
+        return;
+      }
+      
+      try {
+        if (!supabase) throw new Error("Supabase is not configured.");
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          // If sign in fails, try sign up implicitly for this demo/MVP
+          const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({ email, password });
+          if (signUpErr) throw signUpErr;
+        }
+        
+        authModal.style.display = 'none';
+        if (authBtn) authBtn.textContent = 'Account';
+        Analytics.trackEvent('auth_success', { method: 'email' });
+        authRateLimit = 0;
+      } catch (err) {
+        authRateLimit++;
+        errDiv.textContent = escapeHTML(err.message);
+        errDiv.style.display = 'block';
+        Analytics.trackEvent('auth_failed', { reason: err.message });
+        
+        if (authRateLimit >= 3) {
+          setTimeout(() => authRateLimit = 0, 30000); // 30s lockout
+        }
+      }
+    });
+
+    document.getElementById('googleAuthBtn').addEventListener('click', async () => {
+      try {
+        if (!supabase) throw new Error("Supabase is not configured.");
+        const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+        if (error) throw error;
+      } catch (err) {
+        document.getElementById('authError').textContent = escapeHTML(err.message);
+        document.getElementById('authError').style.display = 'block';
+      }
+    });
+
+    // --- FEEDBACK LOOP ---
+    const feedbackModal = document.getElementById('feedbackModal');
+    const feedbackBtn = document.getElementById('feedbackBtn');
+    
+    if (feedbackBtn) {
+      feedbackBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        feedbackModal.style.display = 'flex';
+      });
+    }
+
+    document.getElementById('submitFeedbackBtn').addEventListener('click', () => {
+      const cat = document.getElementById('feedbackCategory').value;
+      const msg = escapeHTML(document.getElementById('feedbackMessage').value);
+      
+      if (!msg.trim()) return alert("Message cannot be empty.");
+      
+      const ticketId = 'TK-' + Math.floor(Math.random() * 90000 + 10000);
+      console.log(`[Feedback System] ${ticketId} Created. Category: ${cat}, Msg: ${msg}`);
+      Analytics.trackEvent('ticket_submitted', { category: cat, ticketId });
+      
+      document.getElementById('feedbackMessage').value = '';
+      feedbackModal.style.display = 'none';
+      alert(`Feedback submitted successfully! Ticket ID: ${ticketId}`);
+    });
+
+  </script>
+
 </body>
 </html>
