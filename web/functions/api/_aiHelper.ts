@@ -115,12 +115,13 @@ export async function callAIModel(
           schema: {
             type: "object",
             properties: {
+              thought_process: { type: "string" },
               natural: { type: "string" },
               funny: { type: "string" },
               flirty: { type: "string" },
               confident: { type: "string" }
             },
-            required: ["natural", "funny", "flirty", "confident"],
+            required: ["thought_process", "natural", "funny", "flirty", "confident"],
             additionalProperties: false
           }
         }

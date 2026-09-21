@@ -116,88 +116,88 @@ export function detectTone(text) {
 const T = {
   en: {
     happy: {
-      natural: ["That's so good to hear{n}! What made your day?", "Love that for you! Tell me more.", "I'm so glad things are going well!"],
-      funny: ["Did you win the lottery and forget to tell me?", "I'll take some of whatever you're having 😂", "Look at you thriving! Who are you and what did you do with my friend?"],
-      flirty: ["Love seeing you this happy, it looks good on you 😉", "Your good mood is contagious.", "I’d celebrate with you right now if I could."],
-      confident: ["You deserve it. Enjoy the win.", "I never had any doubts. Glad you're feeling good.", "That's exactly what I like to hear."]
+      natural: ["love that for you{n}, tell me more", "sounds like a huge win honestly", "you're in a good mood, what happened?"],
+      funny: ["look at you thriving, don't forget the little people 😂", "are you always this cheerful or did you win the lottery?", "save some happiness for the rest of us"],
+      flirty: ["you in a good mood looks dangerous on you 😉", "celebrating without me? bold move", "your energy is contagious, not gonna lie"],
+      confident: ["you earned it. let's grab drinks to celebrate", "told you that would work out. what's next?", "deserve every bit of it. proud of you"]
     },
     excited: {
-      natural: ["OMG that's amazing{n}! 🎉 Tell me everything!", "No way, that's huge! So happy for you!", "Let's goooo! How are you feeling?"],
-      funny: ["I'm vicariously living through your excitement right now 😂", "Don't forget me when you're rich and famous.", "Okay, deep breaths... now tell me EVERY detail!"],
-      flirty: ["I love how passionate you get about things 😏", "We definitely need to celebrate this properly...", "Your excitement is genuinely so attractive."],
-      confident: ["You earned every bit of this. Well done.", "I always knew you'd pull this off. Enjoy it.", "Just another day of you crushing it."]
+      natural: ["no way, that's actually huge! tell me everything", "let's go! that's so sick", "honestly that made my day hearing that"],
+      funny: ["calm down, you're gonna pull a muscle 😂", "don't get too famous on me now", "okay deep breath, now give me the full story"],
+      flirty: ["i love how excited you get, it's genuinely hot 😏", "we definitely need to celebrate this in person", "you're cute when you're hyped up"],
+      confident: ["knew you were gonna crush it. dinner's on you 😉", "just the beginning for you. let's mark the occasion", "elite moves. let's celebrate this week"]
     },
     sad: {
-      natural: ["I'm really sorry you're going through this{n}. Want to talk about it?", "That sounds tough. I'm here if you want to share more.", "Sending you a big hug. You don't have to handle it alone."],
-      funny: ["I can come over with ice cream and bad jokes if you need?", "Let's cancel the day and pretend tomorrow doesn't exist either.", "I will personally fight whoever made you sad."],
-      flirty: ["Wish I was there to give you a proper hug right now.", "I'd do anything to make you smile today.", "Let me take you out and get your mind off things?"],
-      confident: ["You're stronger than you think. You'll get through this.", "Take all the time you need. I've got your back.", "It's okay to feel down. Just remember who you are."]
+      natural: ["hate hearing that{n}. what happened?", "sorry you're dealing with that, here if you need to vent", "rough day? take it easy tonight"],
+      funny: ["who do i need to roast for this? give me names 😂", "today is officially cancelled, tomorrow we start over", "let's blame the universe and order takeout"],
+      flirty: ["wish i was there to take your mind off things 😉", "let me distract you for an hour, you need a break", "you need a distraction and i'm great at that"],
+      confident: ["one bad day doesn't change anything. shake it off", "you've handled worse. let's get you out of your head tonight", "take a breath. you're gonna be completely fine"]
     },
     angry: {
-      natural: ["That sounds really frustrating. I'd be upset too.", "I hear you. Take a breath — want to vent about it?", "Yeah, that's not okay at all. What happened?"],
-      funny: ["Do we need to hide a body? Because I'm free.", "I'm ready to throw hands on your behalf.", "Breathe. Jail is not worth it, I promise 😂"],
-      flirty: ["You're kind of cute when you're mad, not gonna lie.", "I'd love to help you de-stress later 😉", "Let me take you out and help you forget about it."],
-      confident: ["Don't let them get in your head. You're better than that.", "Focus on what you can control. The rest is noise.", "You have every right to be mad, but don't lose your cool."]
+      natural: ["yeah that's super frustrating, don't blame you at all", "sounds like a headache. what did they do?", "honestly valid. vent to me, i'm listening"],
+      funny: ["take a deep breath, jail looks bad on both of us 😂", "channel that rage into something fun", "who gave them permission to test you today?"],
+      flirty: ["you're kind of hot when you're feisty 😏", "come blow off some steam with me later", "let me take you out so you can forget all about it"],
+      confident: ["don't give them that much power over your mood", "not worth your energy. let it go and focus on tonight", "shake it off. let's change the topic to something better"]
     },
     anxious: {
-      natural: ["Deep breath — you've got this. What's worrying you most?", "It's completely normal to feel nervous. I'm with you.", "Let's break it down together. One step at a time."],
-      funny: ["Remember that time you thought the world was ending and it didn't? Same thing here.", "I'm stressed just reading this. Let's both panic together?", "Worst case scenario, we run away and start a new life."],
-      flirty: ["You're going to do great, stop overthinking it beautiful.", "I believe in you enough for the both of us.", "Wish I was there to calm your nerves right now 😉"],
-      confident: ["You are more than prepared for this. Trust yourself.", "You've handled worse. This is nothing you can't manage.", "Focus. You know exactly what you're doing."]
+      natural: ["deep breath, you're definitely overthinking it", "one step at a time, you've got this handled", "stressing won't help, what's the immediate next thing?"],
+      funny: ["remember: panic is cardio, so at least you got a workout 😂", "overthinking is a full-time job for you isn't it?", "worst case we move to a remote island, problem solved"],
+      flirty: ["stop overthinking, you're way too smart for that 😉", "wish i was there to calm you down right now", "i have faith in you even when you don't"],
+      confident: ["trust yourself. you're more than ready for this", "you've done the work, now just go execute", "breathe. you've got this completely locked down"]
     },
     love: {
-      natural: ["Aww, that's so sweet{n}! 💕", "You just made my day ❤️", "Love you too! 🥰"],
-      funny: ["Are you trying to make me blush? Because it's working.", "Who paid you to say that? 😂", "I know, I'm pretty great. But you're not bad yourself."],
-      flirty: ["Keep talking like that and see what happens 😉", "I was just thinking about you too...", "You always know exactly what to say."],
-      confident: ["I appreciate that. You mean a lot to me too.", "I know. The feeling is completely mutual.", "That's exactly what I needed to hear today."]
+      natural: ["appreciate you saying that honestly ❤️", "that actually made me smile", "you're pretty great yourself you know"],
+      funny: ["are you trying to get on my good side? it's working 😂", "who paid you to be this nice to me?", "careful, you're boosting my ego way too high"],
+      flirty: ["keep talking like that and see what happens 😉", "you're making it very hard not to kiss you right now", "admit it, you're obsessed with me"],
+      confident: ["i know, the feeling's mutual. let's see each other soon", "that's what i like to hear. you're special to me too", "glad you finally realized. when am i seeing you?"]
     },
     grateful: {
-      natural: ["Anytime{n}! Happy to help 😊", "You're very welcome! Let me know if you need anything else.", "No problem at all!"],
-      funny: ["I accept cash, credit, or coffee as payment ☕", "Just remember this when I need a favor 😂", "You owe me one! Kidding, happy to help."],
-      flirty: ["I'd do a lot more than that for you 😉", "Anytime. Just making sure I stay your favorite.", "You can thank me properly next time I see you."],
-      confident: ["Of course. I've always got your back.", "It was my pleasure. Glad I could be there.", "Don't mention it. That's what I'm here for."]
+      natural: ["of course{n}, happy to help anytime", "anytime, don't even worry about it", "got you, always"],
+      funny: ["you owe me coffee now, no excuses ☕", "i accept payment in pizza and good company 😂", "just making sure i remain your favorite person"],
+      flirty: ["for you? i'd do a lot more than that 😉", "you can thank me properly over drinks this week", "you're lucky i like you so much"],
+      confident: ["always got your back. no need to say thanks", "of course. that's what i'm here for", "anytime. you'd do the same for me"]
     },
     apologetic: {
-      natural: ["No worries at all! It happens 😊", "It's totally fine, don't stress about it.", "All good! Thanks for letting me know."],
-      funny: ["I'll forgive you... this time. Don't push your luck 😂", "Apology accepted, but you're buying the next round.", "It's fine, I'm already planning my revenge."],
-      flirty: ["I'll let it slide, but only because you're cute 😉", "You're lucky I like you so much.", "Make it up to me later?"],
-      confident: ["It's alright. Let's just move forward.", "No apology necessary. We're good.", "I appreciate you saying that. All forgiven."]
+      natural: ["all good{n}, don't worry about it at all", "no stress, things happen!", "completely fine, you're good"],
+      funny: ["i'll forgive you, but you're buying the first round 😂", "apology accepted, strike one though 😉", "don't push your luck, but you're forgiven"],
+      flirty: ["i'll let it slide, but only because you're cute 😉", "you're gonna have to make it up to me in person", "lucky for you, i have a soft spot for you"],
+      confident: ["we're good. let's just move forward", "no apology needed. focus on what's next", "all forgiven. don't sweat it"]
     },
     confused: {
-      natural: ["Let me explain it more clearly. Which part is confusing?", "No worries, let's go through it step by step.", "Good question! Which bit should I clarify?"],
-      funny: ["I barely know what's going on myself, to be honest 😂", "Welcome to the club. We have jackets.", "Wait, you actually thought I knew what I was doing?"],
-      flirty: ["You're overthinking it again... let me distract you 😉", "I'll explain it over drinks. Deal?", "Just follow my lead, you'll be fine."],
-      confident: ["Let's simplify this. What exactly is the issue?", "I'll break it down for you. Here's the deal.", "Don't overcomplicate it. Here's what you need to know."]
+      natural: ["what part did you want me to clear up?", "haha my bad, let me rephrase that", "wait what's confusing? tell me"],
+      funny: ["did i stutter or did you just zone out on me? 😂", "it's not rocket science, but i'll explain anyway", "pretend you understood so we both look smart"],
+      flirty: ["i'll explain it over drinks, deal? 😉", "you're cute when you're confused", "just trust my lead, you'll figure it out"],
+      confident: ["let me simplify it for you. here's the deal", "easy fix. let's look at the main point", "bottom line: here's what matters"]
     },
     neutral: {
-      natural: ["Got it. Tell me more 🙂", "Okay, I'm listening. What's next?", "Interesting! What are you thinking?"],
-      funny: ["Is that a threat or a promise? 😂", "I'm going to need 3-5 business days to process this.", "And then everyone clapped?"],
-      flirty: ["I like where this is going...", "You always have my full attention 😉", "Tell me more, I'm intrigued."],
-      confident: ["Understood. Let's figure out the next steps.", "Got it. I'll handle it from here.", "Makes sense. Let's move forward."]
+      natural: ["yeah that makes sense honestly", "fair enough, what are you thinking next?", "gotcha, tell me more about that"],
+      funny: ["bold move, let's see if it pays off 😂", "are you always this mysterious or just today?", "fascinating story, tell me more"],
+      flirty: ["you're interesting, i'll give you that 😉", "careful, you're getting my full attention now", "i like where this is heading..."],
+      confident: ["sounds good. let's make a move on it", "handled. what's your schedule look like this week?", "i'm down. let's make it happen"]
     },
     greeting: {
-      natural: ["Hey{n}! 👋 How's your day going?", "Hi! Good to hear from you. What's up?"],
-      funny: ["Who goes there? 🗡️", "I was just hoping you wouldn't text me today 😂 Kidding, what's up?"],
-      flirty: ["Hey there 😉 Was just thinking about you.", "Well hello... you read my mind."],
-      confident: ["Hey. Good timing, I was just getting free.", "Hi. Let's catch up, what's on your mind?"]
+      natural: ["hey{n}! what are you up to today?", "hey stranger, how's your day going?", "yo, good timing. what's up?"],
+      funny: ["look who decided to bless my notifications 😂", "well well, look who finally remembered i exist", "are you always this fashionably late to text?"],
+      flirty: ["hey you 😉 was just thinking about you", "well hello... must be my lucky day", "finally texted me, took you long enough 😏"],
+      confident: ["hey. let's catch up, what's your week looking like?", "hey, perfect timing. what are you getting into tonight?", "hey. let's skip the small talk, what's your vibe today?"]
     },
     farewell: {
-      natural: ["Take care{n}! Talk soon 👋", "Bye! Catch you later 😊"],
-      funny: ["Don't do anything I wouldn't do! Which leaves you a lot of options.", "Finally, some peace and quiet 😂 Bye!"],
-      flirty: ["Sweet dreams... hope I'm in them 😉", "Try not to miss me too much. Talk soon."],
-      confident: ["Have a good one. Let's reconnect later.", "Take care. I'll reach out tomorrow."]
+      natural: ["talk soon{n}, have a great night!", "catch you later, take care!", "gn! chat tomorrow"],
+      funny: ["don't do anything i wouldn't do 😂", "try not to dream about me too much", "bye, don't miss me too hard"],
+      flirty: ["sweet dreams... try not to think about me too much 😉", "goodnight, talk to you first thing tomorrow", "dream of me 😏"],
+      confident: ["goodnight. let's grab coffee this weekend", "take care. i'll hit you up tomorrow", "sleep well. talk soon"]
     },
     question: {
-      natural: ["Good question! Let me think… could you give me a bit more detail?", "Hmm, let me help with that. What exactly do you want to know?"],
-      funny: ["Why are you asking me? I'm just as clueless! 😂", "I'll answer that if my lawyer says it's okay."],
-      flirty: ["Why so curious about me all of a sudden? 😉", "I'll tell you if you tell me a secret first."],
-      confident: ["I have the answer, but let's see what you think first.", "Here's exactly what you need to know."]
+      natural: ["honestly yeah, what made you ask?", "good question, give me a sec to think", "depends on what you had in mind!"],
+      funny: ["is this an interrogation? do i need my lawyer? 😂", "i'll tell you, but it's gonna cost you a coffee", "classified information, sorry 😉"],
+      flirty: ["why so curious about me all of a sudden? 😉", "i'll tell you if you answer one of mine first", "ask me in person and maybe i'll tell you"],
+      confident: ["simple answer: yes. now what's the plan?", "i've got the answer, but what do you think?", "let's discuss that over drinks thursday"]
     },
     request: {
-      natural: ["Sure thing! What do you need?", "Of course, happy to help! Tell me more."],
-      funny: ["What's in it for me? 😂", "Only if it doesn't involve moving furniture or doing math."],
-      flirty: ["For you? I'd do just about anything 😉", "Say please properly and we have a deal."],
-      confident: ["Consider it done. Send the details.", "I can handle that. No problem."]
+      natural: ["yeah for sure, what's the details?", "definitely, happy to help out", "send it over, i'll check it out"],
+      funny: ["what's in it for me? negotiate with me 😂", "only if it doesn't involve heavy lifting or math", "i'll do it, but you officially owe me"],
+      flirty: ["say please and maybe i will 😉", "for you? i'll make an exception", "only if you promise to be nice to me this week"],
+      confident: ["consider it done. send the details", "no problem, i'll take care of it", "i got you. don't worry about it"]
     }
   },
   banglish: {

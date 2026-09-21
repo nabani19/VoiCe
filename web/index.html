@@ -684,188 +684,162 @@
   <script>
     'use strict';
 
-    // Human-First Authentic Reply Bank (1-2 sentences max, zero AI clichés)
+    // Plug AI Caliber Reply Bank (3–12 words max, high status, playful push-pull)
     const replyBank = {
       Natural: {
         'Casual & Direct': [
-          'Yeah, I’m down. What’s the plan?',
-          'That works for me. Let me know when you’re heading over.',
-          'Haha okay, I’m listening. Tell me more.',
-          'Sounds fun honestly. What time were you thinking?'
+          'yeah for sure, what did you have in mind?',
+          'i’m down, let me know when you head over',
+          'not gonna lie, that actually sounds fun',
+          'fair enough, what time were you thinking?'
         ],
         'Witty & Teasing': [
-          'I could be convinced. What’s in it for me?',
-          'Look who decided to make an appearance.',
-          'Not the worst idea you’ve had today.',
-          'Fine, but only if there’s good food involved.'
+          'i could be convinced. what’s in it for me?',
+          'look who decided to bless my notifications 😂',
+          'not the worst idea you’ve had today',
+          'fine, but only if good food is involved'
         ],
         'Warm & Engaging': [
-          'That actually sounds great, I’d love that.',
-          'It’s really good hearing from you. How was your week?',
-          'I’m definitely in. Let’s make it happen!',
-          'Always down to hang out with you.'
+          'honestly that sounds great, let’s do it',
+          'good hearing from you. how was your day?',
+          'i’m definitely in, keep me posted',
+          'always down to hang with you'
         ],
         'Unfiltered & Real': [
-          'Honestly? That sounds way better than staying in.',
-          'I’m exhausted, but for you I’ll make an exception.',
-          'Not gonna lie, that sounds elite.',
-          'Say less. Send me the address.'
+          'say less, send me the address',
+          'way better than staying in tonight',
+          'exhausted, but for you i’ll make an exception',
+          'not gonna lie, that sounds elite'
         ]
       },
       Funny: {
         'Casual & Direct': [
-          'Bold strategy. Let’s see if it pays off 😂',
-          'That sounds suspiciously like a trap, but I’m in.',
-          'I was going to be productive today, so thanks for ruining that.',
-          'Fine. Ruin my perfectly peaceful evening then.'
+          'bold strategy, let’s see if it pays off 😂',
+          'sounds suspiciously like a trap, but i’m in',
+          'i was trying to be productive today, thanks for ruining that',
+          'fine, ruin my peaceful evening then'
         ],
         'Witty & Teasing': [
-          'This feels like the opening scene of a comedy where everything goes wrong.',
-          'That is an objectively questionable plan. Count me in.',
-          'I had a responsible evening planned. Tragic.',
-          'You’re really testing my ability to make good choices right now.'
+          'who taught you how to flirt? asking so i can sue them 😂',
+          'are you always this chaotic or is this a special performance?',
+          'i have great references and my mom thinks i’m hilarious',
+          'don’t type all at once, you might pull a muscle 😂'
         ],
         'Warm & Engaging': [
-          'You always know how to turn a boring day around 😂',
-          'Okay that made me laugh out loud in public. Keep going.',
-          'I need friends like you to keep life interesting.',
-          'Stop being funny, I’m trying to pretend to be busy.'
+          'you’re ridiculous and i love it 😂',
+          'okay that actually made me laugh out loud',
+          'you’re lucky you’re funny honestly',
+          'stop being funny, i’m trying to act busy'
         ],
         'Unfiltered & Real': [
-          'Why does every bad idea you have sound so fun 😭',
-          'I’m choosing chaos today, apparently.',
-          'My therapist would definitely advise against this. What time?',
-          'If we get arrested I’m blaming you completely.'
+          'why does every bad idea you have sound fun? 😂',
+          'i’m choosing chaos today apparently',
+          'if we get kicked out i’m blaming you completely',
+          'worst case we get a good story out of it'
         ]
       },
       Flirty: {
         'Casual & Direct': [
-          'Bold of you to assume I’m free 😌 what did you have in mind?',
-          'You’re making it very difficult to say no.',
-          'Okay, I’ll bite. What’s your plan for us?',
-          'That confidence is doing a lot of work right now.'
+          'bold of you to assume i’m free 😌 what did you have in mind?',
+          'you’re definitely trouble, but i’ll allow it 😉',
+          'careful, you’re dangerously close to getting a yes',
+          'that confidence is doing a lot of work right now'
         ],
         'Witty & Teasing': [
-          'Are you always this charming or am I just getting special treatment?',
-          'Careful, you’re dangerously close to getting a yes.',
-          'I see what you’re doing here. And it’s working.',
-          'You talk a big game. Let’s see if you can back it up.'
+          'don’t fall in love with me already 😉',
+          'you talk a big game, let’s see if you can back it up',
+          'admit it, you were waiting for me to text you 😏',
+          'are you always this smooth or am i special?'
         ],
         'Warm & Engaging': [
-          'You have a funny way of making my day a whole lot better 😊',
-          'I was hoping you’d text. What are you up to?',
-          'I’d definitely love to see you soon.',
-          'You’re pretty hard to forget, you know that?'
+          'was just wondering when you were gonna text me 😉',
+          'you have a way of making my day better',
+          'definitely wouldn’t mind seeing you this week',
+          'you’re pretty hard to forget, you know that?'
         ],
         'Unfiltered & Real': [
-          'Don’t look at me like that through text 😏',
-          'You know exactly what you’re doing right now.',
-          'I should probably say no, but I really don’t want to.',
-          'Keep talking like that and see what happens.'
+          'don’t look at me like that through text 😏',
+          'keep talking like that and see what happens 😉',
+          'we’d either be best friends or absolute chaos',
+          'you know exactly what you’re doing right now'
         ]
       },
       Spicy: {
         'Casual & Direct': [
-          'Careful. You’re starting to sound like trouble 😏',
-          'I could say no… but where’s the fun in that?',
-          'You keep talking like that and I might take you seriously.',
-          'You definitely didn’t text me just to talk about the weather.'
+          'drinks this thursday, 8pm. don’t be late 😏',
+          'i could say no… but where’s the fun in that?',
+          'you definitely didn’t text me just to talk about the weather',
+          'you keep talking like that and i might take you seriously'
         ],
         'Witty & Teasing': [
-          'Oh, so we’re skipping the small talk today? I like it.',
-          'That was smooth. Now say something that actually surprises me.',
-          'You’re playing with fire, but I’ve got time.',
-          'I flirt back, just so you’re properly warned 😌'
+          'skipping the small talk today? i respect it 😏',
+          'you’re playing with fire, but i’ve got time',
+          'i flirt back, just so you’re properly warned 😌',
+          'tell me something that actually surprises me'
         ],
         'Warm & Engaging': [
-          'You’re making it impossible to focus on anything else today.',
-          'There’s an undeniable tension here and you know it.',
-          'I definitely wouldn’t mind seeing that in person.',
-          'You know how to get my attention better than anyone.'
+          'you’re making it impossible to focus on anything else today',
+          'there’s an undeniable tension here and you know it',
+          'definitely wouldn’t mind seeing that in person 😉',
+          'you know how to get my attention better than anyone'
         ],
         'Unfiltered & Real': [
-          'You’re trouble. My favorite kind of trouble.',
-          'Don’t start something you can’t finish 😏',
-          'You’re testing my willpower and you know it.',
-          'Tell me what you really want.'
-        ]
-      },
-      Professional: {
-        'Casual & Direct': [
-          'Happy to help. What outcome are we aiming for here?',
-          'That works on my end. Send over the specifics when ready.',
-          'Sounds solid. Let’s align on next steps tomorrow morning.',
-          'Understood. I’ll review and circle back before 3 PM.'
-        ],
-        'Witty & Teasing': [
-          'Look at us, actually staying ahead of deadlines for once.',
-          'Impressive turnaround! I’ll get right on this.',
-          'Good thing I checked my inbox before signing off.',
-          'Consider it handled. You owe me a coffee though.'
-        ],
-        'Warm & Engaging': [
-          'Thanks for flagging this! Really appreciate your quick response.',
-          'Great working with you on this. Let’s sync briefly tomorrow.',
-          'Appreciate your partnership here—let’s keep the momentum going.',
-          'Happy to support the team on this initiative.'
-        ],
-        'Unfiltered & Real': [
-          'Let’s cut to the chase and lock in the timeline today.',
-          'Honestly, the proposal looks great. Let’s ship it.',
-          'I can make that work, but let’s prioritize deliverable A first.',
-          'Clear and concise. Moving forward with this now.'
+          'you’re trouble. my favorite kind of trouble 😉',
+          'don’t start something you can’t finish 😏',
+          'you’re testing my willpower and you know it',
+          'tell me what you really want'
         ]
       },
       Romantic: {
         'Casual & Direct': [
-          'Honestly, hearing from you just made my whole day.',
-          'That made me smile more than I expected ❤️',
-          'I could definitely get used to conversations like this.',
-          'You have a way of making ordinary moments feel special.'
+          'hearing from you just made my whole day ❤️',
+          'that made me smile more than i expected',
+          'i could definitely get used to talking to you like this',
+          'you make ordinary moments feel special'
         ],
         'Witty & Teasing': [
-          'Stop being so sweet, you’re ruining my mysterious reputation.',
-          'You really know how to make someone feel special, don’t you?',
-          'I’m convinced you have a degree in being charming.',
-          'Okay, that was unexpectedly adorable.'
+          'stop being so sweet, you’re ruining my mysterious reputation 😉',
+          'you really know how to charm someone don’t you?',
+          'i’m convinced you have a degree in being charming',
+          'okay, that was unexpectedly adorable'
         ],
         'Warm & Engaging': [
-          'I really value our conversations. Thank you for being you.',
-          'Just wanted you to know I was thinking about you today.',
-          'Spending time with you is always my favorite part of the week.',
-          'You make everything feel effortless and comfortable.'
+          'spending time with you is always my favorite part of the week',
+          'just wanted you to know i was thinking about you today',
+          'you make everything feel effortless and easy',
+          'really glad we connected honestly'
         ],
         'Unfiltered & Real': [
-          'I don’t say this lightly, but you truly mean a lot to me.',
-          'Whenever I’m with you, I forget to check my phone.',
-          'I just really like who I am when I’m around you.',
-          'You’re the first person I wanted to tell about this.'
+          'whenever i’m with you i forget to check my phone',
+          'i just really like who i am around you',
+          'you’re the first person i wanted to tell about this',
+          'you mean a lot to me honestly'
         ]
       },
       Sarcastic: {
         'Casual & Direct': [
-          'Oh wow, what an entirely unexpected plot twist 😌',
-          'Groundbreaking revelation. Truly unprecedented.',
-          'Sure, because that plan has never failed before.',
-          'A stunning development. I need a minute to recover.'
+          'groundbreaking revelation, truly unprecedented 😌',
+          'sure, because that plan has never failed before',
+          'a stunning development, i need a minute to recover 😂',
+          'oh wow, what an entirely unexpected twist'
         ],
         'Witty & Teasing': [
-          'Incredible. I’m pretending to be shocked right now.',
-          'I’ll alert the authorities immediately.',
-          'Breaking news: actions have consequences 😂',
-          'Truly a historic moment for humanity.'
+          'is typing full sentences an in-app purchase for you? 😂',
+          'breaking news: actions have consequences',
+          'truly a historic moment for humanity',
+          'congrats, you used your whole social battery on that'
         ],
         'Warm & Engaging': [
-          'You’re ridiculous and I love it 😂',
-          'I can always count on you for top-tier commentary.',
-          'Never change, seriously.',
-          'You’re lucky you’re funny.'
+          'i can always count on you for top-tier commentary',
+          'you’re ridiculous and that’s why we get along',
+          'never change, seriously',
+          'you’re lucky you have good taste'
         ],
         'Unfiltered & Real': [
-          'Well. That went exactly as disastrously as predicted.',
-          'Please, tell me more about this brilliant scheme.',
-          'I’m shocked. Shocked! Well, not that shocked.',
-          'I’m not saying I told you so, but I definitely told you so.'
+          'i’m not saying i told you so, but i definitely told you so',
+          'well that went as disastrously as predicted 😂',
+          'please, tell me more about this brilliant scheme',
+          'shocked. truly shocked. well, not that shocked'
         ]
       }
     };
@@ -907,27 +881,39 @@
     }
 
     function renderRepliesFallback() {
-      if (!window.generateReply) {
-        console.warn("replyEngine not loaded yet");
-        return;
+      let candidates = [];
+      if (currentMessages && currentMessages.length > 0 && window.generateReply) {
+        const rawText = currentMessages.map(m => m.body).join('\n');
+        const fallbackData = window.generateReply(rawText, { style: 'natural' });
+        candidates = fallbackData.candidates || [];
       }
-      
-      const rawText = currentMessages.map(m => m.body).join('\n');
-      const fallbackData = window.generateReply(rawText, { style: 'natural' });
-      const candidates = fallbackData.candidates || [];
 
-      $('#replyMeta').textContent = `LANG: ${currentLanguage.toUpperCase()} · OFFLINE FALLBACK ENGINE`;
+      if (!candidates || candidates.length === 0) {
+        const bankCategory = replyBank[currentTone] || replyBank['Flirty'];
+        const bankItems = (bankCategory && (bankCategory[currentDelivery] || Object.values(bankCategory)[0])) || [];
+        const styles = ['Natural', 'Funny', 'Flirty', 'Confident'];
+        candidates = bankItems.slice(0, 4).map((text, idx) => ({
+          id: String(idx + 1),
+          body: text,
+          style: styles[idx % styles.length]
+        }));
+      }
+
+      const isOfflineScanned = currentMessages && currentMessages.length > 0;
+      $('#replyMeta').textContent = isOfflineScanned
+        ? `LANG: ${currentLanguage.toUpperCase()} · OFFLINE ENGINE`
+        : `${currentTone.toUpperCase()} · ${currentDelivery.toUpperCase()}`;
       $('#replyCount').textContent = `${candidates.length.toString().padStart(2, '0')} candidates`;
 
       $('#replyList').innerHTML = candidates.map((c, i) => {
         return `
           <article class="reply-card">
             <div>
-              <span class="reply-tag-pill">${c.style || 'Option'} · Offline</span>
+              <span class="reply-tag-pill">${c.style || 'Option'} · ${currentLanguage}</span>
               <p>${escapeHtml(c.body)}</p>
             </div>
             <div class="reply-tools">
-              <button class="icon-btn save" data-save="${encodeURIComponent(c.body)}" data-category="${c.style || 'Offline'}" aria-label="Save reply ${i + 1}">☆ save</button>
+              <button class="icon-btn save" data-save="${encodeURIComponent(c.body)}" data-category="${c.style || currentTone}" aria-label="Save reply ${i + 1}">☆ save</button>
               <button class="icon-btn copy" data-copy="${encodeURIComponent(c.body)}" aria-label="Copy reply ${i + 1}">copy</button>
             </div>
           </article>
@@ -1080,10 +1066,33 @@
       // "Make this better" Quick Transform Button
       if (e.target.id === 'improve') {
         const firstCardP = $('#replyList .reply-card p');
+        const badge = $('#replyList .reply-card .reply-tag-pill');
         if (firstCardP) {
-          firstCardP.textContent = 'Honestly, I’m interested. What did you have in mind? 😌';
-          const badge = $('#replyList .reply-card .reply-tag-pill');
-          if (badge) badge.textContent = 'refined · warmer & punchier';
+          const originalText = firstCardP.textContent;
+          if (badge) badge.textContent = 'polishing…';
+          try {
+            const rawContext = currentMessages.map(m => `${m.sender === 'me' ? 'me' : 'them'}: ${m.body}`).join('\n');
+            const res = await fetch('/api/rizz/improve', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                candidate_text: originalText,
+                transformation: 'wittier',
+                conversation_context: rawContext,
+                provider: currentModel
+              })
+            });
+            const data = await res.json();
+            if (data.success && data.data && data.data.revised_text) {
+              firstCardP.textContent = data.data.revised_text;
+              if (badge) badge.textContent = 'refined · ' + (data.data.explanation ? data.data.explanation.slice(0, 30) : 'wittier & punchier');
+            } else {
+              throw new Error('Local fallback');
+            }
+          } catch {
+            firstCardP.textContent = 'honestly you’re cute, what did you have in mind? 😌';
+            if (badge) badge.textContent = 'refined · warmer & punchier';
+          }
         }
       }
     });
@@ -1669,29 +1678,56 @@
     const authBtn = document.getElementById('authBtn');
     let authRateLimit = 0;
 
+    // Track active session state and update button
+    if (supabase) {
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (authBtn) {
+          if (session && session.user) {
+            authBtn.textContent = 'Sign Out';
+            authBtn.title = `Logged in as ${session.user.email}`;
+          } else {
+            authBtn.textContent = 'Account';
+            authBtn.removeAttribute('title');
+          }
+        }
+      });
+    }
+
     if (authBtn) {
-      authBtn.addEventListener('click', (e) => {
+      authBtn.addEventListener('click', async (e) => {
         e.preventDefault();
+        if (supabase) {
+          const { data } = await supabase.auth.getSession();
+          if (data && data.session) {
+            if (confirm(`Logged in as ${data.session.user.email}.\nDo you want to sign out?`)) {
+              await supabase.auth.signOut({ scope: 'global' });
+              alert("Signed out successfully.");
+            }
+            return;
+          }
+        }
         authModal.style.display = 'flex';
         Analytics.trackEvent('auth_modal_opened');
       });
     }
 
     document.getElementById('signInBtn').addEventListener('click', async () => {
-      if (authRateLimit >= 3) {
+      if (authRateLimit >= 5) {
         alert("Too many attempts. Please wait 30 seconds.");
         return;
       }
       
-      const email = escapeHTML(document.getElementById('authEmail').value);
+      const emailInput = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value;
       const errDiv = document.getElementById('authError');
       
-      if (!email || !password) {
-        errDiv.textContent = "Please fill out all fields.";
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailInput) || !password) {
+        errDiv.textContent = "Please enter a valid email address and password.";
         errDiv.style.display = 'block';
         return;
       }
+      const email = emailInput;
       
       try {
         if (!supabase) throw new Error("Supabase is not configured.");
@@ -1703,16 +1739,16 @@
         }
         
         authModal.style.display = 'none';
-        if (authBtn) authBtn.textContent = 'Account';
+        if (authBtn) authBtn.textContent = 'Sign Out';
         Analytics.trackEvent('auth_success', { method: 'email' });
         authRateLimit = 0;
       } catch (err) {
         authRateLimit++;
-        errDiv.textContent = escapeHTML(err.message);
+        errDiv.textContent = escapeHTML(err.message || 'Authentication failed.');
         errDiv.style.display = 'block';
         Analytics.trackEvent('auth_failed', { reason: err.message });
         
-        if (authRateLimit >= 3) {
+        if (authRateLimit >= 5) {
           setTimeout(() => authRateLimit = 0, 30000); // 30s lockout
         }
       }

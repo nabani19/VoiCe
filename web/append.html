@@ -164,29 +164,56 @@
     const authBtn = document.getElementById('authBtn');
     let authRateLimit = 0;
 
+    // Track active session state and update button
+    if (supabase) {
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (authBtn) {
+          if (session && session.user) {
+            authBtn.textContent = 'Sign Out';
+            authBtn.title = `Logged in as ${session.user.email}`;
+          } else {
+            authBtn.textContent = 'Account';
+            authBtn.removeAttribute('title');
+          }
+        }
+      });
+    }
+
     if (authBtn) {
-      authBtn.addEventListener('click', (e) => {
+      authBtn.addEventListener('click', async (e) => {
         e.preventDefault();
+        if (supabase) {
+          const { data } = await supabase.auth.getSession();
+          if (data && data.session) {
+            if (confirm(`Logged in as ${data.session.user.email}.\nDo you want to sign out?`)) {
+              await supabase.auth.signOut({ scope: 'global' });
+              alert("Signed out successfully.");
+            }
+            return;
+          }
+        }
         authModal.style.display = 'flex';
         Analytics.trackEvent('auth_modal_opened');
       });
     }
 
     document.getElementById('signInBtn').addEventListener('click', async () => {
-      if (authRateLimit >= 3) {
+      if (authRateLimit >= 5) {
         alert("Too many attempts. Please wait 30 seconds.");
         return;
       }
       
-      const email = escapeHTML(document.getElementById('authEmail').value);
+      const emailInput = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value;
       const errDiv = document.getElementById('authError');
       
-      if (!email || !password) {
-        errDiv.textContent = "Please fill out all fields.";
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailInput) || !password) {
+        errDiv.textContent = "Please enter a valid email address and password.";
         errDiv.style.display = 'block';
         return;
       }
+      const email = emailInput;
       
       try {
         if (!supabase) throw new Error("Supabase is not configured.");
@@ -198,16 +225,16 @@
         }
         
         authModal.style.display = 'none';
-        if (authBtn) authBtn.textContent = 'Account';
+        if (authBtn) authBtn.textContent = 'Sign Out';
         Analytics.trackEvent('auth_success', { method: 'email' });
         authRateLimit = 0;
       } catch (err) {
         authRateLimit++;
-        errDiv.textContent = escapeHTML(err.message);
+        errDiv.textContent = escapeHTML(err.message || 'Authentication failed.');
         errDiv.style.display = 'block';
         Analytics.trackEvent('auth_failed', { reason: err.message });
         
-        if (authRateLimit >= 3) {
+        if (authRateLimit >= 5) {
           setTimeout(() => authRateLimit = 0, 30000); // 30s lockout
         }
       }

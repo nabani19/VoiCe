@@ -2,6 +2,7 @@
   "name": "voice-web",
   "version": "2.1.0",
   "description": "VoiCe — AI Chat Analysis & Human Smart Reply Web & Pages Functions",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "wrangler pages dev web --compatibility-date=2024-01-01",

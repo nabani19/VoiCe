@@ -183,13 +183,26 @@ alter table public.streaks enable row level security;
 create policy "streaks_all_own" on public.streaks
   for all using (auth.uid() = user_id);
 
--- Stored Procedure: Idempotent streak check-in
-create or replace function public.checkin_streak(target_user_id uuid)
+-- Stored Procedure: Idempotent streak check-in (IDOR-hardened, auth.uid() bounded)
+create or replace function public.checkin_streak(target_user_id uuid default auth.uid())
 returns table(current_streak int, longest_streak int, already_checked_in boolean) as $$
 declare
   v_streak record;
   v_today date := current_date;
+  v_caller uuid := auth.uid();
 begin
+  -- 1. Enforce authenticated session
+  if v_caller is null then
+    raise exception 'Unauthorized: valid user session required' using errcode = '42501';
+  end if;
+
+  -- 2. Prevent IDOR: caller can never check-in or mutate another user's streak
+  if target_user_id is not null and target_user_id <> v_caller then
+    raise exception 'Forbidden: cannot mutate streak for target user %', target_user_id using errcode = '42501';
+  end if;
+
+  target_user_id := v_caller;
+
   select * into v_streak from public.streaks where user_id = target_user_id;
   
   if not found then

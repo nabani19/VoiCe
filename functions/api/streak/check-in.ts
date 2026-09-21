@@ -16,12 +16,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     const anonKey = env.SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !anonKey) {
-      // In local demo mode without live Supabase configured
       return new Response(JSON.stringify({
-        success: true,
-        data: { current_streak: 5, longest_streak: 12, already_checked_in: false, message: 'Local check-in recorded.' },
+        success: false,
+        error: 'Authentication and database service temporarily unavailable.'
       }), {
-        status: 200,
+        status: 503,
         headers: { 'Content-Type': 'application/json' },
       });
     }
