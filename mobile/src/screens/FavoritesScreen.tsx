@@ -12,6 +12,8 @@ const categories: Array<Tone | 'All'> = [
   'Spicy',
   'Natural',
   'Professional',
+  'Romantic',
+  'Sarcastic',
 ];
 
 export const FavoritesScreen: React.FC = () => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { theme } from './src/theme/colors';
@@ -6,11 +6,32 @@ import { HomeScreen } from './src/screens/HomeScreen';
 import { ReportScreen } from './src/screens/ReportScreen';
 import { FavoritesScreen } from './src/screens/FavoritesScreen';
 import { HistoryScreen } from './src/screens/HistoryScreen';
+import { useFavoritesStore } from './src/store/useFavoritesStore';
+import { useStreakStore } from './src/store/useStreakStore';
+import { supabase } from './src/services/supabase';
 
 type Tab = 'home' | 'report' | 'favorites' | 'history';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home');
+  const { loadFavorites } = useFavoritesStore();
+  const { syncStreak } = useStreakStore();
+
+  useEffect(() => {
+    // On boot: sync streak + load favorites from Supabase (auth-aware)
+    syncStreak();
+    loadFavorites();
+
+    // Re-sync on auth state change (login / logout)
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, _session) => {
+      syncStreak();
+      loadFavorites();
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

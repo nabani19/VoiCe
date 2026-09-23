@@ -1,8 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { theme } from '../theme/colors';
+import { useVoiceStore } from '../store/useVoiceStore';
 
 export const ReportScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+  const { report, isLoading } = useVoiceStore();
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Top Back Nav */}
@@ -13,67 +16,98 @@ export const ReportScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       <Text style={styles.eyebrow}>CONVERSATION DIAGNOSTIC REPORT</Text>
       <Text style={styles.title}>THREAD ANALYSIS</Text>
 
-      {/* Score Card */}
-      <View style={styles.scoreCard}>
-        <View>
-          <Text style={styles.scoreLabel}>CONVERSATIONAL MOMENTUM</Text>
-          <Text style={styles.scoreNumber}>8.4</Text>
+      {isLoading ? (
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator color={theme.colors.rustBright} size="large" />
+          <Text style={styles.loadingText}>Generating report with AI…</Text>
         </View>
-        <View style={styles.tagWrap}>
-          <Text style={styles.tag}>OPEN LOOP</Text>
-          <Text style={styles.tag}>RECIPROCAL</Text>
-          <Text style={styles.tag}>UNPROMPTED</Text>
+      ) : report ? (
+        <>
+          {/* Score Card — from live report data */}
+          <View style={styles.scoreCard}>
+            <View>
+              <Text style={styles.scoreLabel}>CONVERSATIONAL MOMENTUM</Text>
+              <Text style={styles.scoreNumber}>{report.score.toFixed(1)}</Text>
+            </View>
+            <View style={styles.tagWrap}>
+              {report.observable_cues.slice(0, 3).map((cue, i) => (
+                <Text key={i} style={styles.tag}>{cue.toUpperCase()}</Text>
+              ))}
+            </View>
+          </View>
+
+          {/* Flow Arc */}
+          <View style={styles.sectionCard}>
+            <Text style={styles.sectionKey}>FLOW ARC</Text>
+            <Text style={styles.sectionValue}>{report.flow_arc}</Text>
+          </View>
+
+          {/* Strong Signals */}
+          {report.strong_signals.map((sig, i) => (
+            <View key={i} style={styles.sectionCard}>
+              <Text style={styles.sectionKey}>STRONG POSITIVE SIGNAL</Text>
+              <Text style={styles.signalTitle}>{sig.signal}</Text>
+              <Text style={styles.sectionValue}>{sig.meaning}</Text>
+              {sig.evidence ? (
+                <View style={styles.evidenceBadge}>
+                  <Text style={styles.evidenceText}>EVIDENCE: "{sig.evidence}"</Text>
+                </View>
+              ) : null}
+            </View>
+          ))}
+
+          {/* Red Flags */}
+          {report.red_flags.map((flag, i) => (
+            <View key={i} style={styles.sectionCard}>
+              <Text style={styles.sectionKey}>WATCH OUT / HESITATION</Text>
+              <Text style={styles.flagTitle}>{flag.flag}</Text>
+              <Text style={styles.sectionValue}>{flag.risk}</Text>
+              <View style={[styles.evidenceBadge, styles.warningBadge]}>
+                <Text style={styles.warningText}>CONFIDENCE: {flag.confidence.toUpperCase()} · {flag.evidence}</Text>
+              </View>
+            </View>
+          ))}
+
+          {/* How to Impress */}
+          <View style={styles.sectionCard}>
+            <Text style={styles.sectionKey}>HOW TO IMPRESS THEM</Text>
+            <Text style={styles.sectionValue}>{report.how_to_impress.advice}</Text>
+            <View style={[styles.evidenceBadge, styles.tipBadge]}>
+              <Text style={styles.tipText}>KEY INTEREST: {report.how_to_impress.key_interest.toUpperCase()}</Text>
+            </View>
+          </View>
+
+          {/* Pro Tips */}
+          <View style={styles.sectionCard}>
+            <Text style={styles.sectionKey}>PRO TIPS FOR NEXT MOVES</Text>
+            {report.pro_tips.map((tip, i) => (
+              <Text key={i} style={styles.bulletItem}>• {tip}</Text>
+            ))}
+          </View>
+
+          {/* Suggested Next Moves */}
+          {report.suggested_next_moves?.length > 0 && (
+            <View style={styles.sectionCard}>
+              <Text style={styles.sectionKey}>SUGGESTED NEXT MOVES</Text>
+              {report.suggested_next_moves.map((move, i) => (
+                <Text key={i} style={styles.bulletItem}>→ {move}</Text>
+              ))}
+            </View>
+          )}
+        </>
+      ) : (
+        /* Empty State — shown before first analysis */
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyIcon}>📊</Text>
+          <Text style={styles.emptyTitle}>NO REPORT YET</Text>
+          <Text style={styles.emptyBody}>
+            Import a screenshot or paste a chat thread on the VOICE tab to generate your full conversation diagnostic report.
+          </Text>
+          <TouchableOpacity style={styles.emptyAction} onPress={onBack}>
+            <Text style={styles.emptyActionText}>→ GO TO VOICE ENGINE</Text>
+          </TouchableOpacity>
         </View>
-      </View>
-
-      {/* Flow Arc */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionKey}>FLOW ARC</Text>
-        <Text style={styles.sectionValue}>
-          Opener → Playful banter → Mutual teasing → Open schedule inquiry
-        </Text>
-      </View>
-
-      {/* Strong Signals */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionKey}>STRONG POSITIVE SIGNALS</Text>
-        <Text style={styles.sectionValue}>
-          They initiated a follow-up question after your last joke instead of allowing the topic to fade.
-        </Text>
-        <View style={styles.evidenceBadge}>
-          <Text style={styles.evidenceText}>EVIDENCE: “What about that Italian spot you mentioned?”</Text>
-        </View>
-      </View>
-
-      {/* Red Flags / Hesitations */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionKey}>WATCH OUT / HESITATION</Text>
-        <Text style={styles.sectionValue}>
-          They have not committed to a specific day yet. Avoid double-texting with multiple options.
-        </Text>
-        <View style={[styles.evidenceBadge, styles.warningBadge]}>
-          <Text style={styles.warningText}>CONFIDENCE: MEDIUM · AMBIGUOUS COMMITMENT</Text>
-        </View>
-      </View>
-
-      {/* How to Impress */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionKey}>HOW TO IMPRESS THEM</Text>
-        <Text style={styles.sectionValue}>
-          Offer one specific day and time with confidence (e.g. "Friday at 7:30") rather than an open-ended "whenever works for you." Decisiveness matches their teasing tone.
-        </Text>
-        <View style={[styles.evidenceBadge, styles.tipBadge]}>
-          <Text style={styles.tipText}>PRO STRATEGY · ACTIVE LISTENING</Text>
-        </View>
-      </View>
-
-      {/* Pro Tips */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionKey}>PRO TIPS FOR NEXT MOVES</Text>
-        <Text style={styles.bulletItem}>• Keep replies under 15 words to maintain reciprocal conversational balance.</Text>
-        <Text style={styles.bulletItem}>• Acknowledge the food banter before locking in the time.</Text>
-        <Text style={styles.bulletItem}>• Never send two questions in consecutive texts.</Text>
-      </View>
+      )}
     </ScrollView>
   );
 };
@@ -108,6 +142,16 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '800',
     marginBottom: theme.spacing.lg,
+  },
+  loadingWrap: {
+    alignItems: 'center',
+    paddingVertical: 48,
+    gap: 12,
+  },
+  loadingText: {
+    color: theme.colors.muted,
+    fontFamily: theme.typography.mono,
+    fontSize: 11,
   },
   scoreCard: {
     backgroundColor: theme.colors.panel,
@@ -159,6 +203,20 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     textTransform: 'uppercase',
   },
+  signalTitle: {
+    color: theme.colors.rustBright,
+    fontSize: 12,
+    fontFamily: theme.typography.mono,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  flagTitle: {
+    color: '#caa99f',
+    fontSize: 12,
+    fontFamily: theme.typography.mono,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
   sectionValue: {
     color: theme.colors.text,
     fontSize: 14,
@@ -198,5 +256,45 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     marginTop: 4,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 48,
+    borderWidth: 1,
+    borderColor: '#2b2723',
+    borderStyle: 'dashed',
+    paddingHorizontal: theme.spacing.lg,
+  },
+  emptyIcon: {
+    fontSize: 32,
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    color: theme.colors.muted,
+    fontFamily: theme.typography.mono,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 2,
+    marginBottom: 8,
+  },
+  emptyBody: {
+    color: '#756e67',
+    fontSize: 13,
+    lineHeight: 18,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  emptyAction: {
+    borderWidth: 1,
+    borderColor: theme.colors.rustBright,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  emptyActionText: {
+    color: theme.colors.rustBright,
+    fontFamily: theme.typography.mono,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
   },
 });

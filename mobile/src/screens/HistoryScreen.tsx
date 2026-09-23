@@ -42,7 +42,7 @@ const mockHistory: HistoryItem[] = [
   },
 ];
 
-const tones: Array<Tone | 'All'> = ['All', 'Flirty', 'Funny', 'Spicy', 'Natural', 'Professional'];
+const tones: Array<Tone | 'All'> = ['All', 'Flirty', 'Funny', 'Spicy', 'Natural', 'Professional', 'Romantic', 'Sarcastic'];
 
 export const HistoryScreen: React.FC = () => {
   const [selectedTone, setSelectedTone] = useState<Tone | 'All'>('All');

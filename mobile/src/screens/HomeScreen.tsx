@@ -8,6 +8,7 @@ import {
   TextInput,
   ActivityIndicator,
   Alert,
+  Modal,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
@@ -16,6 +17,7 @@ import { useVoiceStore } from '../store/useVoiceStore';
 import { useFavoritesStore } from '../store/useFavoritesStore';
 import { useStreakStore } from '../store/useStreakStore';
 import { Tone, DeliveryStyle } from '../types';
+import { generateReplies, improveReply, analyzeChat } from '../services/api';
 
 const tones: Tone[] = [
   'Natural',
@@ -34,8 +36,19 @@ const deliveries: DeliveryStyle[] = [
   'Unfiltered & Real',
 ];
 
+const IMPROVE_TRANSFORMS = [
+  { label: 'Shorter', value: 'shorter' },
+  { label: 'Funnier', value: 'funnier' },
+  { label: 'Warmer', value: 'warmer' },
+  { label: 'More Chill', value: 'more chill' },
+  { label: 'Wittier', value: 'wittier' },
+  { label: 'Less Aggressive', value: 'less aggressive' },
+];
+
 export const HomeScreen: React.FC<{ onOpenReport: () => void }> = ({ onOpenReport }) => {
   const {
+    messages,
+    setMessages,
     tone,
     setTone,
     delivery,
@@ -43,20 +56,67 @@ export const HomeScreen: React.FC<{ onOpenReport: () => void }> = ({ onOpenRepor
     provider,
     setProvider,
     intensity,
-    setIntensity,
     candidates,
+    setCandidates,
     isLoading,
+    setLoading,
+    setError,
     improveCandidate,
   } = useVoiceStore();
 
-  const { addFavorite, removeFavorite, isFavorite } = useFavoritesStore();
+  const { addFavorite, removeFavorite, isFavorite, loadFavorites } = useFavoritesStore();
   const { currentStreak } = useStreakStore();
+
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [improvingIdx, setImprovingIdx] = useState<number | null>(null);
+  const [showImproveSheet, setShowImproveSheet] = useState<{ idx: number; candidateText: string } | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [pasteText, setPasteText] = useState('');
+  const [showPasteInput, setShowPasteInput] = useState(false);
 
   const handleCopy = async (id: string, text: string) => {
     await Clipboard.setStringAsync(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 1500);
+  };
+
+  const handleGenerateReplies = async (selectedTone: Tone = tone) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const results = await generateReplies({
+        messages,
+        tone: selectedTone,
+        delivery,
+        intensity,
+        intent: 'continue',
+        provider,
+      });
+      setCandidates(results);
+    } catch (err: any) {
+      setError(err.message || 'Generation failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToneSelect = (t: Tone) => {
+    setTone(t);
+    handleGenerateReplies(t);
+  };
+
+  const handleImprove = async (idx: number, transformation: string) => {
+    setShowImproveSheet(null);
+    setImprovingIdx(idx);
+    try {
+      const candidateText = candidates[idx]?.body || '';
+      const result = await improveReply(candidateText, transformation, provider);
+      improveCandidate(idx, result.revised_text, transformation);
+    } catch (err: any) {
+      Alert.alert('Could not improve reply', err.message || 'Try again.');
+    } finally {
+      setImprovingIdx(null);
+    }
   };
 
   const handlePickScreenshot = async () => {
@@ -70,10 +130,40 @@ export const HomeScreen: React.FC<{ onOpenReport: () => void }> = ({ onOpenRepor
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       quality: 0.9,
+      base64: true,
     });
 
     if (!result.canceled && result.assets[0]) {
-      Alert.alert('Screenshot Uploaded', 'Analyzing bubbles with Claude 3.5 Sonnet Vision...');
+      const imageBase64 = result.assets[0].base64 || '';
+      const mediaType = (result.assets[0].mimeType as any) || 'image/jpeg';
+      setIsAnalyzing(true);
+      setError(null);
+      try {
+        const analysis = await analyzeChat({ imageBase64, provider });
+        setMessages(analysis.messages);
+        if (analysis.detected_tone) setTone(analysis.detected_tone);
+        await handleGenerateReplies(analysis.detected_tone || tone);
+      } catch (err: any) {
+        Alert.alert('Analysis failed', err.message || 'Could not process screenshot.');
+      } finally {
+        setIsAnalyzing(false);
+      }
+    }
+  };
+
+  const handlePasteAnalyze = async () => {
+    if (!pasteText.trim()) return;
+    setIsAnalyzing(true);
+    setShowPasteInput(false);
+    try {
+      const analysis = await analyzeChat({ text: pasteText, provider });
+      setMessages(analysis.messages);
+      if (analysis.detected_tone) setTone(analysis.detected_tone);
+      await handleGenerateReplies(analysis.detected_tone || tone);
+    } catch (err: any) {
+      Alert.alert('Analysis failed', err.message || 'Could not analyze text.');
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -92,10 +182,50 @@ export const HomeScreen: React.FC<{ onOpenReport: () => void }> = ({ onOpenRepor
       </View>
 
       {/* Screenshot Dropzone Card */}
-      <TouchableOpacity style={styles.uploadCard} onPress={handlePickScreenshot} activeOpacity={0.8}>
-        <Text style={styles.uploadTitle}>📸 TAP TO IMPORT SCREENSHOT</Text>
-        <Text style={styles.uploadSubtitle}>Extracts speaker turns and chat context automatically</Text>
+      <TouchableOpacity
+        style={styles.uploadCard}
+        onPress={handlePickScreenshot}
+        activeOpacity={0.8}
+        disabled={isAnalyzing}
+      >
+        {isAnalyzing ? (
+          <>
+            <ActivityIndicator color={theme.colors.rustBright} />
+            <Text style={styles.uploadSubtitle}>Analyzing with Claude Vision…</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.uploadTitle}>📸 TAP TO IMPORT SCREENSHOT</Text>
+            <Text style={styles.uploadSubtitle}>Extracts speaker turns and chat context automatically</Text>
+          </>
+        )}
       </TouchableOpacity>
+
+      {/* Paste Text Toggle */}
+      <TouchableOpacity style={styles.pasteToggle} onPress={() => setShowPasteInput(!showPasteInput)}>
+        <Text style={styles.pasteToggleText}>{showPasteInput ? '↑ HIDE PASTE INPUT' : '✎ PASTE CHAT TEXT INSTEAD'}</Text>
+      </TouchableOpacity>
+
+      {showPasteInput && (
+        <View style={styles.pasteBlock}>
+          <TextInput
+            style={styles.pasteInput}
+            placeholder="Paste chat thread here…"
+            placeholderTextColor={theme.colors.muted}
+            multiline
+            numberOfLines={4}
+            value={pasteText}
+            onChangeText={setPasteText}
+          />
+          <TouchableOpacity
+            style={[styles.analyzeBtn, !pasteText.trim() && styles.analyzeBtnDisabled]}
+            onPress={handlePasteAnalyze}
+            disabled={!pasteText.trim() || isAnalyzing}
+          >
+            <Text style={styles.analyzeBtnText}>ANALYZE ↗</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* AI Engine Selection */}
       <View style={styles.section}>
@@ -124,7 +254,7 @@ export const HomeScreen: React.FC<{ onOpenReport: () => void }> = ({ onOpenRepor
             <TouchableOpacity
               key={t}
               style={[styles.chip, tone === t && styles.chipActive]}
-              onPress={() => setTone(t)}
+              onPress={() => handleToneSelect(t)}
             >
               <Text style={[styles.chipText, tone === t && styles.chipTextActive]}>{t}</Text>
             </TouchableOpacity>
@@ -154,19 +284,28 @@ export const HomeScreen: React.FC<{ onOpenReport: () => void }> = ({ onOpenRepor
           <Text style={styles.sectionLabel}>SMART CANDIDATES (1–2 SENTENCES MAX)</Text>
           <Text style={styles.candidateMeta}>{tone.toUpperCase()} · {delivery.toUpperCase()}</Text>
         </View>
-        <TouchableOpacity style={styles.reportLink} onPress={onOpenReport}>
-          <Text style={styles.reportLinkText}>VIEW REPORT ↗</Text>
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity style={styles.regenerateBtn} onPress={() => handleGenerateReplies()} disabled={isLoading}>
+            <Text style={styles.regenerateBtnText}>↺ REGEN</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.reportLink} onPress={onOpenReport}>
+            <Text style={styles.reportLinkText}>VIEW REPORT ↗</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Candidate Reply Cards */}
       {isLoading ? (
-        <ActivityIndicator color={theme.colors.rustBright} size="large" style={{ marginVertical: 30 }} />
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator color={theme.colors.rustBright} size="large" />
+          <Text style={styles.loadingText}>Generating with {provider === 'claude' ? 'Claude 3.5' : provider === 'chatgpt' ? 'ChatGPT-4o' : 'Gemini 1.5'}…</Text>
+        </View>
       ) : (
         <View style={styles.candidateList}>
           {candidates.map((candidate, idx) => {
-            const isFav = isFavorite(candidate.body);
+            const isFav = isFavorite(candidate.id);
             const isCopied = copiedId === candidate.id;
+            const isImprovingThis = improvingIdx === idx;
 
             return (
               <View key={candidate.id} style={styles.replyCard}>
@@ -175,7 +314,7 @@ export const HomeScreen: React.FC<{ onOpenReport: () => void }> = ({ onOpenRepor
                   <View style={styles.cardActions}>
                     <TouchableOpacity
                       style={[styles.iconButton, isFav && styles.iconButtonActive]}
-                      onPress={() => (isFav ? removeFavorite(candidate.id) : addFavorite(candidate.body, tone))}
+                      onPress={() => (isFav ? removeFavorite(candidate.id) : void addFavorite(candidate.body, tone))}
                     >
                       <Text style={[styles.iconText, isFav && styles.iconTextActive]}>
                         {isFav ? '★' : '☆'}
@@ -194,19 +333,45 @@ export const HomeScreen: React.FC<{ onOpenReport: () => void }> = ({ onOpenRepor
 
                 <Text style={styles.replyBody}>{candidate.body}</Text>
 
-                <TouchableOpacity
-                  style={styles.improveButton}
-                  onPress={() =>
-                    improveCandidate(idx, 'Honestly, I’m interested. What did you have in mind? 😌', 'warmer')
-                  }
-                >
-                  <Text style={styles.improveButtonText}>✦ MAKE THIS BETTER</Text>
-                </TouchableOpacity>
+                {isImprovingThis ? (
+                  <ActivityIndicator color={theme.colors.rustBright} style={{ marginTop: 8, alignSelf: 'flex-start' }} />
+                ) : (
+                  <TouchableOpacity
+                    style={styles.improveButton}
+                    onPress={() => setShowImproveSheet({ idx, candidateText: candidate.body })}
+                  >
+                    <Text style={styles.improveButtonText}>✦ MAKE THIS BETTER</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             );
           })}
         </View>
       )}
+
+      {/* Improve Bottom Sheet Modal */}
+      <Modal
+        visible={!!showImproveSheet}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowImproveSheet(null)}
+      >
+        <TouchableOpacity style={styles.modalBackdrop} onPress={() => setShowImproveSheet(null)} activeOpacity={1}>
+          <View style={styles.improveSheet}>
+            <Text style={styles.improveSheetTitle}>MAKE IT BETTER</Text>
+            <Text style={styles.improveSheetSubtitle}>Select transformation</Text>
+            {IMPROVE_TRANSFORMS.map((t) => (
+              <TouchableOpacity
+                key={t.value}
+                style={styles.transformOption}
+                onPress={() => showImproveSheet && handleImprove(showImproveSheet.idx, t.value)}
+              >
+                <Text style={styles.transformOptionText}>{t.label.toUpperCase()}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </ScrollView>
   );
 };
@@ -265,7 +430,9 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     backgroundColor: 'rgba(255, 255, 255, 0.02)',
     alignItems: 'center',
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.spacing.sm,
+    minHeight: 64,
+    justifyContent: 'center',
   },
   uploadTitle: {
     color: theme.colors.rustBright,
@@ -278,6 +445,45 @@ const styles = StyleSheet.create({
     color: theme.colors.muted,
     fontSize: 12,
     marginTop: 4,
+  },
+  pasteToggle: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.md,
+  },
+  pasteToggleText: {
+    color: '#756e67',
+    fontFamily: theme.typography.mono,
+    fontSize: 10,
+    letterSpacing: 0.8,
+  },
+  pasteBlock: {
+    marginBottom: theme.spacing.md,
+    gap: 8,
+  },
+  pasteInput: {
+    backgroundColor: '#12100e',
+    borderWidth: 1,
+    borderColor: '#342f2a',
+    color: theme.colors.text,
+    padding: theme.spacing.sm,
+    fontSize: 14,
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  analyzeBtn: {
+    backgroundColor: theme.colors.rust,
+    padding: theme.spacing.sm,
+    alignItems: 'center',
+  },
+  analyzeBtnDisabled: {
+    opacity: 0.4,
+  },
+  analyzeBtnText: {
+    color: '#fff',
+    fontFamily: theme.typography.mono,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
   },
   section: {
     marginBottom: theme.spacing.md,
@@ -338,6 +544,23 @@ const styles = StyleSheet.create({
     fontFamily: theme.typography.mono,
     fontWeight: '600',
   },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  regenerateBtn: {
+    borderWidth: 1,
+    borderColor: '#342f2a',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  regenerateBtnText: {
+    color: theme.colors.muted,
+    fontFamily: theme.typography.mono,
+    fontSize: 10,
+    letterSpacing: 0.5,
+  },
   reportLink: {
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.rustBright,
@@ -348,6 +571,16 @@ const styles = StyleSheet.create({
     fontFamily: theme.typography.mono,
     fontSize: 11,
     fontWeight: '700',
+  },
+  loadingWrap: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    gap: 12,
+  },
+  loadingText: {
+    color: theme.colors.muted,
+    fontFamily: theme.typography.mono,
+    fontSize: 11,
   },
   candidateList: {
     gap: 10,
@@ -412,5 +645,42 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: theme.typography.mono,
     letterSpacing: 0.8,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'flex-end',
+  },
+  improveSheet: {
+    backgroundColor: '#12100e',
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.line,
+    padding: theme.spacing.lg,
+    gap: 8,
+  },
+  improveSheetTitle: {
+    color: theme.colors.text,
+    fontFamily: theme.typography.mono,
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    marginBottom: 4,
+  },
+  improveSheetSubtitle: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    marginBottom: 12,
+  },
+  transformOption: {
+    paddingVertical: 12,
+    paddingHorizontal: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: '#342f2a',
+  },
+  transformOptionText: {
+    color: theme.colors.text,
+    fontFamily: theme.typography.mono,
+    fontSize: 11,
+    letterSpacing: 1,
   },
 });
