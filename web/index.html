@@ -688,7 +688,178 @@
     const replyBank = {
       Natural: {
         'Casual & Direct': [
-          'yeah for sure, what did you have in mind?',
+          'why, what are you getting me into',
+          'sold, when',
+          'depends on your definition of fun',
+          'already planning an escape route aren\'t you'
+        ],
+        'Witty & Teasing': [
+          'that could go very well or very badly. i\'m interested',
+          'you have an interesting way of making plans sound dangerous',
+          'against my better judgment — sure',
+          'fine. but i\'m holding you personally responsible'
+        ],
+        'Warm & Engaging': [
+          'hadn\'t thought about it but now that\'s literally all i\'m thinking about',
+          'you have weirdly good timing',
+          'you know i can\'t say no when you ask like that',
+          'stop making sense, it\'s unfair'
+        ],
+        'Unfiltered & Real': [
+          'say less, send me the address',
+          'more appealing than what i had planned',
+          'i\'ll allow it',
+          'honestly needed exactly this'
+        ]
+      },
+      Funny: {
+        'Casual & Direct': [
+          'bold strategy, let\'s see if it pays off',
+          'therapist is going to love hearing about this one',
+          'is typing full sentences an in-app purchase for you 😂',
+          'i\'d clap but i only have two hands'
+        ],
+        'Witty & Teasing': [
+          'bold move. genuinely did not see that coming',
+          'the confidence is impressive given the evidence 😂',
+          'that plan has never failed before said no one ever',
+          'who gave you permission to be this chaotic'
+        ],
+        'Warm & Engaging': [
+          'you\'re ridiculous and somehow that\'s exactly what i needed 😂',
+          'stop making me laugh, i\'m trying to be annoyed at you',
+          'you\'re lucky you\'re entertaining',
+          'okay fine, that was actually hilarious'
+        ],
+        'Unfiltered & Real': [
+          'if this goes badly i\'m suing you for damages',
+          'worst case we get a good story out of it 💀',
+          'my instincts are screaming yes, my common sense resigned',
+          'chaos theory is telling me this is a great idea'
+        ]
+      },
+      Flirty: {
+        'Casual & Direct': [
+          'you\'re dangerous and you know it',
+          'don\'t make it weird by being actually interesting',
+          'careful, i was starting to take you seriously',
+          'you\'ve got 48 hours to make a good impression'
+        ],
+        'Witty & Teasing': [
+          'you know exactly what you\'re doing right now 😏',
+          'don\'t fall in love with me, this is just texting',
+          'you talk a big game — let\'s see if it\'s backed up',
+          'say that again but slower, i want to make sure i heard it right'
+        ],
+        'Warm & Engaging': [
+          'was wondering when you\'d finally ask 😏',
+          'you have a very inconvenient way of making my day better',
+          'you\'re very difficult to ignore and i think you know that',
+          'don\'t do that thing where you make me smile at my phone'
+        ],
+        'Unfiltered & Real': [
+          'keep talking like that and see what happens',
+          'you\'re testing me and i respect the strategy 😏',
+          'we\'d be either amazing or a disaster — genuinely curious which',
+          'you\'re making this very hard to resist, which i suspect is the point'
+        ]
+      },
+      Spicy: [
+        { id: '1', body: 'bet you say that to everyone 👀', style: 'teasing' },
+        { id: '2', body: 'that\'s either brave or reckless, haven\'t decided', style: 'direct' },
+        { id: '3', body: 'you\'re playing a very dangerous game right now 😏', style: 'bold' },
+        { id: '4', body: 'the audacity is genuinely impressive, carry on', style: 'deadpan' },
+      ],
+      Romantic: {
+        'Casual & Direct': [
+          'you have a very inconvenient way of making my day better',
+          'stop being interesting at this hour, some of us need sleep',
+          'don\'t do that thing where you make me smile at my phone',
+          'you\'re very difficult to ignore and i think you know that'
+        ],
+        'Witty & Teasing': [
+          'you\'re ruining my reputation for being emotionally unavailable',
+          'okay that was actually the right thing to say at the right time',
+          'you have an unreasonable ability to make everything better',
+          'stop being charming, it\'s throwing off my whole day'
+        ],
+        'Warm & Engaging': [
+          'just so you know, talking to you is the best part of my day',
+          'you always know exactly what to say at the right time',
+          'i genuinely forget to check my phone when i\'m with you',
+          'i just really like who i am around you'
+        ],
+        'Unfiltered & Real': [
+          'i\'m embarrassingly happy you texted me right now',
+          'you\'re the first person i wanted to tell about this',
+          'whenever i\'m with you i forget to care about anything else',
+          'you mean a lot to me and that\'s just the truth'
+        ]
+      },
+      Sarcastic: {
+        'Casual & Direct': [
+          'groundbreaking. truly, i\'ve never heard that one',
+          'wow what a shocking development in this story 💀',
+          'incredible. what\'s next, water being wet?',
+          'genuinely floored. give me a moment to recover'
+        ],
+        'Witty & Teasing': [
+          'is typing full sentences an in-app purchase for you? 😂',
+          'breaking news: actions have consequences, film at 11',
+          'who gave you permission to be this confidently wrong',
+          'congrats, you used your entire social battery on that one'
+        ],
+        'Warm & Engaging': [
+          'you\'re ridiculous and that\'s exactly why we get along',
+          'i can always count on you for peak commentary',
+          'never change. seriously, i mean that as a threat',
+          'you\'re lucky you\'re entertaining'
+        ],
+        'Unfiltered & Real': [
+          'shocked. truly shocked. well, not that shocked',
+          'please, tell me more about this flawless plan',
+          'well that went as predicted by literally everyone',
+          'i\'m not saying i told you so but i definitely told you so 😂'
+        ]
+      },
+      Professional: {
+        'Casual & Direct': [
+          'works for me. what\'s the actual goal here?',
+          'solid. who owns the next step?',
+          'let\'s align thursday — i\'ll send the agenda',
+          'noted. i\'ll have a cleaner version to you by 3'
+        ],
+        'Witty & Teasing': [
+          'bold timeline. love the confidence.',
+          'that\'s either efficient or chaotic — jury\'s still out',
+          'noted. also noted: this could have been an email',
+          'clarity appreciated, miracles pending'
+        ],
+        'Warm & Engaging': [
+          'appreciate the heads up — i\'ll make it work on my end',
+          'good thinking, that cleans up a lot of ambiguity',
+          'on it. let\'s make sure we\'re aligned before end of day',
+          'sounds solid, happy to pick this up tomorrow morning'
+        ],
+        'Unfiltered & Real': [
+          'direct and i respect it. done.',
+          'that\'s actually a clean solution. sold.',
+          'no notes. let\'s move',
+          'got it. will loop back once it\'s ready'
+        ]
+      }
+    };
+
+    // Spicy uses array format — normalise to object for compatibility
+    if (Array.isArray(replyBank.Spicy)) {
+      const spicyLines = replyBank.Spicy.map(c => c.body);
+      replyBank.Spicy = {
+        'Casual & Direct': [spicyLines[0], spicyLines[1], spicyLines[2], spicyLines[3]],
+        'Witty & Teasing': ['skipping the small talk today? i respect it 😏', 'you\'re playing with fire and you know it', 'i warn back, just so you\'re properly warned 😌', 'tell me something that actually surprises me'],
+        'Warm & Engaging': ['you\'re making it very hard to focus on anything else', 'there\'s a tension here and you know it', 'you know how to get my attention better than anyone', 'wouldn\'t mind seeing that in person 😉'],
+        'Unfiltered & Real': ['you\'re trouble. my favorite kind.', 'don\'t start something you can\'t finish 😏', 'you\'re testing my willpower and i respect the commitment', 'tell me what you actually want']
+      };
+    }
           'i’m down, let me know when you head over',
           'not gonna lie, that actually sounds fun',
           'fair enough, what time were you thinking?'
@@ -921,8 +1092,52 @@
       }).join('');
     }
 
+    // Demo seed conversations — one per tone — for fresh AI generation on page load
+    const DEMO_SEEDS = {
+      Flirty: [
+        { sender: 'them', body: 'hey, are you free tonight?', sequence: 1 },
+        { sender: 'me', body: 'why, what are you getting me into', sequence: 2 },
+        { sender: 'them', body: 'that rooftop bar downtown if you\'re up for it 😌', sequence: 3 }
+      ],
+      Funny: [
+        { sender: 'them', body: 'why should I even go out with you lol', sequence: 1 },
+        { sender: 'me', body: 'my track record is spotty but my playlist is elite', sequence: 2 },
+        { sender: 'them', body: 'haha okay fair. what did you have in mind', sequence: 3 }
+      ],
+      Spicy: [
+        { sender: 'them', body: 'bet you say this to everyone 👀', sequence: 1 },
+        { sender: 'me', body: 'only the ones who make it worth it', sequence: 2 },
+        { sender: 'them', body: 'okay now I\'m actually curious about you', sequence: 3 }
+      ],
+      Natural: [
+        { sender: 'them', body: 'what are you up to tonight?', sequence: 1 },
+        { sender: 'me', body: 'finishing up some stuff, why?', sequence: 2 },
+        { sender: 'them', body: 'thinking about grabbing drinks if you\'re around', sequence: 3 }
+      ],
+      Professional: [
+        { sender: 'them', body: 'can we get a quick sync before Thursday?', sequence: 1 },
+        { sender: 'me', body: 'for sure, what do we need to cover?', sequence: 2 },
+        { sender: 'them', body: 'just the Q4 scope and the handoff timeline', sequence: 3 }
+      ],
+      Romantic: [
+        { sender: 'them', body: 'I keep thinking about our last conversation', sequence: 1 },
+        { sender: 'me', body: 'which part specifically 😊', sequence: 2 },
+        { sender: 'them', body: 'the part where you made everything feel easy', sequence: 3 }
+      ],
+      Sarcastic: [
+        { sender: 'them', body: 'I have the most genius plan ever', sequence: 1 },
+        { sender: 'me', body: 'that\'s terrifying. tell me everything', sequence: 2 },
+        { sender: 'them', body: 'okay so basically we just show up and see what happens', sequence: 3 }
+      ]
+    };
+
     async function fetchReplies() {
-      if (!currentMessages || currentMessages.length === 0) {
+      // If no messages loaded, seed with a demo conversation so the AI always runs
+      const messagesToUse = (currentMessages && currentMessages.length > 0)
+        ? currentMessages
+        : (DEMO_SEEDS[currentTone] || DEMO_SEEDS.Flirty);
+
+      if (!messagesToUse || messagesToUse.length === 0) {
         renderRepliesFallback();
         return;
       }
@@ -937,7 +1152,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages: currentMessages,
+            messages: messagesToUse,
             tone: currentTone,
             delivery: currentDelivery,
             intensity: currentIntensity,
