@@ -1,4 +1,4 @@
-// Mobile API Client for VoiCe
+﻿// Mobile API Client for VoiCe
 // Connects to the Cloudflare Pages Functions / backend API and Supabase
 
 import { Tone, DeliveryStyle, ChatMessage, ReplyCandidate, ReportData, AIProvider } from '../types';
@@ -73,51 +73,50 @@ export async function generateReplies(params: {
     return json.data.candidates;
   } catch (err: any) {
     console.warn('API call failed, using local dynamic bank:', err.message);
-    // Return high quality fallback candidates matching chosen tone
+    // Return high quality fallback candidates matching chosen tone — PLUG AI caliber
     const defaults: Record<Tone, ReplyCandidate[]> = {
       Flirty: [
-        { id: '1', body: 'Bold of you to assume I’m free 😌 what did you have in mind?', style: 'playful' },
-        { id: '2', body: 'You’re making it very hard to say no.', style: 'direct' },
-        { id: '3', body: 'That confidence is doing a lot of work right now.', style: 'bold' },
-        { id: '4', body: 'I’ll behave if the pasta is good.', style: 'teasing' },
+        { id: '1', body: "you're dangerous and you know it", style: 'natural' },
+        { id: '2', body: "don't make it weird by being actually interesting", style: 'playful' },
+        { id: '3', body: "careful, I was starting to take you seriously", style: 'teasing' },
+        { id: '4', body: "you've got 48 hours to make a good impression", style: 'bold' },
       ],
       Spicy: [
-        { id: '1', body: 'Careful. You’re starting to sound like trouble 😏', style: 'bold' },
-        { id: '2', body: 'I could say no… but where’s the fun in that?', style: 'playful' },
-        { id: '3', body: 'You keep talking like that and I might take you seriously.', style: 'teasing' },
-        { id: '4', body: 'You definitely didn’t text me just about food.', style: 'direct' },
+        { id: '1', body: "bet you say that to everyone", style: 'teasing' },
+        { id: '2', body: "that's either brave or reckless, haven't decided", style: 'direct' },
+        { id: '3', body: "you're playing a very dangerous game right now", style: 'bold' },
+        { id: '4', body: "the audacity is genuinely impressive, carry on", style: 'deadpan' },
       ],
       Funny: [
-        { id: '1', body: 'That sounds suspiciously like a trap, but I’m in.', style: 'witty' },
-        { id: '2', body: 'I was going to be productive today, so thanks for ruining that 😂', style: 'playful' },
-        { id: '3', body: 'Fine. Ruin my perfectly peaceful evening then.', style: 'sarcastic' },
-        { id: '4', body: 'If this goes poorly I’m blaming you completely.', style: 'teasing' },
+        { id: '1', body: "is typing full sentences an in-app purchase for you", style: 'roast' },
+        { id: '2', body: "therapist is going to love hearing about this one", style: 'witty' },
+        { id: '3', body: "bold strategy, let's see if it pays off", style: 'dry' },
+        { id: '4', body: "bold move, genuinely did not see that coming", style: 'playful' },
       ],
       Natural: [
-        { id: '1', body: 'Yeah, I’m down. What time were you thinking?', style: 'direct' },
-        { id: '2', body: 'That works for me. Send me the details when ready.', style: 'casual' },
-        { id: '3', body: 'Sounds fun honestly, let’s do it.', style: 'relaxed' },
-        { id: '4', body: 'Haha okay, I’m listening. Tell me more.', style: 'open' },
+        { id: '1', body: "why, what are you getting me into", style: 'curious' },
+        { id: '2', body: "sold, when", style: 'direct' },
+        { id: '3', body: "depends on your definition of fun", style: 'mysterious' },
+        { id: '4', body: "already planning an escape route aren't you", style: 'relaxed' },
       ],
       Professional: [
-        { id: '1', body: 'Happy to help. What outcome are we aiming for?', style: 'outcome' },
-        { id: '2', body: 'That works on my end. Send over the specifics when ready.', style: 'clear' },
-        { id: '3', body: 'Sounds solid. Let’s align on next steps tomorrow.', style: 'direct' },
-        { id: '4', body: 'Understood. I’ll review and circle back before 3 PM.', style: 'timeline' },
+        { id: '1', body: "works for me. what's the actual goal here?", style: 'outcome' },
+        { id: '2', body: "let's align Thursday — I'll send the agenda", style: 'direct' },
+        { id: '3', body: "noted. I'll have a cleaner version to you by 3", style: 'timeline' },
+        { id: '4', body: "solid. who owns the next step?", style: 'decisive' },
       ],
       Romantic: [
-        { id: '1', body: 'Honestly, hearing from you just made my whole day.', style: 'sincere' },
-        { id: '2', body: 'That made me smile more than I expected ❤️', style: 'warm' },
-        { id: '3', body: 'I could definitely get used to conversations like this.', style: 'affectionate' },
-        { id: '4', body: 'You have a way of making ordinary moments feel special.', style: 'genuine' },
+        { id: '1', body: "you have a very inconvenient way of making my day better", style: 'sincere' },
+        { id: '2', body: "stop being interesting at this hour, some of us need sleep", style: 'warm' },
+        { id: '3', body: "don't do that thing where you make me smile at my phone", style: 'affectionate' },
+        { id: '4', body: "you're very difficult to ignore and I think you know that", style: 'genuine' },
       ],
       Sarcastic: [
-        { id: '1', body: 'Oh wow, what an entirely unexpected plot twist 😌', style: 'deadpan' },
-        { id: '2', body: 'Groundbreaking revelation. Truly unprecedented.', style: 'ironic' },
-        { id: '3', body: 'Sure, because that plan has never failed before.', style: 'dry' },
-        { id: '4', body: 'A stunning development. I need a minute to recover 😂', style: 'playful' },
+        { id: '1', body: "groundbreaking. truly, I've never heard that one", style: 'deadpan' },
+        { id: '2', body: "wow what a shocking development in this story", style: 'ironic' },
+        { id: '3', body: "incredible. what's next, water being wet?", style: 'dry' },
+        { id: '4', body: "genuinely floored. give me a moment to recover", style: 'playful' },
       ],
-    };
     return defaults[params.tone] || defaults.Flirty;
   }
 }
