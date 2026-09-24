@@ -40,6 +40,7 @@ declare module 'react-native' {
   export const FlatList: any;
   export const Dimensions: any;
   export const Platform: any;
+  export const Modal: any;
 }
 
 declare module 'react-native-url-polyfill/auto' {}
@@ -64,6 +65,7 @@ declare module 'expo-image-picker' {
     allowsEditing?: boolean;
     aspect?: [number, number];
     quality?: number;
+    base64?: boolean;
   }
   export interface ImagePickerAsset {
     uri: string;
@@ -72,6 +74,8 @@ declare module 'expo-image-picker' {
     type?: 'image' | 'video';
     fileName?: string;
     fileSize?: number;
+    base64?: string;
+    mimeType?: string;
   }
   export interface ImagePickerResult {
     canceled: boolean;

@@ -1,4 +1,4 @@
-﻿// Mobile API Client for VoiCe
+// Mobile API Client for VoiCe
 // Connects to the Cloudflare Pages Functions / backend API and Supabase
 
 import { Tone, DeliveryStyle, ChatMessage, ReplyCandidate, ReportData, AIProvider } from '../types';
@@ -116,7 +116,8 @@ export async function generateReplies(params: {
         { id: '2', body: "wow what a shocking development in this story", style: 'ironic' },
         { id: '3', body: "incredible. what's next, water being wet?", style: 'dry' },
         { id: '4', body: "genuinely floored. give me a moment to recover", style: 'playful' },
-      ],
+      ]
+    };
     return defaults[params.tone] || defaults.Flirty;
   }
 }
