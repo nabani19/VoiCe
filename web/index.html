@@ -1727,10 +1727,10 @@
     const supabaseUrl = 'YOUR_SUPABASE_URL';
     const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
     
-    let supabase = null;
+    let supabaseClient = null;
     try {
       if (supabaseUrl !== 'YOUR_SUPABASE_URL' && window.supabase) {
-        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
       }
     } catch(e) { console.warn("Supabase not initialized", e); }
 
@@ -1739,8 +1739,8 @@
     let authRateLimit = 0;
 
     // Track active session state and update button
-    if (supabase) {
-      supabase.auth.onAuthStateChange((event, session) => {
+    if (supabaseClient) {
+      supabaseClient.auth.onAuthStateChange((event, session) => {
         if (authBtn) {
           if (session && session.user) {
             authBtn.textContent = 'Sign Out';
@@ -1756,11 +1756,11 @@
     if (authBtn) {
       authBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        if (supabase) {
-          const { data } = await supabase.auth.getSession();
+        if (supabaseClient) {
+          const { data } = await supabaseClient.auth.getSession();
           if (data && data.session) {
             if (confirm(`Logged in as ${data.session.user.email}.\nDo you want to sign out?`)) {
-              await supabase.auth.signOut({ scope: 'global' });
+              await supabaseClient.auth.signOut({ scope: 'global' });
               alert("Signed out successfully.");
             }
             return;
@@ -1790,11 +1790,11 @@
       const email = emailInput;
       
       try {
-        if (!supabase) throw new Error("Supabase is not configured.");
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (!supabaseClient) throw new Error("Supabase is not configured.");
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) {
           // If sign in fails, try sign up implicitly for this demo/MVP
-          const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({ email, password });
+          const { data: signUpData, error: signUpErr } = await supabaseClient.auth.signUp({ email, password });
           if (signUpErr) throw signUpErr;
         }
         
@@ -1816,8 +1816,8 @@
 
     document.getElementById('googleAuthBtn').addEventListener('click', async () => {
       try {
-        if (!supabase) throw new Error("Supabase is not configured.");
-        const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+        if (!supabaseClient) throw new Error("Supabase is not configured.");
+        const { data, error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
         if (error) throw error;
       } catch (err) {
         document.getElementById('authError').textContent = escapeHTML(err.message);
