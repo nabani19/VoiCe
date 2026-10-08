@@ -226,6 +226,10 @@
     .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
     .filter-chip { background: transparent; border: 1px solid #302b26; color: #8e867e; padding: 6px 10px; font: 500 9px var(--mono); text-transform: uppercase; cursor: pointer; }
     .filter-chip.active, .filter-chip:hover { border-color: var(--rust-bright); color: var(--text); }
+    .saved-filter-chip { background: transparent; border: 1px solid #302b26; color: #8e867e; padding: 6px 10px; font: 500 9px var(--mono); text-transform: uppercase; cursor: pointer; }
+    .saved-filter-chip.active, .saved-filter-chip:hover { border-color: var(--rust-bright); color: var(--text); }
+    .streak-badge { cursor: pointer; transition: opacity .2s; }
+    .streak-badge:hover { opacity: 0.8 !important; }
 
     /* Capability Gallery */
     .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -386,6 +390,7 @@
           <a href="#smart-reply">Reply Engine</a>
           <a href="#report">Report</a>
           <a href="#" id="feedbackBtn" style="color:var(--violet);">Feedback</a>
+          <button class="streak-badge" id="streakBadge" style="display:none;" aria-label="Daily streak check-in">🔥 <i id="streakCount">0</i> day streak</button>
           <a href="#" id="authBtn" style="color:var(--rust-bright); font-weight: 600;">Sign In</a>
         </div>
         <button class="hamburger" id="hamburger" aria-expanded="false" aria-controls="navLinks">Menu</button>
@@ -571,6 +576,31 @@
     </section>
 
 
+
+    <!-- SAVED REPLIES -->
+    <section class="section" id="saved-replies">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">YOUR ARSENAL</div>
+            <h2 class="display">SAVED<br>REPLIES.</h2>
+          </div>
+          <p>Your bookmarked lines, organized by tone. Copy, delete, or reuse anytime — all saved to your account.</p>
+        </div>
+        <div class="filter-bar" aria-label="Filter saved replies">
+          <span class="eyebrow" style="align-self:center;margin-right:6px;">FILTER:</span>
+          <button class="saved-filter-chip active" data-saved-filter="all">All</button>
+          <button class="saved-filter-chip" data-saved-filter="Flirty">Flirty</button>
+          <button class="saved-filter-chip" data-saved-filter="Funny">Funny</button>
+          <button class="saved-filter-chip" data-saved-filter="Spicy">Spicy</button>
+          <button class="saved-filter-chip" data-saved-filter="Natural">Natural</button>
+          <button class="saved-filter-chip" data-saved-filter="Professional">Professional</button>
+        </div>
+        <div class="reply-list" id="savedRepliesList">
+          <div style="padding:24px;color:#a9a198;text-align:center;border:1px dashed var(--border-color);border-radius:var(--radius-md);">Loading saved replies…</div>
+        </div>
+      </div>
+    </section>
 
     <!-- CONVERSATION REPORT -->
     <section class="section" id="report">
@@ -1093,12 +1123,48 @@
         return;
       }
 
-      // Save to Favorites
+      // Save to Favorites (persisted to database)
       const saveBtn = e.target.closest('[data-save]');
       if (saveBtn) {
-        saveBtn.classList.toggle('saved');
-        const isSaved = saveBtn.classList.contains('saved');
-        saveBtn.textContent = isSaved ? '★ saved' : '☆ save';
+        const body = decodeURIComponent(saveBtn.dataset.save);
+        const category = saveBtn.dataset.category || currentTone;
+        if (saveBtn.classList.contains('saved')) {
+          const favId = saveBtn.dataset.favId;
+          if (favId) await DataStore.removeFavorite(favId);
+          saveBtn.classList.remove('saved');
+          saveBtn.removeAttribute('data-fav-id');
+          saveBtn.textContent = '☆ save';
+        } else {
+          try {
+            const result = await DataStore.saveFavorite(body, category);
+            if (result && result.id) saveBtn.dataset.favId = result.id;
+            saveBtn.classList.add('saved');
+            saveBtn.textContent = '★ saved';
+          } catch (err) {
+            console.error('Save failed:', err);
+            saveBtn.classList.add('saved');
+            saveBtn.textContent = '★ saved';
+          }
+        }
+        return;
+      }
+
+      // Delete from Saved Replies
+      const deleteFavBtn = e.target.closest('[data-action="delete-fav"]');
+      if (deleteFavBtn) {
+        const favId = deleteFavBtn.dataset.favId;
+        if (favId) await DataStore.removeFavorite(favId);
+        const activeChip = document.querySelector('.saved-filter-chip.active');
+        await loadSavedReplies(activeChip ? activeChip.dataset.savedFilter : 'all');
+        return;
+      }
+
+      // Saved replies filter chips
+      const savedFilterChip = e.target.closest('[data-saved-filter]');
+      if (savedFilterChip) {
+        document.querySelectorAll('[data-saved-filter]').forEach(c => c.classList.remove('active'));
+        savedFilterChip.classList.add('active');
+        await loadSavedReplies(savedFilterChip.dataset.savedFilter);
         return;
       }
 
@@ -1556,6 +1622,11 @@
         btn.textContent = '⚡ GENERATING SMART REPLIES…';
         await fetchReplies();
 
+        // Persist conversation to database
+        if (currentMessages && currentMessages.length > 0) {
+          DataStore.saveConversation(currentMessages, currentTone, 'screenshot');
+        }
+
         // Let user directly to the reply engine immediately
         const replySection = document.getElementById('smart-reply');
         if (replySection) {
@@ -1850,6 +1921,121 @@
       feedbackModal.style.display = 'none';
       alert(`Feedback submitted successfully! Ticket ID: ${ticketId}`);
     });
+
+    // ─── DATA LAYER (Local API for persistence) ───────────────────────────
+    const DataStore = {
+      async getFavorites(category) {
+        try {
+          const url = category && category !== 'all'
+            ? `/api/data/favorites?category=${encodeURIComponent(category)}`
+            : '/api/data/favorites';
+          const res = await fetch(url);
+          if (!res.ok) return [];
+          const data = await res.json();
+          return data.favorites || [];
+        } catch { return []; }
+      },
+      async saveFavorite(body, category) {
+        const res = await fetch('/api/data/favorites', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ body, category })
+        });
+        if (!res.ok) throw new Error('Failed to save');
+        return await res.json();
+      },
+      async removeFavorite(id) {
+        await fetch(`/api/data/favorites/${id}`, { method: 'DELETE' });
+      },
+      async getStreak() {
+        try {
+          const res = await fetch('/api/data/streak');
+          if (!res.ok) return null;
+          return await res.json();
+        } catch { return null; }
+      },
+      async checkin() {
+        try {
+          const res = await fetch('/api/data/streak/checkin', { method: 'POST' });
+          if (!res.ok) return null;
+          return await res.json();
+        } catch { return null; }
+      },
+      async saveConversation(messages, tone, sourceType) {
+        try {
+          const res = await fetch('/api/data/conversations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages, tone, source_type: sourceType })
+          });
+          if (!res.ok) return null;
+          return await res.json();
+        } catch { return null; }
+      },
+      async saveReport(conversationId, payload) {
+        try {
+          await fetch('/api/data/reports', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ conversation_id: conversationId, payload })
+          });
+        } catch {}
+      }
+    };
+
+    // ─── SAVED REPLIES ────────────────────────────────────────────────────
+    async function loadSavedReplies(category) {
+      const favorites = await DataStore.getFavorites(category);
+      const list = $('#savedRepliesList');
+      if (!list) return;
+      if (favorites.length === 0) {
+        list.innerHTML = '<div style="padding:24px;color:#a9a198;text-align:center;border:1px dashed var(--border-color);border-radius:var(--radius-md);">No saved replies yet. Tap ☆ save on any generated reply to build your arsenal.</div>';
+        return;
+      }
+      list.innerHTML = favorites.map(f => `
+        <article class="reply-card">
+          <div>
+            <span class="reply-tag-pill">${escapeHtml(f.category)}</span>
+            <p>${escapeHtml(f.body)}</p>
+          </div>
+          <div class="reply-tools">
+            <button class="icon-btn copy" data-copy="${encodeURIComponent(f.body)}" aria-label="Copy reply">copy</button>
+            <button class="icon-btn saved" data-fav-id="${f.id}" data-action="delete-fav" aria-label="Remove from saved">★ saved</button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // ─── STREAK ───────────────────────────────────────────────────────────
+    async function loadStreak() {
+      const streak = await DataStore.getStreak();
+      if (!streak) return;
+      const badge = $('#streakBadge');
+      if (!badge) return;
+      $('#streakCount').textContent = streak.current_streak;
+      badge.style.display = 'inline-flex';
+      badge.dataset.checkedIn = streak.already_checked_in ? 'true' : 'false';
+      badge.title = streak.already_checked_in ? 'Already checked in today!' : 'Click for daily check-in!';
+      badge.style.opacity = streak.already_checked_in ? '0.6' : '1';
+    }
+
+    if ($('#streakBadge')) {
+      $('#streakBadge').addEventListener('click', async () => {
+        const badge = $('#streakBadge');
+        if (badge.dataset.checkedIn === 'true') return;
+        const result = await DataStore.checkin();
+        if (result) {
+          $('#streakCount').textContent = result.current_streak;
+          badge.dataset.checkedIn = 'true';
+          badge.style.opacity = '0.6';
+          badge.title = 'Already checked in today!';
+        }
+      });
+    }
+
+    // ─── INIT ON PAGE LOAD ────────────────────────────────────────────────
+    loadSavedReplies('all');
+    loadStreak();
 
   </script>
 

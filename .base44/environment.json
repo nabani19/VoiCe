@@ -1,0 +1,61 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "SUPABASE_URL",
+      "description": "Supabase project URL (found in Supabase Dashboard → Project Settings → API). Optional for local dev — the app runs with a local Postgres + Express data API.",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "SUPABASE_ANON_KEY",
+      "description": "Supabase anon key (found in Supabase Dashboard → Project Settings → API). Optional for local dev.",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "description": "Supabase service role key (found in Supabase Dashboard → Project Settings → API). Optional for local dev.",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "ANTHROPIC_API_KEY",
+      "description": "Anthropic Claude API key (from console.anthropic.com). Optional — app falls back to local neural engine without it.",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "OPENAI_API_KEY",
+      "description": "OpenAI API key (from platform.openai.com). Optional — app falls back to local neural engine without it.",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "GEMINI_API_KEY",
+      "description": "Google Gemini API key (from ai.google.dev). Optional — app falls back to local neural engine without it.",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "OPENROUTER_API_KEY",
+      "description": "OpenRouter API key (from openrouter.ai). Optional — app falls back to local neural engine without it.",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "GOOGLE_CLIENT_ID",
+      "description": "Google OAuth client ID (from Google Cloud Console → Credentials). Optional — only needed for Google sign-in.",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "GOOGLE_CLIENT_SECRET",
+      "description": "Google OAuth client secret (from Google Cloud Console → Credentials). Optional — only needed for Google sign-in.",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    }
+  ]
+}
