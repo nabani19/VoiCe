@@ -14,7 +14,7 @@ services:
     env_file:
       - ./.env.base44-defaults
       - /run/base44/app.env
-    command: ["sh", "-ec", "cd /app/web && npm install --no-audit --no-fund && exec npx wrangler pages dev . --port 3000 --ip 0.0.0.0 --compatibility-date=2024-01-01"]
+    command: ["sh", "-ec", "apt-get update -qq && apt-get install -y -qq ca-certificates > /dev/null 2>&1 && cd /app/web && npm install --no-audit --no-fund && exec npx wrangler pages dev . --port 3000 --ip 0.0.0.0 --compatibility-date=2024-01-01"]
     restart: on-failure
     healthcheck:
       test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
