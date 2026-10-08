@@ -1,0 +1,166 @@
+<!-- RIZZ Ler - Enhanced Motion History -->
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>RIZZ Ler - History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: { extend: {
+            "colors": {
+                "error": "#ffb4ab", "tertiary": "#ffffff", "primary-fixed-dim": "#abd600",
+                "on-tertiary-container": "#5c647a", "tertiary-container": "#dae2fd",
+                "inverse-primary": "#506600", "surface-container-low": "#0b1c30",
+                "surface-tint": "#abd600", "on-secondary-container": "#c4abff",
+                "on-primary-fixed": "#161e00", "primary-container": "#c3f400",
+                "on-error": "#690005", "on-secondary-fixed": "#23005c", "surface-dim": "#031427",
+                "on-secondary-fixed-variant": "#5516be", "secondary-fixed": "#e9ddff",
+                "primary-fixed": "#c3f400", "on-secondary": "#3c0091", "inverse-surface": "#d3e4fe",
+                "on-tertiary": "#283044", "error-container": "#93000a", "outline-variant": "#444933",
+                "on-error-container": "#ffdad6", "surface-container": "#102034",
+                "surface-container-high": "#1b2b3f", "on-primary-fixed-variant": "#3c4d00",
+                "surface": "#031427", "on-surface": "#d3e4fe", "on-background": "#d3e4fe",
+                "surface-container-lowest": "#000f21", "surface-bright": "#2a3a4f",
+                "surface-container-highest": "#26364a", "on-tertiary-fixed": "#131b2e",
+                "background": "#031427", "tertiary-fixed": "#dae2fd", "inverse-on-surface": "#213145",
+                "surface-variant": "#26364a", "on-primary-container": "#556d00",
+                "secondary-container": "#571bc1", "on-primary": "#283500",
+                "on-tertiary-fixed-variant": "#3f465c", "secondary": "#d0bcff", "outline": "#8e9379",
+                "on-surface-variant": "#c4c9ac", "secondary-fixed-dim": "#d0bcff",
+                "primary": "#ffffff", "tertiary-fixed-dim": "#bec6e0"
+            },
+            "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+            "spacing": { "xs": "8px", "gutter": "16px", "lg": "24px", "base": "4px", "xl": "32px", "margin": "20px", "sm": "12px", "md": "16px" },
+            "fontFamily": {
+                "headline-lg-mobile": ["Hanken Grotesk"], "body-lg": ["Hanken Grotesk"],
+                "label-md": ["JetBrains Mono"], "body-md": ["Hanken Grotesk"],
+                "headline-lg": ["Hanken Grotesk"], "label-sm": ["JetBrains Mono"],
+                "headline-md": ["Hanken Grotesk"], "display-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                "label-md": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "label-sm": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.08em", "fontWeight": "500"}],
+                "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}]
+            }
+          }}
+        }
+      </script>
+<style>
+        .glass-card { background-color: rgba(255,255,255,0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.05); border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); transition: all 300ms ease-in-out; }
+        .glass-card:hover { transform: translateY(-4px); background-color: rgba(255,255,255,0.06); box-shadow: 0 10px 30px -10px rgba(171,214,0,0.1); }
+        .glass-card:active { transform: scale(0.98); }
+        .interactive-element { transition: all 300ms ease-in-out; }
+        .interactive-element:active { transform: scale(0.98); }
+        .glowing-input-focus:focus-within { box-shadow: 0 0 25px rgba(195,244,0,0.4), inset 0 0 10px rgba(195,244,0,0.1); border-color: #c3f400; }
+        @keyframes volt-pulse { 0% { box-shadow: 0 0 0 0 rgba(195,244,0,0.6); } 70% { box-shadow: 0 0 0 15px rgba(195,244,0,0); } 100% { box-shadow: 0 0 0 0 rgba(195,244,0,0); } }
+        .primary-glow-pulse { transition: all 300ms ease-in-out; }
+        .primary-glow-pulse:hover { box-shadow: 0 0 20px rgba(195,244,0,0.5); }
+        .primary-glow-pulse:active { animation: volt-pulse 0.6s infinite ease-out; transform: scale(0.98); }
+        .brand-glow { text-shadow: 0 0 15px rgba(195,244,0,0.7); }
+        @keyframes fadeSlideUp { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+        .animate-fade-slide-up { animation: fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
+        .delay-100 { animation-delay: 100ms; } .delay-200 { animation-delay: 200ms; } .delay-300 { animation-delay: 300ms; }
+    </style>
+<style>body { min-height: max(884px, 100dvh); }</style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen pb-[100px] pt-20 selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Desktop TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_30px_rgba(171,214,0,0.1)] flex items-center justify-between px-margin h-16 w-full hidden md:flex">
+<div class="flex items-center gap-sm interactive-element cursor-pointer group">
+<span class="material-symbols-outlined text-primary-fixed group-hover:opacity-80 transition-opacity drop-shadow-[0_0_10px_rgba(195,244,0,0.8)]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-display-lg text-headline-lg tracking-tighter text-primary-fixed brand-glow">RIZZ Ler</span>
+</div>
+<nav class="flex gap-lg">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all interactive-element" href="rizz.html"><span class="material-symbols-outlined mb-base">upload_file</span><span class="font-label-md text-label-md">Analyze</span></a>
+<a class="flex flex-col items-center justify-center text-primary-fixed drop-shadow-[0_0_15px_rgba(195,244,0,0.8)] transition-all interactive-element" href="rizz-history.html"><span class="material-symbols-outlined mb-base" style="font-variation-settings: 'FILL' 1;">history</span><span class="font-label-md text-label-md">History</span></a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all interactive-element" href="rizz-settings.html"><span class="material-symbols-outlined mb-base">psychology</span><span class="font-label-md text-label-md">Personas</span></a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all interactive-element" href="rizz-replies.html"><span class="material-symbols-outlined mb-base">workspace_premium</span><span class="font-label-md text-label-md">Premium</span></a>
+</nav>
+<a class="text-primary-fixed hover:opacity-80 transition-all interactive-element cursor-pointer p-base rounded-full hover:bg-white/5 drop-shadow-[0_0_8px_rgba(195,244,0,0.5)]" href="rizz-settings.html"><span class="material-symbols-outlined">settings</span></a>
+</header>
+<!-- Mobile Header -->
+<div class="md:hidden fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-margin h-16 shadow-[0_0_20px_rgba(171,214,0,0.05)]">
+<a class="material-symbols-outlined text-primary-fixed cursor-pointer interactive-element drop-shadow-[0_0_10px_rgba(195,244,0,0.8)]" href="rizz.html">bolt</a>
+<span class="font-display-lg text-headline-lg-mobile tracking-tighter text-primary-fixed brand-glow">RIZZ Ler</span>
+<a class="material-symbols-outlined text-primary-fixed cursor-pointer interactive-element drop-shadow-[0_0_8px_rgba(195,244,0,0.5)]" href="rizz-settings.html">settings</a>
+</div>
+<!-- Main Content -->
+<main class="max-w-[800px] mx-auto px-margin pt-lg md:pt-[100px]">
+<!-- Search -->
+<div class="mb-xl">
+<div class="relative glowing-input-focus transition-all rounded-lg overflow-hidden border border-white/10 bg-surface-container-low group">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant transition-colors group-focus-within:text-primary-fixed group-focus-within:drop-shadow-[0_0_8px_rgba(195,244,0,0.8)]">search</span>
+<input class="w-full bg-transparent text-on-surface font-body-md pl-[48px] pr-sm py-sm focus:outline-none placeholder-on-surface-variant/50" placeholder="Search past analyses..." type="text" id="searchInput">
+</div>
+</div>
+<!-- History List -->
+<div class="flex flex-col gap-sm" id="historyList">
+<a class="glass-card rounded-xl p-md flex flex-col md:flex-row gap-md cursor-pointer group animate-fade-slide-up delay-100" href="rizz-replies.html">
+<div class="flex-1">
+<div class="flex items-center gap-sm mb-xs"><span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase">Oct 24, 2023</span><div class="w-1 h-1 rounded-full bg-on-surface-variant"></div><span class="font-label-sm text-label-sm text-on-surface-variant">14:32</span></div>
+<h3 class="font-headline-md text-headline-md-mobile text-tertiary mb-xs group-hover:text-primary-fixed group-hover:drop-shadow-[0_0_8px_rgba(195,244,0,0.6)] transition-all">Project Kickoff Pitch</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-sm transition-colors duration-300 group-hover:text-on-surface">Analyzed the initial outreach message for the Alpha project. Identified key areas where confidence could be improved.</p>
+<div class="flex gap-xs">
+<span class="inline-flex items-center px-2 py-1 rounded-full border border-primary-fixed/50 bg-primary-fixed/10 text-primary-fixed font-label-md text-label-sm interactive-element hover:bg-primary-fixed/20 hover:drop-shadow-[0_0_5px_rgba(195,244,0,0.5)]">Assertive</span>
+<span class="inline-flex items-center px-2 py-1 rounded-full border border-white/10 text-on-surface-variant font-label-md text-label-sm interactive-element hover:bg-white/10">Professional</span>
+</div>
+</div>
+<div class="w-full md:w-[120px] h-[80px] rounded-lg overflow-hidden relative flex-shrink-0">
+<div class="w-full h-full bg-cover bg-center opacity-60 group-hover:opacity-100 transition-all duration-500 blur-[2px] group-hover:blur-0 scale-110 group-hover:scale-100" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCWk-FbNDueTfSYrXW5B36QwlOTFAzyN8iuENYLiK2XdgLk5UzWzf1LLFTSvL4fD8UVL5lOE7CaSMqTjhp8bjwIWmFP9pAvlGEZLNdyvOJC7p9FL7P68ZwnrFvXXW79XlEm3mqB7DDGvXFcFWiT7ETHUmZXJW_blorQ1Vy0jbARRZWYWb3ULotOMESMhu_Jv0a3xs6PS-iWUEdZE4KGQ8xjS0xQ8np1ww0-BDsq8vPWUAfcqewGreLV_fH904QrYHbyZT67geZUbLs')"></div>
+</div>
+</a>
+<a class="glass-card rounded-xl p-md flex flex-col md:flex-row gap-md cursor-pointer group animate-fade-slide-up delay-200" href="rizz-replies.html">
+<div class="flex-1">
+<div class="flex items-center gap-sm mb-xs"><span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase">Oct 22, 2023</span><div class="w-1 h-1 rounded-full bg-on-surface-variant"></div><span class="font-label-sm text-label-sm text-on-surface-variant">09:15</span></div>
+<h3 class="font-headline-md text-headline-md-mobile text-tertiary mb-xs group-hover:text-primary-fixed group-hover:drop-shadow-[0_0_8px_rgba(195,244,0,0.6)] transition-all">Apology Email Draft</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-sm transition-colors duration-300 group-hover:text-on-surface">Reviewing tone for a delayed delivery notification. Ensuring empathy without sounding overly defensive.</p>
+<div class="flex gap-xs">
+<span class="inline-flex items-center px-2 py-1 rounded-full border border-secondary-fixed/30 bg-secondary-fixed/10 text-secondary-fixed font-label-md text-label-sm interactive-element hover:bg-secondary-fixed/20">Empathetic</span>
+</div>
+</div>
+<div class="w-full md:w-[120px] h-[80px] rounded-lg overflow-hidden relative flex-shrink-0">
+<div class="w-full h-full bg-cover bg-center opacity-60 group-hover:opacity-100 transition-all duration-500 blur-[2px] group-hover:blur-0 scale-110 group-hover:scale-100" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLUfj7q-FrecT7Q_6fSl1QnId3nLZyDZD7quksLKy8NqMSXJcsY-4_lgJ9miZCp_WeoBKB01DVV9aHC1hP0H801n0jOuIGBg64scdx1C4oVBmEEWTqFps8hZxHz1bySPVs9YV6MeEA16IKLn9Wri7-JB1dFGxLZQQyzNK1x-XOxCvnjWVYv80U02Cov7VapGuwrclBa8b99YQsEFHLY3ciuy_21oRUYw6cYhDjUnVyYD69RtQ6wllP46rtsny5yXPAYoNYIY1ZQQ')"></div>
+</div>
+</a>
+<a class="glass-card rounded-xl p-md flex flex-col md:flex-row gap-md cursor-pointer group animate-fade-slide-up delay-300" href="rizz-replies.html">
+<div class="flex-1">
+<div class="flex items-center gap-sm mb-xs"><span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase">Oct 18, 2023</span><div class="w-1 h-1 rounded-full bg-on-surface-variant"></div><span class="font-label-sm text-label-sm text-on-surface-variant">18:45</span></div>
+<h3 class="font-headline-md text-headline-md-mobile text-tertiary mb-xs group-hover:text-primary-fixed group-hover:drop-shadow-[0_0_8px_rgba(195,244,0,0.6)] transition-all">Networking Event Follow-up</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-sm transition-colors duration-300 group-hover:text-on-surface">Casual yet structured follow-up message to potential leads met at the tech summit.</p>
+<div class="flex gap-xs">
+<span class="inline-flex items-center px-2 py-1 rounded-full border border-primary-fixed/50 bg-primary-fixed/10 text-primary-fixed font-label-md text-label-sm interactive-element hover:bg-primary-fixed/20 hover:drop-shadow-[0_0_5px_rgba(195,244,0,0.5)]">Friendly</span>
+<span class="inline-flex items-center px-2 py-1 rounded-full border border-white/10 text-on-surface-variant font-label-md text-label-sm interactive-element hover:bg-white/10">Casual</span>
+</div>
+</div>
+<div class="w-full md:w-[120px] h-[80px] rounded-lg overflow-hidden relative flex-shrink-0">
+<div class="w-full h-full bg-cover bg-center opacity-60 group-hover:opacity-100 transition-all duration-500 blur-[2px] group-hover:blur-0 scale-110 group-hover:scale-100" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDv2HSdX_8eKHlNqr2ttFLaXd6KW4lFLOi8moY1kSB2JC376Jf1BqUwzr7IE2xabz-n8DqD02VHDdxcZ59Xfal-30xjqjIAuhqO1loFjXX94BXmYFxNcGHFDr-o_zSajeJ-mLhr6M1bqdFku1t0O6tlFBtmZa-OX1rdKfirbXLGHF76a_Mb5Au8iTUh77ZeWi0_7wA5Ov5oOQ_H_n0tIoNs7iZi5SyYoqPB2sZVqMGTSH-ikBfMhexApxJvablKKejb9iYDexW1PJ4')"></div>
+</div>
+</a>
+</div>
+</main>
+<!-- Mobile Bottom Nav -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface/80 backdrop-blur-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.4)] flex justify-around items-center h-20 px-2 border-t border-white/10">
+<a class="flex flex-col items-center justify-center text-on-surface-variant transition-all interactive-element active:scale-90" href="rizz.html"><span class="material-symbols-outlined mb-1">upload_file</span><span class="font-label-md text-label-md">Analyze</span></a>
+<a class="flex flex-col items-center justify-center text-primary-fixed drop-shadow-[0_0_15px_rgba(195,244,0,0.9)] transition-all interactive-element active:scale-90 primary-glow-pulse" href="rizz-history.html"><span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">history</span><span class="font-label-md text-label-md">History</span></a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant transition-all interactive-element active:scale-90" href="rizz-settings.html"><span class="material-symbols-outlined mb-1">psychology</span><span class="font-label-md text-label-md">Personas</span></a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant transition-all interactive-element active:scale-90" href="rizz-replies.html"><span class="material-symbols-outlined mb-1">workspace_premium</span><span class="font-label-md text-label-md">Premium</span></a>
+</nav>
+<script>
+        const searchInput = document.getElementById('searchInput');
+        const historyList = document.getElementById('historyList');
+        if (searchInput) searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            historyList.querySelectorAll('a.glass-card').forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+        });
+    </script>
+</body></html>

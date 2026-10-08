@@ -1,0 +1,190 @@
+<!-- RIZZ Ler - Enhanced Motion Hub -->
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>RIZZ Ler - Upload Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error": "#ffb4ab", "tertiary": "#ffffff", "primary-fixed-dim": "#abd600",
+                      "on-tertiary-container": "#5c647a", "tertiary-container": "#dae2fd",
+                      "inverse-primary": "#506600", "surface-container-low": "#0b1c30",
+                      "surface-tint": "#abd600", "on-secondary-container": "#c4abff",
+                      "on-primary-fixed": "#161e00", "primary-container": "#c3f400",
+                      "on-error": "#690005", "on-secondary-fixed": "#23005c", "surface-dim": "#031427",
+                      "on-secondary-fixed-variant": "#5516be", "secondary-fixed": "#e9ddff",
+                      "primary-fixed": "#c3f400", "on-secondary": "#3c0091", "inverse-surface": "#d3e4fe",
+                      "on-tertiary": "#283044", "error-container": "#93000a", "outline-variant": "#444933",
+                      "on-error-container": "#ffdad6", "surface-container": "#102034",
+                      "surface-container-high": "#1b2b3f", "on-primary-fixed-variant": "#3c4d00",
+                      "surface": "#031427", "on-surface": "#d3e4fe", "on-background": "#d3e4fe",
+                      "surface-container-lowest": "#000f21", "surface-bright": "#2a3a4f",
+                      "surface-container-highest": "#26364a", "on-tertiary-fixed": "#131b2e",
+                      "background": "#031427", "tertiary-fixed": "#dae2fd", "inverse-on-surface": "#213145",
+                      "surface-variant": "#26364a", "on-primary-container": "#556d00",
+                      "secondary-container": "#571bc1", "on-primary": "#283500",
+                      "on-tertiary-fixed-variant": "#3f465c", "secondary": "#d0bcff", "outline": "#8e9379",
+                      "on-surface-variant": "#c4c9ac", "secondary-fixed-dim": "#d0bcff",
+                      "primary": "#ffffff", "tertiary-fixed-dim": "#bec6e0"
+              },
+              "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+              "spacing": { "xs": "8px", "gutter": "16px", "lg": "24px", "base": "4px", "xl": "32px", "margin": "20px", "sm": "12px", "md": "16px" },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Hanken Grotesk"], "body-lg": ["Hanken Grotesk"],
+                      "label-md": ["JetBrains Mono"], "body-md": ["Hanken Grotesk"],
+                      "headline-lg": ["Hanken Grotesk"], "label-sm": ["JetBrains Mono"],
+                      "headline-md": ["Hanken Grotesk"], "display-lg": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.08em", "fontWeight": "500"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+        .cyber-glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.05); border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); }
+        .neon-glow { box-shadow: 0 0 10px rgba(195,244,0,0.2), 0 0 30px rgba(195,244,0,0.1); }
+        .text-glow { text-shadow: 0 0 10px rgba(195,244,0,0.5); }
+        .btn-motion { transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
+        .btn-motion:hover { transform: translateY(-2px); }
+        .btn-motion:active { transform: scale(0.95); }
+        .btn-primary-glow { box-shadow: 0 0 15px rgba(195,244,0,0.3), 0 0 30px rgba(195,244,0,0.15); }
+        .btn-primary-glow:hover { box-shadow: 0 0 25px rgba(195,244,0,0.5), 0 0 50px rgba(195,244,0,0.25); animation: pulse-glow 1.5s infinite ease-in-out; }
+        .btn-primary-glow:active { box-shadow: 0 0 35px rgba(195,244,0,0.7), 0 0 70px rgba(195,244,0,0.35); animation: none; }
+        @keyframes pulse-glow { 0% { box-shadow: 0 0 15px rgba(195,244,0,0.3), 0 0 30px rgba(195,244,0,0.15); } 50% { box-shadow: 0 0 35px rgba(195,244,0,0.6), 0 0 60px rgba(195,244,0,0.3); } 100% { box-shadow: 0 0 15px rgba(195,244,0,0.3), 0 0 30px rgba(195,244,0,0.15); } }
+        .icon-btn-motion { transition: all 0.2s cubic-bezier(0.4,0,0.2,1); }
+        .icon-btn-motion:hover { transform: scale(1.1) translateY(-1px); color: #c3f400; }
+        .icon-btn-motion:active { transform: scale(0.9) translateY(0); }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-up { animation: slideUpFade 0.6s cubic-bezier(0.4,0,0.2,1) forwards; opacity: 0; }
+        .delay-100 { animation-delay: 0.1s; } .delay-200 { animation-delay: 0.2s; } .delay-300 { animation-delay: 0.3s; }
+    </style>
+<style>body { min-height: max(884px, 100dvh); }</style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Desktop TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_20px_rgba(195,244,0,0.05)] fixed top-0 w-full z-50 flex items-center justify-between px-margin h-16 w-full hidden md:flex">
+<div class="flex items-center space-x-sm">
+<span class="material-symbols-outlined text-primary-fixed text-2xl text-glow" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-display-lg text-headline-lg tracking-tighter text-primary-fixed text-glow">RIZZ Ler</span>
+</div>
+<nav class="flex-1 flex justify-center space-x-lg">
+<a class="flex items-center space-x-xs text-primary-fixed btn-motion active:scale-95 transition-transform font-label-md text-label-md" href="rizz.html"><span class="material-symbols-outlined text-xl">upload_file</span><span>Analyze</span></a>
+<a class="flex items-center space-x-xs text-on-surface-variant hover:text-primary-fixed btn-motion active:scale-95 transition-transform font-label-md text-label-md" href="rizz-history.html"><span class="material-symbols-outlined text-xl">history</span><span>History</span></a>
+<a class="flex items-center space-x-xs text-on-surface-variant hover:text-primary-fixed btn-motion active:scale-95 transition-transform font-label-md text-label-md" href="rizz-settings.html"><span class="material-symbols-outlined text-xl">psychology</span><span>Personas</span></a>
+<a class="flex items-center space-x-xs text-on-surface-variant hover:text-primary-fixed btn-motion active:scale-95 transition-transform font-label-md text-label-md" href="rizz-replies.html"><span class="material-symbols-outlined text-xl">workspace_premium</span><span>Premium</span></a>
+</nav>
+<a class="text-on-surface-variant icon-btn-motion" href="rizz-settings.html"><span class="material-symbols-outlined text-2xl">settings</span></a>
+</header>
+<!-- Mobile Header -->
+<header class="bg-surface/80 backdrop-blur-xl fixed top-0 w-full z-50 flex items-center justify-between px-margin h-16 w-full md:hidden">
+<div class="flex items-center space-x-xs">
+<span class="material-symbols-outlined text-primary-fixed text-2xl text-glow" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-display-lg text-headline-lg-mobile tracking-tighter text-primary-fixed text-glow">RIZZ Ler</span>
+</div>
+<a class="text-on-surface-variant icon-btn-motion" href="rizz-settings.html"><span class="material-symbols-outlined text-2xl">settings</span></a>
+</header>
+<!-- Main Content -->
+<main class="flex-1 pt-[80px] pb-[100px] md:pt-[100px] px-margin md:px-lg max-w-5xl mx-auto w-full flex flex-col gap-xl">
+<!-- Hero -->
+<section class="flex flex-col items-center justify-center text-center py-lg mt-md animate-slide-up">
+<h1 class="font-headline-lg text-headline-lg-mobile md:font-display-lg md:text-display-lg tracking-tight mb-sm">Let's level up your game</h1>
+<p class="font-body-md text-body-md md:font-body-lg md:text-body-lg text-on-surface-variant max-w-lg">Upload screenshots of your chats, bios, or profiles. Our AI will analyze the vibe and generate the perfect response.</p>
+</section>
+<!-- Drop Zone -->
+<section class="w-full animate-slide-up delay-100">
+<div class="relative w-full cyber-glass rounded-xl p-lg flex flex-col items-center justify-center min-h-[320px] border border-white/5 hover:border-primary-fixed/50 hover:shadow-[0_0_30px_rgba(195,244,0,0.2)] transition-all group cursor-pointer overflow-hidden duration-150" id="dropzone">
+<div class="absolute inset-0 bg-primary-fixed/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl blur-xl duration-150"></div>
+<div class="z-10 flex flex-col items-center space-y-md text-center">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary-fixed/20 group-hover:neon-glow transition-all duration-150">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant group-hover:text-primary-fixed transition-colors">cloud_upload</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md-mobile text-tertiary mb-xs">Drop Chat Screenshots</h3>
+<p class="font-label-md text-label-md text-on-surface-variant">PNG, JPG, or HEIC (Max 10MB)</p>
+</div>
+<button class="mt-sm bg-primary-fixed text-on-primary-fixed font-label-md text-label-md px-lg py-sm rounded-full btn-motion btn-primary-glow font-bold tracking-wide" id="browseBtn">BROWSE FILES</button>
+<input type="file" id="fileInput" accept="image/png,image/jpeg,image/heic" class="hidden">
+</div>
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 duration-150"></div>
+<div class="absolute bottom-0 left-0 w-24 h-24 bg-secondary/10 rounded-full blur-2xl -translate-x-1/2 translate-y-1/2"></div>
+</div>
+</section>
+<!-- Recent Analyses -->
+<section class="w-full mt-lg">
+<div class="flex items-center justify-between mb-md animate-slide-up delay-200">
+<h2 class="font-headline-md text-headline-md-mobile">Recent Analyses</h2>
+<a class="font-label-md text-label-md text-primary-fixed btn-motion flex items-center hover:text-glow" href="rizz-history.html">View All <span class="material-symbols-outlined text-sm ml-xs">arrow_forward</span></a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<a class="cyber-glass rounded-lg overflow-hidden flex flex-col group cursor-pointer hover:neon-glow transition-all duration-300 btn-motion animate-slide-up delay-100" href="rizz-replies.html">
+<div class="h-32 w-full relative overflow-hidden bg-surface-container-high">
+<div class="bg-cover bg-center w-full h-full opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-150" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCiQGzuQp2wlNWz6UkVI4TCfO-yO75dqwiSELyh-UVzwjHs1XKtfI7sXM18W99dWHCYOtGghoLOyf152lRKydzq0nghiidRK5tOJhgEG_hjI0hLk5mG0M3tdAeaYXtsYtsFpSuE3178FbHzJRmk5V8ZDZtmZJQsbdTIigJZ6h3czdJF18FO2IoP09HgNzy_vNQlNVYWbI95-3A_ENdJInk221P9Xgn3d94hcHMGs9M5KCtC90or6fji-AwPG-EwV3VpLKCJECAKpmc');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+<div class="absolute bottom-sm left-sm bg-surface-container/80 backdrop-blur-md px-sm py-xs rounded-full border border-white/10 font-label-sm text-label-sm flex items-center space-x-xs"><span class="material-symbols-outlined text-[12px] text-primary-fixed">check_circle</span><span>Success: 92%</span></div>
+</div>
+<div class="p-sm flex flex-col gap-xs">
+<h4 class="font-body-md text-body-md font-semibold truncate">Tinder Match - "Hey"</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center"><span class="material-symbols-outlined text-[14px] mr-xs">schedule</span> 2 hours ago</p>
+</div>
+</a>
+<a class="cyber-glass rounded-lg overflow-hidden flex flex-col group cursor-pointer hover:neon-glow transition-all duration-300 btn-motion animate-slide-up delay-200" href="rizz-replies.html">
+<div class="h-32 w-full relative overflow-hidden bg-surface-container-high">
+<div class="bg-cover bg-center w-full h-full opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-150" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCCuPmoP_PcUae8ocAHXo8xjtKAttUJSvbp4KtO0NTpqpr0EcKIyIdaA7gQx23Pg6dvugsZ-qxwEIOIJnhT-zdQ1boPqR5lCmH2GkCDM67gGMDtSlwNSmrNjBQ7xSM8XI1NPLeCYq4R0SAWyyCAQhEIGadJeUupFHiJmknYDV8-HywKd1m4XSEhwqv-QtG4IH6Q4n-vZ9t42q6HnuG12lFLiQDV0f1yBYjHtLv4VEFY5i66R56rRjIGNtvlkbSINOD6l0dupmS8FlY');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+<div class="absolute bottom-sm left-sm bg-surface-container/80 backdrop-blur-md px-sm py-xs rounded-full border border-white/10 font-label-sm text-label-sm flex items-center space-x-xs"><span class="material-symbols-outlined text-[12px] text-primary-fixed">check_circle</span><span>Success: 85%</span></div>
+</div>
+<div class="p-sm flex flex-col gap-xs">
+<h4 class="font-body-md text-body-md font-semibold truncate">Hinge Profile Review</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center"><span class="material-symbols-outlined text-[14px] mr-xs">schedule</span> 5 hours ago</p>
+</div>
+</a>
+<a class="cyber-glass rounded-lg overflow-hidden flex flex-col group cursor-pointer hover:neon-glow transition-all duration-300 btn-motion animate-slide-up delay-300" href="rizz-replies.html">
+<div class="h-32 w-full relative overflow-hidden bg-surface-container-high">
+<div class="bg-cover bg-center w-full h-full opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-150" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBEkL1ozsDYFAzOjlRKePTgNUTUzNEXWBAvwUhtR9IdABcCLyzhd3lL4L6e6M38sEw7loq8QEQNdvtnVYoCTyEhQgbEhve8cd-Lq_xkx-SBUOmwLpvN__5DEqgUCiFWvq56ttgI_7QRF22bFtQjSw8E87x57gyn5P9OOBrGFjYzRBtU7_QMN0vppdNb3PgOWhxjGIcMtFpKqsxWHpgdoUV4KWX0bLWTf9eMUrCa8KzCUnt5sBCzDMrITFO5inwo1_QOHb3bE-eE4to');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+<div class="absolute bottom-sm left-sm bg-surface-container/80 backdrop-blur-md px-sm py-xs rounded-full border border-white/10 font-label-sm text-label-sm flex items-center space-x-xs"><span class="material-symbols-outlined text-[12px] text-error">warning</span><span class="text-error">Needs Context</span></div>
+</div>
+<div class="p-sm flex flex-col gap-xs">
+<h4 class="font-body-md text-body-md font-semibold truncate">Unknown Number</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center"><span class="material-symbols-outlined text-[14px] mr-xs">schedule</span> 1 day ago</p>
+</div>
+</a>
+</div>
+</section>
+</main>
+<!-- Mobile Bottom Nav -->
+<nav class="bg-surface/80 backdrop-blur-2xl border-t border-white/10 shadow-[0_-4px_24px_rgba(195,244,0,0.15)] fixed bottom-0 w-full z-50 rounded-t-xl flex justify-around items-center h-20 px-2 md:hidden">
+<a class="flex flex-col items-center justify-center text-primary-fixed drop-shadow-[0_0_12px_rgba(195,244,0,0.8)] btn-motion" href="rizz.html"><span class="material-symbols-outlined text-2xl mb-base text-glow" style="font-variation-settings: 'FILL' 1;">upload_file</span><span class="font-label-md text-label-md text-glow">Analyze</span></a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed btn-motion" href="rizz-history.html"><span class="material-symbols-outlined text-2xl mb-base">history</span><span class="font-label-md text-label-md">History</span></a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed btn-motion" href="rizz-settings.html"><span class="material-symbols-outlined text-2xl mb-base">psychology</span><span class="font-label-md text-label-md">Personas</span></a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed btn-motion" href="rizz-replies.html"><span class="material-symbols-outlined text-2xl mb-base">workspace_premium</span><span class="font-label-md text-label-md">Premium</span></a>
+</nav>
+<script>
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const browseBtn = document.getElementById('browseBtn');
+        if (browseBtn) browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+        if (dropzone) {
+            dropzone.addEventListener('click', () => fileInput.click());
+            dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-primary-fixed','neon-glow'); });
+            dropzone.addEventListener('dragleave', (e) => { e.preventDefault(); dropzone.classList.remove('border-primary-fixed','neon-glow'); });
+            dropzone.addEventListener('drop', (e) => { e.preventDefault(); dropzone.classList.remove('border-primary-fixed','neon-glow'); if (e.dataTransfer.files.length) window.location.href = 'rizz-replies.html'; });
+        }
+        if (fileInput) fileInput.addEventListener('change', (e) => { if (e.target.files.length) window.location.href = 'rizz-replies.html'; });
+    </script>
+</body></html>

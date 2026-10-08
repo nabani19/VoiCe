@@ -1,0 +1,186 @@
+<!-- RIZZ Ler - Enhanced Motion Settings -->
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>RIZZ Ler - Personas &amp; Settings</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: {
+          "colors": {
+            "error": "#ffb4ab", "tertiary": "#ffffff", "primary-fixed-dim": "#abd600",
+            "on-tertiary-container": "#5c647a", "tertiary-container": "#dae2fd",
+            "inverse-primary": "#506600", "surface-container-low": "#0b1c30",
+            "surface-tint": "#abd600", "on-secondary-container": "#c4abff",
+            "on-primary-fixed": "#161e00", "primary-container": "#c3f400",
+            "on-error": "#690005", "on-secondary-fixed": "#23005c", "surface-dim": "#031427",
+            "on-secondary-fixed-variant": "#5516be", "secondary-fixed": "#e9ddff",
+            "primary-fixed": "#c3f400", "on-secondary": "#3c0091", "inverse-surface": "#d3e4fe",
+            "on-tertiary": "#283044", "error-container": "#93000a", "outline-variant": "#444933",
+            "on-error-container": "#ffdad6", "surface-container": "#102034",
+            "surface-container-high": "#1b2b3f", "on-primary-fixed-variant": "#3c4d00",
+            "surface": "#031427", "on-surface": "#d3e4fe", "on-background": "#d3e4fe",
+            "surface-container-lowest": "#000f21", "surface-bright": "#2a3a4f",
+            "surface-container-highest": "#26364a", "on-tertiary-fixed": "#131b2e",
+            "background": "#031427", "tertiary-fixed": "#dae2fd", "inverse-on-surface": "#213145",
+            "surface-variant": "#26364a", "on-primary-container": "#556d00",
+            "secondary-container": "#571bc1", "on-primary": "#283500",
+            "on-tertiary-fixed-variant": "#3f465c", "secondary": "#d0bcff", "outline": "#8e9379",
+            "on-surface-variant": "#c4c9ac", "secondary-fixed-dim": "#d0bcff",
+            "primary": "#ffffff", "tertiary-fixed-dim": "#bec6e0"
+          },
+          "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+          "spacing": { "xs": "8px", "gutter": "16px", "lg": "24px", "base": "4px", "xl": "32px", "margin": "20px", "sm": "12px", "md": "16px" },
+          "fontFamily": {
+            "headline-lg-mobile": ["Hanken Grotesk"], "body-lg": ["Hanken Grotesk"],
+            "label-md": ["JetBrains Mono"], "body-md": ["Hanken Grotesk"],
+            "headline-lg": ["Hanken Grotesk"], "label-sm": ["JetBrains Mono"],
+            "headline-md": ["Hanken Grotesk"], "display-lg": ["Hanken Grotesk"]
+          },
+          "fontSize": {
+            "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+            "label-md": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500"}],
+            "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+            "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "label-sm": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.08em", "fontWeight": "500"}],
+            "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}]
+          }
+        }}
+      }
+    </script>
+<style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        .glass-card { background-color: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 0.5px solid rgba(255,255,255,0.1); border-top: 0.5px solid rgba(255,255,255,0.2); transition: all 300ms cubic-bezier(0.4,0,0.2,1); }
+        .cyber-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #c3f400; cursor: pointer; box-shadow: 0 0 20px rgba(195,244,0,0.8), 0 0 10px #c3f400; transition: transform 300ms ease; }
+        .cyber-range::-webkit-slider-thumb:active { transform: scale(0.9); }
+        .motion-card-active { box-shadow: 0 0 30px rgba(195,244,0,0.4), inset 0 0 20px rgba(195,244,0,0.2); border-color: #c3f400 !important; }
+        .motion-delete-glow:hover { box-shadow: 0 0 20px rgba(255,180,171,0.4); }
+        .motion-delete-glow:active { box-shadow: 0 0 10px rgba(255,180,171,0.2); }
+        .persona-transition { transition: all 300ms cubic-bezier(0.4,0,0.2,1); }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-up { animation: slideUpFade 0.6s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
+        .delay-100 { animation-delay: 100ms; } .delay-200 { animation-delay: 200ms; } .delay-300 { animation-delay: 300ms; }
+    </style>
+<style>body { min-height: max(884px, 100dvh); }</style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_20px_rgba(171,214,0,0.05)] flex items-center justify-between px-margin h-16">
+<a class="text-on-surface-variant hover:opacity-80 transition-all active:scale-[0.95] flex items-center justify-center" href="rizz.html" style="transition-duration: 150ms;"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bolt</span></a>
+<h1 class="font-display-lg text-headline-lg-mobile tracking-tighter text-primary-fixed">RIZZ Ler</h1>
+<span class="text-on-surface-variant hover:opacity-80 transition-all active:scale-[0.95] flex items-center justify-center" style="transition-duration: 150ms;"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span></span>
+</header>
+<!-- Main Content -->
+<main class="pt-[88px] pb-[120px] px-margin flex flex-col gap-lg">
+<!-- Active Mode -->
+<section class="flex flex-col gap-sm">
+<h2 class="font-headline-md text-headline-md-mobile text-on-surface">Active Mode</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="glass-card rounded-xl p-md flex flex-col gap-sm relative overflow-hidden group cursor-pointer active:scale-[0.98] motion-card-active persona-transition animate-slide-up delay-100">
+<div class="absolute top-0 right-0 p-sm text-primary-fixed opacity-100 transition-opacity" style="transition-duration: 150ms;"><span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span></div>
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary-fixed shadow-[inset_0_0_10px_rgba(195,244,0,0.2)] persona-transition group-hover:shadow-[inset_0_0_15px_rgba(195,244,0,0.4)]"><span class="material-symbols-outlined text-[24px]">psychology</span></div>
+<div><h3 class="font-body-lg text-body-lg text-primary-fixed font-bold persona-transition">Natural</h3><p class="font-body-md text-body-md text-on-surface-variant opacity-80 mt-1">Balanced tone for everyday conversational flow.</p></div>
+<div class="mt-auto pt-sm flex justify-between items-center border-t border-white/5"><span class="font-label-md text-label-md text-primary-fixed uppercase">Temp: 0.7</span><span class="font-label-sm text-label-sm text-on-surface-variant bg-surface px-2 py-1 rounded-full border border-white/10">ACTIVE</span></div>
+</div>
+<div class="glass-card rounded-xl p-md flex flex-col gap-sm relative overflow-hidden hover:border-primary-fixed/50 group cursor-pointer active:scale-[0.98] persona-transition animate-slide-up delay-200">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:text-primary-fixed persona-transition"><span class="material-symbols-outlined text-[24px]">local_fire_department</span></div>
+<div><h3 class="font-body-lg text-body-lg text-on-surface font-bold persona-transition group-hover:text-primary-fixed">Spicy</h3><p class="font-body-md text-body-md text-on-surface-variant opacity-80 mt-1">High-energy, assertive, and unfiltered responses.</p></div>
+<div class="mt-auto pt-sm flex justify-between items-center border-t border-white/5"><span class="font-label-md text-label-md text-on-surface-variant uppercase">Temp: 0.9</span></div>
+</div>
+<div class="glass-card rounded-xl p-md flex flex-col gap-sm relative overflow-hidden hover:border-primary-fixed/50 group cursor-pointer active:scale-[0.98] persona-transition animate-slide-up delay-300">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:text-primary-fixed persona-transition"><span class="material-symbols-outlined text-[24px]">draw</span></div>
+<div><h3 class="font-body-lg text-body-lg text-on-surface font-bold persona-transition group-hover:text-primary-fixed">Creative</h3><p class="font-body-md text-body-md text-on-surface-variant opacity-80 mt-1">Poetic, expansive, and deeply lateral thinking.</p></div>
+<div class="mt-auto pt-sm flex justify-between items-center border-t border-white/5"><span class="font-label-md text-label-md text-on-surface-variant uppercase">Temp: 1.2</span></div>
+</div>
+</div>
+</section>
+<!-- Advanced Tuning -->
+<section class="flex flex-col gap-sm">
+<h2 class="font-headline-md text-headline-md-mobile text-on-surface">Advanced Tuning</h2>
+<div class="glass-card rounded-xl flex flex-col divide-y divide-white/10">
+<div class="p-md flex flex-col gap-sm">
+<div class="flex justify-between items-center"><label class="font-body-md text-body-md text-on-surface" for="verbosity">Verbosity Level</label><span class="font-label-md text-label-md text-primary-fixed">High</span></div>
+<div class="relative w-full h-8 flex items-center">
+<div class="absolute w-full h-1 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary-fixed shadow-[0_0_15px_rgba(195,244,0,0.8)] w-[75%] transition-[width] ease-out" style="transition-duration: 150ms;"></div></div>
+<input class="cyber-range absolute w-full h-full opacity-0 z-10 cursor-pointer" id="verbosity" max="100" min="1" type="range" value="75">
+</div>
+</div>
+<div class="p-md flex justify-between items-center">
+<div class="flex flex-col"><span class="font-body-md text-body-md text-on-surface">Strict Syntax</span><span class="font-label-sm text-label-sm text-on-surface-variant mt-1">Enforce rigid grammatical structures</span></div>
+<button aria-checked="false" class="w-12 h-6 rounded-full bg-surface-container relative border border-white/10 transition-all duration-300 active:scale-[0.95]" role="switch"><div class="absolute left-1 top-1 w-4 h-4 rounded-full bg-on-surface-variant transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]"></div></button>
+</div>
+</div>
+</section>
+<!-- Account Settings -->
+<section class="flex flex-col gap-sm mt-md">
+<h2 class="font-headline-md text-headline-md-mobile text-on-surface">Account Settings</h2>
+<div class="glass-card rounded-xl p-md flex items-center gap-md hover:border-primary-fixed/30 group">
+<div class="relative w-16 h-16 rounded-full overflow-hidden border border-white/20 transition-all duration-300 group-hover:border-primary-fixed/50 group-hover:scale-105">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAozIzmb7Nh4Ay-7Vqy7p7lR_zgolixyE_JwxzqZmLYI2FaWkfSWH2yeerq7ceTk0ko-qj6uTWCShlu8z9MHP6_-gFz6YU5cVt0Z1CWPogljKJV1mdHJU8Jj8vEviaiO9T2RCp3A8alTuBXmKmBjpmrpYsC-x0lMP5Vknte8RT8JqkxDdxOIFaZ_dxt-NoTfOiugfMlJZWG3cx1kxuFSfkVx8OQVNTGBhLd7LjZ27qmCRc6aAL1WwGtWdLza58gCHAdUhfff-yjXq0">
+</div>
+<div class="flex flex-col flex-1">
+<h3 class="font-headline-md text-[20px] text-on-surface transition-colors duration-300 group-hover:text-primary-fixed">User_X99</h3>
+<span class="font-label-sm text-label-sm text-primary-fixed mt-1 border border-primary-fixed/30 bg-primary-fixed/10 px-2 py-0.5 rounded-full self-start transition-all duration-300 group-hover:bg-primary-fixed group-hover:text-on-primary">PRO TIER</span>
+</div>
+<button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all duration-300 active:scale-[0.90]"><span class="material-symbols-outlined">edit</span></button>
+</div>
+<div class="glass-card rounded-xl p-md mt-sm border-error/20 bg-error/5 flex flex-col gap-md">
+<h3 class="font-body-md text-body-md text-error font-bold flex items-center gap-xs"><span class="material-symbols-outlined text-[18px]">warning</span> Danger Zone</h3>
+<button class="w-full py-sm rounded-lg border border-error/30 text-error font-label-md text-label-md uppercase tracking-wider hover:bg-error/10 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">logout</span> Sign Out</button>
+<button class="w-full py-sm rounded-lg bg-error text-on-error font-label-md text-label-md uppercase tracking-wider shadow-[0_0_20px_rgba(255,180,171,0.2)] hover:opacity-90 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-xs motion-delete-glow"><span class="material-symbols-outlined text-[18px]">delete_forever</span> Delete Account</button>
+</div>
+</section>
+</main>
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface/80 backdrop-blur-2xl border-t border-white/10 shadow-[0_-4px_24px_rgba(0,0,0,0.4)] flex justify-around items-center h-20 px-2 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-all active:scale-[0.90] w-full h-full group" href="rizz.html" style="transition-duration: 150ms;"><span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform" style="transition-duration: 150ms;">upload_file</span><span class="font-label-md text-label-md">Analyze</span></a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-all active:scale-[0.90] w-full h-full group" href="rizz-history.html" style="transition-duration: 150ms;"><span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform" style="transition-duration: 150ms;">history</span><span class="font-label-md text-label-md">History</span></a>
+<a class="flex flex-col items-center justify-center text-primary-fixed drop-shadow-[0_0_8px_rgba(171,214,0,0.5)] hover:text-primary-fixed-dim transition-all active:scale-[0.90] w-full h-full relative group" href="rizz-settings.html" style="transition-duration: 150ms;"><div class="absolute -top-4 w-12 h-1 rounded-full bg-primary-fixed shadow-[0_0_12px_rgba(195,244,0,1)] transition-all duration-300 group-active:scale-x-75"></div><span class="material-symbols-outlined mb-1 scale-110" style="transition-duration: 150ms;">psychology</span><span class="font-label-md text-label-md">Personas</span></a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-all active:scale-[0.90] w-full h-full group" href="rizz-replies.html" style="transition-duration: 150ms;"><span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform" style="transition-duration: 150ms;">workspace_premium</span><span class="font-label-md text-label-md">Premium</span></a>
+</nav>
+<script>
+        document.querySelectorAll('[role="switch"]').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const isChecked = this.getAttribute('aria-checked') === 'true';
+                this.setAttribute('aria-checked', !isChecked);
+                const knob = this.querySelector('div');
+                if (!isChecked) {
+                    this.classList.remove('border-white/10');
+                    this.classList.add('border-primary-fixed', 'bg-primary-fixed/20', 'shadow-[0_0_20px_rgba(195,244,0,0.5)]');
+                    knob.classList.remove('bg-on-surface-variant');
+                    knob.classList.add('translate-x-6', 'bg-primary-fixed', 'shadow-[0_0_15px_rgba(195,244,0,1)]');
+                } else {
+                    this.classList.add('border-white/10');
+                    this.classList.remove('border-primary-fixed', 'bg-primary-fixed/20', 'shadow-[0_0_20px_rgba(195,244,0,0.5)]');
+                    knob.classList.add('bg-on-surface-variant');
+                    knob.classList.remove('translate-x-6', 'bg-primary-fixed', 'shadow-[0_0_15px_rgba(195,244,0,1)]');
+                }
+            });
+        });
+        const slider = document.getElementById('verbosity');
+        const sliderFill = slider.previousElementSibling.firstElementChild;
+        slider.addEventListener('input', function() { sliderFill.style.width = this.value + '%'; });
+        const personaCards = document.querySelectorAll('.grid > div.glass-card');
+        personaCards.forEach(card => {
+            card.addEventListener('click', function() {
+                personaCards.forEach(c => {
+                    c.classList.remove('motion-card-active');
+                    const check = c.querySelector('.material-symbols-outlined[style*="FILL: 1"]');
+                    if (check) check.parentElement.classList.add('opacity-0');
+                    c.querySelectorAll('.text-primary-fixed').forEach(el => { if (!el.classList.contains('font-label-md')) el.classList.replace('text-primary-fixed', 'text-on-surface'); });
+                });
+                this.classList.add('motion-card-active');
+                const activeCheck = this.querySelector('.material-symbols-outlined[style*="FILL: 1"]');
+                if (activeCheck) activeCheck.parentElement.classList.remove('opacity-0');
+                this.querySelectorAll('h3').forEach(h => h.classList.replace('text-on-surface', 'text-primary-fixed'));
+            });
+        });
+    </script>
+</body></html>
