@@ -167,7 +167,7 @@
                 ${i===0?'<div class="absolute inset-0 rounded-xl bg-primary-fixed/5 pointer-events-none"></div>':''}
                 <div class="flex items-center justify-between relative z-10">
                     <span class="font-label-sm text-label-sm bg-surface-container-high ${tagColors[i]||'text-on-surface'} px-2 py-1 rounded-full uppercase tracking-wider border border-white/5">${c.style||'Option'}</span>
-                    <button class="icon-btn-motion text-on-surface-variant group-hover:text-primary-fixed" data-copy="${encodeURIComponent(c.body)}"><span class="material-symbols-outlined text-lg">content_copy</span></button>
+                    <button class="icon-btn-motion flex items-center gap-xs text-on-surface-variant group-hover:text-primary-fixed bg-surface-container-high/60 hover:bg-primary-fixed/20 px-sm py-1 rounded-full border border-white/5 font-label-sm text-label-sm uppercase tracking-wider" data-copy="${encodeURIComponent(c.body)}"><span class="material-symbols-outlined text-base">content_copy</span> Copy</button>
                 </div>
                 <p class="font-body-lg text-body-lg text-on-surface relative z-10">${escapeHtml(c.body)}</p>
             </div>`).join('');
