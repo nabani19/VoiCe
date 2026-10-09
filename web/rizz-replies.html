@@ -110,6 +110,9 @@
 <span class="material-symbols-outlined text-lg">auto_awesome</span> Make this reply better
 </button>
 <button class="btn-volt-motion w-full py-md rounded-lg bg-primary-fixed text-on-primary-fixed font-headline-md text-headline-md-mobile" id="impressBtn">Impress Her</button>
+<button class="btn-motion w-full py-md rounded-lg glass-card text-on-surface font-label-md text-label-md uppercase tracking-wider flex items-center justify-center gap-xs" id="saveBtn">
+<span class="material-symbols-outlined text-lg">bookmark_add</span> Save to History
+</button>
 </section>
 </main>
 <script>
@@ -118,6 +121,7 @@
     let analyzedMessages = [];
     let detectedTone = 'Flirty';
     let detectedLanguage = '';
+    let lastCandidates = [];
 
     function getUpload() {
         try { return JSON.parse(sessionStorage.getItem('rizzUpload') || 'null'); } catch { return null; }
@@ -146,6 +150,7 @@
             if (!data.success) throw new Error(data.error || 'Failed');
             const candidates = data.data.candidates || [];
             if (!candidates.length) throw new Error('No candidates');
+            lastCandidates = candidates;
             renderCards(candidates);
         } catch (err) {
             console.error(err);
@@ -169,11 +174,34 @@
     }
 
     function renderFallback() {
-        renderCards([
+        lastCandidates = [
             { style: 'Flirty', body: 'Oh, you think you can handle me? Challenge accepted. 😈' },
             { style: 'Spicy', body: 'Less talking, more showing. When are we making this happen?' },
             { style: 'Funny', body: "I'd reply with something witty, but you've already left me speechless." }
-        ]);
+        ];
+        renderCards(lastCandidates);
+    }
+
+    async function saveToHistory() {
+        if (!analyzedMessages.length || !lastCandidates.length) { alert('Generate replies first before saving.'); return; }
+        const btn = document.getElementById('saveBtn');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">progress_activity</span> Saving…';
+        btn.disabled = true;
+        try {
+            const res = await fetch('/api/data/generations', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: analyzedMessages, tone: detectedTone, replies: lastCandidates, title: 'Chat Analysis' })
+            });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            btn.innerHTML = '<span class="material-symbols-outlined text-lg">check</span> Saved to History';
+            setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2000);
+        } catch (err) {
+            console.error('Save error:', err);
+            btn.innerHTML = '<span class="material-symbols-outlined text-lg">error</span> Save Failed';
+            setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2000);
+        }
     }
 
     function showNoUpload() {
@@ -213,6 +241,7 @@
             return;
         }
         if (e.target.closest('#improveBtn') || e.target.closest('#impressBtn')) { if (analyzedMessages.length) fetchReplies(); return; }
+        if (e.target.closest('#saveBtn')) { saveToHistory(); return; }
     });
     init();
 </script>

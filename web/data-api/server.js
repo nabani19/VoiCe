@@ -85,6 +85,83 @@ app.post('/data/conversations', async (req, res) => {
   }
 });
 
+// ── Generations (Smart Reply History) ────────────────────────────────────────
+
+app.post('/data/generations', async (req, res) => {
+  const { messages = [], tone, intent = 'continue', delivery = 'Casual & Direct', intensity = 6, replies = [], title } = req.body;
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Create conversation from analyzed messages
+    const convResult = await client.query(
+      `INSERT INTO conversations (user_id, title, source_type, current_tone)
+       VALUES ($1, $2, 'screenshot', $3) RETURNING id, created_at`,
+      [DEMO_USER_ID, title || 'Chat Analysis', tone || null]
+    );
+    const convId = convResult.rows[0].id;
+
+    for (let i = 0; i < messages.length; i++) {
+      const m = messages[i];
+      await client.query(
+        `INSERT INTO messages (conversation_id, user_id, sender_label, body, sequence_no)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [convId, DEMO_USER_ID, m.sender === 'me' ? 'me' : 'them', m.body, i + 1]
+      );
+    }
+
+    // Create generation record
+    const genResult = await client.query(
+      `INSERT INTO generations (conversation_id, user_id, tone, intent, delivery, intensity)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, created_at`,
+      [convId, DEMO_USER_ID, tone || 'Flirty', intent, delivery, intensity]
+    );
+    const genId = genResult.rows[0].id;
+
+    // Save reply candidates
+    for (const r of replies) {
+      await client.query(
+        `INSERT INTO replies (generation_id, user_id, body, style_tag)
+         VALUES ($1, $2, $3, $4)`,
+        [genId, DEMO_USER_ID, r.body, r.style || null]
+      );
+    }
+
+    await client.query('COMMIT');
+    res.json({ id: genId, conversation_id: convId, created_at: genResult.rows[0].created_at });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.get('/data/generations', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT g.id, g.tone, g.intent, g.delivery, g.intensity, g.created_at,
+        c.title AS conversation_title,
+        c.id AS conversation_id,
+        (SELECT body FROM messages WHERE conversation_id = c.id ORDER BY sequence_no DESC LIMIT 1) AS last_message,
+        (SELECT count(*) FROM messages WHERE conversation_id = c.id) AS message_count,
+        COALESCE(
+          (SELECT json_agg(json_build_object('id', r.id, 'body', r.body, 'style_tag', r.style_tag) ORDER BY r.created_at)
+           FROM replies r WHERE r.generation_id = g.id),
+          '[]'::json
+        ) AS replies
+       FROM generations g
+       JOIN conversations c ON g.conversation_id = c.id
+       WHERE g.user_id = $1 AND c.archived_at IS NULL
+       ORDER BY g.created_at DESC`,
+      [DEMO_USER_ID]
+    );
+    res.json({ generations: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ── Favorites ──────────────────────────────────────────────────────────────
 
 app.get('/data/favorites', async (req, res) => {

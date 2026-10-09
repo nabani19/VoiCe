@@ -156,11 +156,61 @@
 <script>
         const searchInput = document.getElementById('searchInput');
         const historyList = document.getElementById('historyList');
+
+        function escapeHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        function formatTime(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+
+        function renderHistory(items) {
+            if (!items.length) {
+                historyList.innerHTML = '<div class="glass-card rounded-xl p-lg text-center"><span class="material-symbols-outlined text-5xl text-on-surface-variant block mb-sm">inbox</span><p class="font-body-md text-body-md text-on-surface-variant">No saved analyses yet. Generate and save replies from the Smart Replies page.</p></div>';
+                return;
+            }
+            historyList.innerHTML = items.map((g, i) => {
+                const replies = g.replies || [];
+                const replyPreview = replies.slice(0, 2).map(r => escapeHtml(r.body)).join(' · ');
+                const toneTag = g.tone ? `<span class="inline-flex items-center px-2 py-1 rounded-full border border-primary-fixed/50 bg-primary-fixed/10 text-primary-fixed font-label-md text-label-sm">${escapeHtml(g.tone)}</span>` : '';
+                const styleTags = replies.slice(0, 3).map(r => r.style_tag ? `<span class="inline-flex items-center px-2 py-1 rounded-full border border-white/10 text-on-surface-variant font-label-md text-label-sm">${escapeHtml(r.style_tag)}</span>` : '').join('');
+                return `<a class="glass-card rounded-xl p-md flex flex-col md:flex-row gap-md cursor-pointer group animate-fade-slide-up" href="rizz-replies.html" style="animation-delay:${i*100}ms">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-sm mb-xs"><span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase">${formatDate(g.created_at)}</span><div class="w-1 h-1 rounded-full bg-on-surface-variant"></div><span class="font-label-sm text-label-sm text-on-surface-variant">${formatTime(g.created_at)}</span></div>
+                        <h3 class="font-headline-md text-headline-md-mobile text-tertiary mb-xs group-hover:text-primary-fixed transition-all">${escapeHtml(g.conversation_title || 'Chat Analysis')}</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-sm">${replyPreview || escapeHtml(g.last_message || '')}</p>
+                        <div class="flex gap-xs flex-wrap">${toneTag}${styleTags}</div>
+                    </div>
+                    <div class="w-full md:w-[120px] h-[80px] rounded-lg overflow-hidden relative flex-shrink-0 flex items-center justify-center bg-surface-container-high">
+                        <span class="material-symbols-outlined text-4xl text-on-surface-variant opacity-40">chat</span>
+                    </div>
+                </a>`;
+            }).join('');
+        }
+
+        async function loadHistory() {
+            historyList.innerHTML = '<div style="padding:24px;text-align:center;color:#8e9379;font-family:JetBrains Mono;font-size:12px;">Loading history…</div>';
+            try {
+                const res = await fetch('/api/data/generations');
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+                renderHistory(data.generations || []);
+            } catch (err) {
+                console.error('History load error:', err);
+                historyList.innerHTML = '<div class="glass-card rounded-xl p-lg text-center"><p class="font-body-md text-body-md text-error">Failed to load history.</p></div>';
+            }
+        }
+
         if (searchInput) searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
             historyList.querySelectorAll('a.glass-card').forEach(card => {
                 card.style.display = card.textContent.toLowerCase().includes(query) ? '' : 'none';
             });
         });
+        loadHistory();
     </script>
 </body></html>
