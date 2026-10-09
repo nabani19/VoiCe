@@ -85,10 +85,10 @@
 <!-- Analyzed Image -->
 <section class="relative rounded-xl overflow-hidden shadow-[0_0_15px_rgba(195,244,0,0.15)] border border-white/10">
 <div class="absolute inset-0 bg-gradient-to-b from-transparent to-surface-container-lowest z-10 pointer-events-none"></div>
-<img alt="Analyzed Chat" class="w-full h-48 object-cover object-top opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAl3WQGP8B0CLOT6WUc33KhJtOJ-KtFYqVo5yXVTZVZoBvUZ3HLXuaal2XukTN-NltVAACRnKTEBE7jfBzUrYIYbIaW9bbJBI1mdXn4EVoxlQf_pbRzqyJnudTA6WR7F8mH116trGE9HS6cEDqC8vKtwN_mdd8f_wHkKNN1AXfssBgduLkv4njcXR3Cvee6hzhqX5e_iirqrNSc0dTmN1sKcuajDZn_UY-1gsghrHErB9oJ5bVkkYXqbsWN6srJM-8DVEG-Vy0DlY">
+<img alt="Analyzed Chat" class="w-full h-48 object-cover object-top opacity-80" id="analyzedImg" src="">
 <div class="absolute bottom-sm left-sm z-20 flex items-center gap-xs">
 <div class="w-2 h-2 rounded-full bg-primary-fixed cyber-pulse"></div>
-<span class="font-label-sm text-label-sm text-primary-fixed uppercase tracking-widest">Analysis Complete</span>
+<span class="font-label-sm text-label-sm text-primary-fixed uppercase tracking-widest" id="analysisStatus">Analyzing…</span>
 </div>
 </section>
 <!-- Tone Indicator -->
@@ -113,12 +113,26 @@
 </section>
 </main>
 <script>
-    const DEMO_MESSAGES = [
-        { sender: 'them', body: 'hey! how are you? 😊' },
-        { sender: 'me', body: 'doing great, just finished a workout' },
-        { sender: 'them', body: 'oh nice, you seem pretty fit then 😏' }
-    ];
     function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    let analyzedMessages = [];
+    let detectedTone = 'Flirty';
+    let detectedLanguage = '';
+
+    function getUpload() {
+        try { return JSON.parse(sessionStorage.getItem('rizzUpload') || 'null'); } catch { return null; }
+    }
+
+    async function analyzeImage(dataUrl, mediaType) {
+        const base64 = dataUrl.split(',')[1] || '';
+        const res = await fetch('/api/analyze', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_base64: base64, media_type: mediaType, provider: 'auto' })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Analysis failed');
+        return data.data;
+    }
 
     async function fetchReplies() {
         const replyList = document.getElementById('replyList');
@@ -126,7 +140,7 @@
         try {
             const res = await fetch('/api/rizz/generate', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: DEMO_MESSAGES, tone: 'Flirty', delivery: 'Casual & Direct', intensity: 6, intent: 'continue', provider: 'auto', language: '' })
+                body: JSON.stringify({ messages: analyzedMessages, tone: detectedTone, delivery: 'Casual & Direct', intensity: 6, intent: 'continue', provider: 'auto', language: detectedLanguage })
             });
             const data = await res.json();
             if (!data.success) throw new Error(data.error || 'Failed');
@@ -162,6 +176,35 @@
         ]);
     }
 
+    function showNoUpload() {
+        document.getElementById('analysisStatus').textContent = 'No Screenshot Uploaded';
+        document.getElementById('analyzedImg').style.display = 'none';
+        document.querySelector('section.relative.rounded-xl').innerHTML = '<div class="glass-card rounded-xl p-lg text-center"><span class="material-symbols-outlined text-5xl text-on-surface-variant block mb-sm">cloud_upload</span><p class="font-body-md text-body-md text-on-surface-variant mb-md">Upload a chat screenshot first to get smart replies.</p><a href="rizz.html" class="inline-block bg-primary-fixed text-on-primary-fixed font-label-md text-label-md px-lg py-sm rounded-full btn-motion">Go to Upload</a></div>';
+        document.querySelector('section.flex.flex-col.gap-xs.animate-slide-up').style.display = 'none';
+        document.getElementById('replyList').innerHTML = '';
+    }
+
+    async function init() {
+        const upload = getUpload();
+        if (!upload) { showNoUpload(); return; }
+        document.getElementById('analyzedImg').src = upload.dataUrl;
+        try {
+            const analysis = await analyzeImage(upload.dataUrl, upload.type || 'image/png');
+            analyzedMessages = (analysis.messages || []).map(m => ({ sender: m.sender, body: m.body }));
+            detectedTone = analysis.detected_tone || 'Flirty';
+            detectedLanguage = analysis.detected_language || '';
+            if (!analyzedMessages.length) throw new Error('No messages extracted');
+            document.getElementById('analysisStatus').textContent = 'Analysis Complete';
+            const toneEl = document.querySelector('.glass-card.rounded-lg.p-sm span.font-headline-md');
+            if (toneEl) toneEl.textContent = detectedTone;
+            fetchReplies();
+        } catch (err) {
+            console.error('Analyze error:', err);
+            document.getElementById('analysisStatus').textContent = 'Analysis Failed';
+            renderFallback();
+        }
+    }
+
     document.addEventListener('click', async (e) => {
         const copyBtn = e.target.closest('[data-copy]');
         if (copyBtn) {
@@ -169,8 +212,8 @@
             try { await navigator.clipboard.writeText(text); const icon = copyBtn.querySelector('.material-symbols-outlined'); const orig = icon.textContent; icon.textContent = 'check'; setTimeout(()=>icon.textContent=orig,1200); } catch {}
             return;
         }
-        if (e.target.closest('#improveBtn') || e.target.closest('#impressBtn')) { fetchReplies(); return; }
+        if (e.target.closest('#improveBtn') || e.target.closest('#impressBtn')) { if (analyzedMessages.length) fetchReplies(); return; }
     });
-    fetchReplies();
+    init();
 </script>
 </body></html>

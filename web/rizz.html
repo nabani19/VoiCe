@@ -179,12 +179,23 @@
         const fileInput = document.getElementById('fileInput');
         const browseBtn = document.getElementById('browseBtn');
         if (browseBtn) browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+        function handleFile(file) {
+            if (!file) return;
+            if (file.size > 10 * 1024 * 1024) { alert('File too large (max 10MB).'); return; }
+            const reader = new FileReader();
+            reader.onload = () => {
+                sessionStorage.setItem('rizzUpload', JSON.stringify({ dataUrl: reader.result, name: file.name, type: file.type }));
+                window.location.href = 'rizz-replies.html';
+            };
+            reader.onerror = () => alert('Failed to read file.');
+            reader.readAsDataURL(file);
+        }
         if (dropzone) {
             dropzone.addEventListener('click', () => fileInput.click());
             dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-primary-fixed','neon-glow'); });
             dropzone.addEventListener('dragleave', (e) => { e.preventDefault(); dropzone.classList.remove('border-primary-fixed','neon-glow'); });
-            dropzone.addEventListener('drop', (e) => { e.preventDefault(); dropzone.classList.remove('border-primary-fixed','neon-glow'); if (e.dataTransfer.files.length) window.location.href = 'rizz-replies.html'; });
+            dropzone.addEventListener('drop', (e) => { e.preventDefault(); dropzone.classList.remove('border-primary-fixed','neon-glow'); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
         }
-        if (fileInput) fileInput.addEventListener('change', (e) => { if (e.target.files.length) window.location.href = 'rizz-replies.html'; });
+        if (fileInput) fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
     </script>
 </body></html>
